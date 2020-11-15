@@ -1,0 +1,237 @@
+<template>
+  <div>
+    <section class="players-list">
+      <div class="players-list__players q-mb-sm" :class="type">
+        <template v-if="!Object.keys(players).length">
+          <div>
+            <no-players
+              :message='noPlayersMsg'
+            >
+            </no-players >
+          </div>
+        </template>
+        <template v-else>
+          <ol class="collection collection-container players-list__players--table q-mb-sm">
+            <!-- The first list item is the header of the table -->
+            <li class="item item-container player-table__items q-mt-xs"
+              :class="type"
+            >
+              <div class="attribute position text-center">{{ showType }}</div>
+              <div class="attribute">Player</div>
+              <!-- Enclose semantically similar attributes as a div hierarchy -->
+              <div class="attribute-container player-information">
+                <div class="attribute last-name"></div>
+                <div class="attribute nick-name">Nickname</div>
+                <div class="attribute online-name">Online Name</div>
+              </div>
+            </li>
+            <player
+              v-for='(player, index) in players'
+              :key='index'
+              :id='player.id'
+              :player='player'
+              :type='type'
+              @selectPlayer="changePlayerStatus"
+            >
+            </player>
+        </ol>
+        </template>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex'
+// import { Container, Draggable } from 'vue-smooth-dnd'
+// import { applyDrag } from '../utils/helpers'
+import { toTitleCase } from 'src/functions/functions-common'
+
+export default {
+  components: {
+    player: require('src/components/Admin/Results/Player.vue').default,
+    noPlayers: require('components/Shared/NoPlayers.vue').default
+    // Container,
+    // Draggable
+  },
+  props: ['players', 'type'],
+  data () {
+    return {
+      noPlayersMsg: 'No players have been knocked out',
+      playerSorted: false
+    }
+  },
+  computed: {
+    ...mapGetters('tourneyResults', ['numFinished', 'numCheckedIn']),
+    showType: function () {
+      return toTitleCase(this.type)
+    }
+  },
+  watch: {
+    finishedPlayers: function () {
+      this.sort()
+    }
+  },
+  methods: {
+    ...mapActions('tourneyResults', ['knockoutPlayer', 'restorePlayer']),
+    changePlayerStatus (payload) {
+      if (this.type === 'checked-in') {
+        this.knockoutPlayer(payload)
+      } else {
+        this.restorePlayer(payload)
+      }
+    },
+    sort () {
+      if (this.type === 'finished') {
+        return this.players.sort((a, b) => a.finishedPosition - b.finishedPosition)
+      }
+    }
+  },
+  beforeMount () {
+    this.sort()
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  .players-list {
+    position: relative;
+    width: 98%;
+    background-color: $off-white;
+    border-radius: 2.5rem;
+    opacity: .85;
+    margin: 16px;
+    height: 66vh;
+    overflow: hidden;
+
+    ol.collection {
+      margin: 0 1.6rem 1.6rem 1.6rem;
+      padding: 0px;
+      max-width: 120rem;
+    }
+
+    li {
+      list-style: none;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .checked-in {
+      background-color: $blue-2;
+    }
+
+    .finished {
+      background-color: $light-blue;
+    }
+
+    &__players {
+      height: 66vh;
+      width: 100%;
+      overflow: scroll;
+      border-radius: 2.5rem;
+      opacity: 0.8;
+
+      .no-players {
+        max-width: 90vw;
+        font-size: 2.4rem;
+
+      }
+      &--table {
+        margin: 0 .6rem .6rem .6rem;
+        position: relative;
+        max-width: 120rem;
+
+        .checked-in {
+          background-color: $blue-2;
+        }
+
+        .finished {
+          background-color: $light-blue;
+        }
+
+        .player-table__heading-row {
+          position: sticky;
+          top: 0;
+          color:  black;
+          align-items:flex-end;
+          justify-content: center;
+          text-overflow: initial;
+          white-space: normal;
+          font-weight: bold;
+          margin-top: 1rem;
+          margin-bottom: .8rem;
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
+        }
+      }
+    }
+  }
+
+.q-page {
+  min-height: auto;
+}
+
+@media screen and (max-width: 600px) {
+  .online-name-header {
+    display: none;
+  }
+}
+
+/* Tabular Layout */
+@media screen and (min-width: 360px) {
+  .players-list__players {
+    /* The maximum column width, that can wrap */
+    .item-container.checked-in {
+      display: grid;
+      grid-template-columns: 6em 4em 8fr 4em;
+    }
+  }
+  .players-list__players {
+    /* The maximum column width, that can wrap */
+    .item-container.finished {
+      display: grid;
+      grid-template-columns: 6em 3.5em 8fr;
+    }
+  }
+  .players-list__players {
+
+    .attribute-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+    }
+
+    /* Definition of wrapping column width for attribute groups. */
+    .player-information {
+        --column-width-min: 7.2em;
+    }
+
+    /* Center header labels */
+    .collection-container > .item-container:first-child .attribute {
+      display: flex;
+      align-items:flex-end;
+      justify-content: flex-start;
+      text-overflow: initial;
+      overflow: auto;
+      white-space: normal;
+      font-weight: bold;
+    }
+
+    .position, .eliminate {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .player-names {
+
+      .name, .nick-name, .online-name {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+}
+</style>

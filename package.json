@@ -1,0 +1,63 @@
+{
+  "name": "dgw-website",
+  "version": "0.0.1",
+  "description": "Donkey's Gone Wild poker league website",
+  "productName": "dgw-website",
+  "author": "Roger Hopkins <jrhopkins83@gmail.com>",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue ./",
+    "test": "echo \"No test specified\" && exit 0",
+    "devIOS": "quasar dev -m capacitor -T ios",
+    "devAndroid": "quasar dev -m capacitor -T android",
+    "buildIOS": "quasar build -m capacitor -T ios",
+    "buildAndroud": "quasar build -m capacitor -T android",
+    "emulators1": "firebase emulators:start --import=dir/base1",
+    "emulators2": "firebase emulators:start --import=dir/base2",
+    "emulators3": "firebase emulators:start --import=dir/base3",
+    "emulators4": "firebase emulators:start --import=dir/base4"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "axios": "^0.18.1",
+    "core-js": "^3.6.5",
+    "firebase": "^7.24.0",
+    "quasar": "^1.0.0",
+    "vue-easy-dnd": "^1.10.2",
+    "vue-smooth-dnd": "^0.8.1",
+    "vuedraggable": "^2.24.3",
+    "vuelidate": "^0.7.6",
+    "vuexfire": "^3.2.4"
+  },
+  "devDependencies": {
+    "@quasar/app": "^2.0.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.1.2",
+    "prettier": "^2.1.2"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": ">= 10.18.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}

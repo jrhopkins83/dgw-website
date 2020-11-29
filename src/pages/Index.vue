@@ -4,7 +4,10 @@
       <q-page style="min-height: inherit;">
         <div class="row">
           <div class="col">
-            <hero-section></hero-section>
+            <hero-section
+              :bank="leagueInfo.bank"
+            >
+            </hero-section>
           </div>
         </div>
         <div class="row">
@@ -54,7 +57,8 @@ export default {
   },
   computed: {
     ...mapGetters('standings', ['seasonStandings', 'standingsSorted', 'standingsFiltered', 'standingsLoaded']),
-    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded'])
+    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded', 'gameDates']),
+    ...mapGetters('games', ['gameDates', 'upcomingGames', 'completedGames'])
   },
   methods: {
     ...mapActions('standings', ['setStandingsLoaded', 'bindStandingsRef']),

@@ -9,7 +9,7 @@
             >
             </q-img>
           </span>
-          <span class="logo__title">
+          <span class="logo__title gt-xs">
             Where Donkeys Come to Play
           </span>
         </div>
@@ -25,12 +25,32 @@
           breakpoint="0"
         >
           <q-route-tab
+            label = 'Home'
+            name = 'home'
+            to = '/'
+          />
+          <q-route-tab
+            label = 'Season Standings'
+            name = 'standings'
+            to = '/season-standings'
+          />
+          <q-route-tab
+            label = 'Weekly Results'
+            name = 'weekly-results'
+            to = '/weekly-results'
+          />
+          <q-route-tab
+            label = 'Schedule'
+            name = ''
+            :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
+          />
+          <!-- <q-route-tab
             v-for="nav in userNavs"
             :key="nav.label"
             :label="nav.label"
             :to="nav.to"
             class="q-pa-sm"
-          />
+          /> -->
         </q-tabs>
         <q-btn-dropdown
           class="q-tab__label"
@@ -40,21 +60,46 @@
           stretch
         >
           <q-list style="min-width: 27rem">
-            <template v-for="(nav, index) in adminNavs">
-              <q-item
-                :key="index"
-                clickablev-ripple
-                :to="nav.to"
-              >
-                <q-item-section>
-                  {{ nav.label }}
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-list>      </q-btn-dropdown>
+            <q-item
+              clickable
+              ripple
+              to="/league-info"
+            >
+              <q-item-section>
+                LEAGUE INFO
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              :to = '{ name: "GameSchedule" , params: { mode: "edit" } }'
+            >
+              <q-item-section>
+                EDIT SCHEDULE
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              to="/"
+            >
+              <q-item-section>
+                EDIT PLAYERS
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              to="/"
+            >
+              <q-item-section>
+                EDIT ANNOUNCEMENTS
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
         <q-btn
           class="mobile-menu"
-          @click="drawerOpen = !drawerOpen"
           icon="menu"
           dense
           flat
@@ -65,17 +110,60 @@
             transition-hide="jump-up"
           >
           <q-list style="min-width: 27rem">
-            <template v-for="(nav, index) in userNavs">
-              <q-item
-                :key="index"
-                clickablev-ripple
-                :to="nav.to"
-              >
-                <q-item-section>
-                  {{ nav.label }}
-                </q-item-section>
-              </q-item>
-            </template>
+            <q-item
+              clickable
+              ripple
+              to="/"
+            >
+              <q-item-section>
+                HOME
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              to = '/season-standings'
+            >
+              <q-item-section>
+                SEASON STANDINGS
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              to= "/weekly-results"
+            >
+              <q-item-section>
+                WEEKLY RESULTS
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
+            >
+              <q-item-section>
+                SCHEDULE
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              to="/"
+            >
+              <q-item-section>
+                PLAYERS
+              </q-item-section>
+            </q-item>
+            <q-item
+              clickable
+              ripple
+              to="/"
+            >
+              <q-item-section>
+                NEWS
+              </q-item-section>
+            </q-item>
           </q-list>
           </q-menu>
         </q-btn>
@@ -114,23 +202,28 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      tab: '',
+      tab: 'home',
       isDesktop: this.$q.platform.is.desktop,
       userNavs: [
         {
+          label: 'Home',
+          name: 'home',
+          to: '/'
+        },
+        {
           label: 'Season Standings',
-          name: 'Standings',
+          name: 'standings',
           to: 'season-standings'
-        // },
-        // {
-        //   label: 'Weekly Results',
-        //   name: 'weekly',
-        //   to: ''
-        // },
-        // {
-        //   label: 'Schedule',
-        //   name: 'schedule',
-        //   to: ''
+        },
+        {
+          label: 'Weekly Results',
+          name: 'weekly-results',
+          to: ''
+        },
+        {
+          label: 'Schedule',
+          // to: 'game-schedule'
+          to: "{ name: 'GameSchedule' , params: { mode: 'view' } }"
         // },
         // {
         //   label: 'News',
@@ -148,29 +241,26 @@ export default {
           label: 'LeagueInfo',
           to: 'league-info'
         },
-        {
-          label: 'Tournment Results',
-          to: 'enter-results'
-        },
+
         {
           label: 'Update Schedule',
-          to: 'updateSchedule'
-        },
-        {
-          label: 'View RSVPs',
-          to: 'rsvp'
-        },
-        {
-          label: 'Edit Players',
-          to: 'editPlayers'
-        },
-        {
-          label: 'Edit Announcements',
-          to: 'editAnnouncements'
-        },
-        {
-          label: 'Send Message',
-          to: 'sendMessage'
+          to: '{ name: "GameSchedule", params: { mode: "edit" } }'
+        // },
+        // {
+        //   label: 'View RSVPs',
+        //   to: 'rsvp'
+        // },
+        // {
+        //   label: 'Edit Players',
+        //   to: 'editPlayers'
+        // },
+        // {
+        //   label: 'Edit Announcements',
+        //   to: 'editAnnouncements'
+        // },
+        // {
+        //   label: 'Send Message',
+        //   to: 'sendMessage'
         }
       ]
     }

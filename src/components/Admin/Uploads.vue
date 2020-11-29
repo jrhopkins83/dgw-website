@@ -11,42 +11,6 @@
 
       <q-separator />
 
-      <q-card-section class="q-pa-sm">
-        <q-form class="q-gutter-md">
-          <q-card class="my-card">
-            <q-card-actions
-              class="q-mb-xs justify-evenly"
-              align="center"
-            >
-              <q-btn
-                color="blue-6"
-                label="Upload League Info"
-                @click="league=true"
-              />
-            </q-card-actions>
-          </q-card>
-          <q-dialog
-            v-model="league"
-          >
-            <q-card style="width: 300px; max-width: 80vw;">
-              <q-card-section>
-                This will upload the basic league information. Proceed?
-              </q-card-section>
-              <q-card-actions align="right" class="bg-white text-teal">
-                <q-btn label="No" color="negative" v-close-popup />
-                <q-btn label="Yes" color="blue-9" @click="uploadLeagueInfo" />
-              </q-card-actions>
-            </q-card>
-          </q-dialog>
-          <q-inner-loading :showing="updating">
-            <q-spinner-gears
-              size="50px"
-              color="blue-9"
-            />
-          </q-inner-loading>
-        </q-form>
-      </q-card-section>
-
       <q-separator />
 
       <q-card-section class="q-pa-sm">
@@ -182,6 +146,7 @@ export default {
       dates: false,
       standings: false,
       updating: false,
+      gameDates: [],
       pointsAssignment: [{}],
       playerToSubmit: {},
       usersAdded: 0,
@@ -202,36 +167,41 @@ export default {
       }
       const reader = new FileReader()
 
-      reader.onload = e => {
+      reader.onload = async e => {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
-          results.forEach(async (player) => {
-            try {
-              const newPlayer = {}
-              newPlayer.firstName = toTitleCase(player.firstName).trim()
-              newPlayer.lastName = toTitleCase(player.lastName).trim()
-              newPlayer.nickName = player.nickName
-              newPlayer.onlineName = player.onlineName
-              newPlayer.phone = player.phone
-              newPlayer.email = player.email
-              newPlayer.avatar = player.avatar
-              newPlayer.emailOptin = true
-              newPlayer.notificationOptin = true
-              player.playerID = await this.addNewPlayer(newPlayer)
-              if (player.playerID) {
-                const playerTotals = await this.uploadWeeklyResults(player)
-                await this.createPlayerStanding(player, playerTotals)
-                if (player.email) {
-                  player.uid = await this.createNewUser(player.email)
-                  if (player.uid) {
-                    await this.createUserPlayerRef(player)
+          this.gameDates = await this.getLeagueDates()
+          if (this.gameDates.length) {
+            results.forEach(async (player) => {
+              try {
+                const newPlayer = {}
+                newPlayer.firstName = toTitleCase(player.firstName).trim()
+                newPlayer.lastName = toTitleCase(player.lastName).trim()
+                newPlayer.nickName = player.nickName
+                newPlayer.onlineName = player.onlineName
+                newPlayer.phone = player.phone
+                newPlayer.email = player.email
+                newPlayer.avatar = player.avatar
+                newPlayer.emailOptin = true
+                newPlayer.notificationOptin = true
+
+                player.playerID = await this.addNewPlayer(newPlayer)
+
+                if (player.playerID) {
+                  const playerTotals = await this.uploadWeeklyResults(player)
+                  await this.createPlayerStanding(player, playerTotals)
+                  if (player.email) {
+                    player.uid = await this.createNewUser(player.email, 'dgw2020')
+                    if (player.uid) {
+                      await this.createUserPlayerRef(player)
+                    }
                   }
                 }
+              } catch (error) {
+                console.error('Error adding document: ', error)
               }
-            } catch (error) {
-              console.error('Error adding document: ', error)
-            }
-          })
+            })
+          }
         }
       }
       this.players = false
@@ -247,50 +217,55 @@ export default {
         // get point assignments
         const pointsAssignments = await this.getPointAssignments()
         if (pointsAssignments) {
-          // Get league dates
-          const leagueDates = await this.getLeagueDates()
-          if (leagueDates) {
-            // for each date get points value
-            const dateKeys = Object.keys(player)
-            dateKeys.forEach(async (key) => {
-              const keyDate = key + ' 19:00:00'
-              const keyDtTime = Timestamp.fromDate(new Date(keyDate))
-              if (keyDtTime.seconds && player[key] > 0) {
-                // Get date ID from date key
-                const index = leagueDates.findIndex(item => item.txtDate === key)
-                if (index >= 0) {
-                  const eventID = leagueDates[index].id
-                  const eventDate = leagueDates[index].txtDate
-                  // Lookup position based on points
-                  let position = 0
-                  const weekPoints = player[key]
-                  if (weekPoints > 0) {
-                    playerTotals.totalGames = playerTotals.totalGames + 1
-                    if (weekPoints === 1) {
-                      position = 10
-                    } else {
-                      const index = pointsAssignments.findIndex(item => item.points === player[key])
-                      position = pointsAssignments[index].position
-                      const totalIndex = position - 1
-                      playerTotals.places[totalIndex] = playerTotals.places[totalIndex] + 1
-                      playerTotals.finalTables = playerTotals.finalTables + 1
+          // for each date get points value
+          const dateKeys = Object.keys(player)
+          dateKeys.forEach(async (key) => {
+            const keyDate = key + ' 19:00:00'
+            const keyDtTime = Timestamp.fromDate(new Date(keyDate))
+            if (keyDtTime.seconds && player[key] > 0) {
+              // Get date ID from date key
+              const index = this.gameDates.findIndex(item => item.txtDate === key)
+              if (index >= 0) {
+                const gameID = this.gameDates[index].id
+                // Lookup position based on points
+                let position = 0
+                const weekPoints = player[key]
+                let finalTable = false
+                if (weekPoints > 0) {
+                  playerTotals.totalGames = playerTotals.totalGames + 1
+                  if (weekPoints === 1) {
+                    position = 10
+                  } else {
+                    const index = pointsAssignments.findIndex(item => item.points === player[key])
+                    position = pointsAssignments[index].position
+                    const totalIndex = position - 1
+                    playerTotals.places[totalIndex] = playerTotals.places[totalIndex] + 1
+                    playerTotals.finalTables = playerTotals.finalTables + 1
+                    if (position <= 9) {
+                      finalTable = true
                     }
                   }
-
-                  // Add new document for the date
-                  const newResult = {
-                    playerID: player.playerID,
-                    eventID: eventID,
-                    date: eventDate,
-                    position: position,
-                    points: weekPoints,
-                    prizeMoney: 0
-                  }
-                  await firebaseStore.collection('weeklyResults').add(newResult)
                 }
+
+                // Add new document for the date
+                const newResult = {
+                  playerID: player.playerID,
+                  gameID: gameID,
+                  gameDate: keyDtTime,
+                  firstName: player.firstName,
+                  lastName: player.lastName,
+                  nickName: player.nickName,
+                  onlineName: player.onlineName,
+                  avatar: player.avatar,
+                  finishedPosition: position,
+                  points: weekPoints,
+                  finalTable: finalTable,
+                  prizeMoney: 0
+                }
+                await firebaseStore.collection('weeklyResults').add(newResult)
               }
-            })
-          }
+            }
+          })
         }
         return playerTotals
       } catch (error) {
@@ -310,17 +285,17 @@ export default {
     },
     async createPlayerStanding (player, playerTotals) {
       try {
+        const playerID = player.playerID
         const newStanding = {
-          playerID: player.playerID,
           firstName: player.firstName,
           lastName: player.lastName,
           nickName: player.nickName,
           onlineName: player.onlineName,
           avatar: player.avatar,
           season: '2020',
-          position: 0,
           totalPoints: player.points,
           games: player.games,
+          winnings: 0,
           pts_game: player.pts_game,
           total1st: playerTotals.places[0],
           total2nd: playerTotals.places[1],
@@ -328,7 +303,8 @@ export default {
           total4th: playerTotals.places[3],
           finalTables: playerTotals.finalTables
         }
-        return firebaseStore.collection('seasonStandings').add(newStanding)
+        const seasonStandings = firebaseStore.collection('seasonStandings')
+        return seasonStandings.doc(playerID).set(newStanding)
       } catch (error) {
         console.log(`Error adding standing: ${error.message}`)
       }
@@ -404,20 +380,20 @@ export default {
     },
     async getLeagueDates () {
       try {
-        const leagueDatesRef = firebaseStore.collection('eventDates')
-          .orderBy('date')
-        const datesSnap = await leagueDatesRef.get()
+        const gameDatesRef = firebaseStore.collection('gameDates')
+          .orderBy('gameDate')
+        const datesSnap = await gameDatesRef.get()
         if (!datesSnap.empty) {
-          const leagueDates = []
+          const gameDates = []
           datesSnap.forEach(async (doc) => {
             const leagueDate = {
               id: doc.id,
               txtDate: doc.data().txtDate,
-              date: doc.data().date
+              gameDate: doc.data().gameDate
             }
-            leagueDates.push(leagueDate)
+            gameDates.push(leagueDate)
           })
-          return leagueDates
+          return gameDates
         } else {
           console.log('No dates found')
           return null
@@ -431,6 +407,7 @@ export default {
       // Upload JSON formatted file with players
       const files = document.getElementById('dateFile').files
       if (files.length <= 0) {
+        showMessage('No dates found in that file')
         return false
       }
       const reader = new FileReader()
@@ -438,35 +415,56 @@ export default {
       reader.onload = e => {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
-          const newEvent = {}
-          results.forEach(async (event) => {
+          const newGame = {}
+          const lastCompletedDate = '11/12/2020 19:00:00'
+          const lastCompletedDtTm = Timestamp.fromDate(new Date(lastCompletedDate))
+          results.forEach(async (game) => {
             try {
-              const newDate = event.Date + ' 19:00:00'
-              newEvent.date = Timestamp.fromDate(new Date(newDate))
-              newEvent.txtDate = event.Date
-              newEvent.type = 'MTT'
-              newEvent.structure = 'Freezeout'
-              newEvent.buyIn = 0
-              newEvent.rebuy = 0
-              newEvent.addon = 0
+              if (game.gameDate.length) {
+                let complete = false
+                const newDate = game.gameDate + ' 19:00:00'
+                newGame.gameDate = Timestamp.fromDate(new Date(newDate))
 
-              await this.addNewLeagueDate(newEvent)
+                if (newGame.gameDate < lastCompletedDtTm) {
+                  complete = true
+                }
+
+                newGame.txtDate = game.gameDate
+                if (game.type) {
+                  newGame.type = game.type
+                } else {
+                  newGame.type = 'MTT'
+                }
+                if (game.structure) {
+                  newGame.structure = game.structure
+                } else {
+                  newGame.structure = 'Freezeout'
+                }
+                newGame.buyIn = game.buyIn
+                newGame.rebuy = game.rebuy
+                newGame.addon = game.addon
+                newGame.notes = game.notes
+                newGame.complete = complete
+
+                await this.addNewLeagueDate(newGame)
+              }
             } catch (error) {
               console.error('Error adding document: ', error)
             }
           })
+        } else {
+          showMessage('No dates found in that file')
         }
         this.dates = false
       }
       reader.readAsText(files.item(0))
-      // TO-DO Fix courseID
     },
     async addNewLeagueDate (newDate) {
-      const collection = 'eventDates'
+      const collection = 'gameDates'
       try {
         return await this.addObjectToFS(newDate, collection)
       } catch (err) {
-        return showMessage('Error', 'Error updating new date')
+        return err
       }
     },
     // Add document to collection passed from function

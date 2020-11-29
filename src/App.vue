@@ -21,7 +21,6 @@ export default {
   },
   beforeMount () {
     this.getUserInfoLS()
-    this.getPlayersLS()
     this.handleAuthStateChange()
   }
 }

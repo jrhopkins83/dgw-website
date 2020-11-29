@@ -86,10 +86,12 @@ export default {
       }
       if (!this.formHasError) {
         try {
-          const addAdminRole = firebaseFunctions.httpsCallable('addAdminRole')
+          const addAdminRole = firebaseFunctions.httpsCallable('setAdminClaim')
           addAdminRole({ email: this.adminEmail }).then(result => {
             this.clearEmail()
-            console.log(result)
+            const msg = result.data.message
+            console.log(msg)
+            showMessage(msg)
           })
         } catch (error) {
           showMessage('error', `Error making admin, error: ${error.message}`)

@@ -1,17 +1,17 @@
 <template>
   <div>
-    <li class="item item-container player-table__items q-mt-xs"
+    <li class="list-group-item item item-container player-table__items q-mt-xs"
       :class="type"
     >
-
-      <div v-if="type!=='finished'" class="position">
-        <q-checkbox
-          v-model="checkedIn"
-          type="number"
-          @input="updateCheckedIn"
+      <div class="eliminate">
+        <q-icon
+          class="handle"
+          color="primary"
+          name="drag_handle"
+          size="md"
         />
       </div>
-      <div v-else class="position">
+      <div class="position">
         {{ player.finishedPosition}}
       </div>
       <div class="player-img q-px-xs q-py-none">
@@ -19,23 +19,12 @@
           <img :src="player_avatar" color="primary">
         </q-avatar>
       </div>
-      <div class="attribute-container player-information player-names"
-        clickable
-        ripple
-      >
-        <div class="attribute name">{{ name }}</div>
-        <div class="attribute nick-name">{{ player.nickName}}</div>
-        <div class="attribute online-name">{{ player.onlineName }}
+      <div class="attribute-container player-information">
+        <div class="attribute-container player-names">
+          <div class="attribute name">{{ player.firstName }}</div>
+          <div class="attribute nick-name">{{ player.nickName}}</div>
+          <div class="attribute online-name">{{ player.onlineName }}</div>
         </div>
-      </div>
-      <div v-if="type!=='finished' && !reorderFlag" class="eliminate">
-        <q-btn
-          color="secondary"
-          icon="not_interested"
-          round
-          size="sm"
-          @click="koPlayer"
-        />
       </div>
     </li>
   </div>
@@ -44,7 +33,7 @@
 
 <script>
 import { showMessage } from 'src/functions/functions-common'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Player',
@@ -56,16 +45,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('tourneyResults', ['reorderFlag']),
     player_avatar: function () {
       if (this.player.avatar) {
         return this.player.avatar
       } else {
         return 'default.jpg'
       }
-    },
-    name: function () {
-      return this.player.lastName.length ? `${this.player.firstName} ${this.player.lastName.substr(0, 1)}.` : this.player.firstName
     }
   },
   methods: {
@@ -77,14 +62,14 @@ export default {
       }
       this.updateCheckedInPlayer(newResult)
     },
-    koPlayer () {
+    selectPlayer () {
       if (this.player.checkedIn) {
         const playerToChange = {
           id: this.id,
           docID: this.player.id,
           player: this.player
         }
-        this.$emit('koPlayer', playerToChange)
+        this.$emit('selectPlayer', playerToChange)
       } else {
         const message = `${this.player.firstName} isn't checked in. Click Checked In first.`
         showMessage(message)
@@ -165,7 +150,7 @@ export default {
     /* The maximum column width, that can wrap */
     .item-container.finished {
       display: grid;
-      grid-template-columns: 6em 3.5em 8fr;
+      grid-template-columns: 6em 4em 4em 8fr;
     }
   }
   .players-list__players {
@@ -173,7 +158,22 @@ export default {
     .attribute-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+    }
+
+    /* Definition of wrapping column width for attribute groups. */
+    .player-information {
         --column-width-min: 7.2em;
+    }
+
+    /* Center header labels */
+    .collection-container > .item-container:first-child .attribute {
+      display: flex;
+      align-items:flex-end;
+      justify-content: flex-start;
+      text-overflow: initial;
+      overflow: auto;
+      white-space: normal;
+      font-weight: bold;
     }
 
     .position, .eliminate {

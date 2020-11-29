@@ -75,6 +75,9 @@ export const mixinAddEditPlayer = {
         } else {
           try {
             // TO-DO: Manage duplicates through FS rules
+            // Delete contact info
+            delete newPlayer.email
+            delete newPlayer.phone
             const docRef = await this.addPlayerFS(newPlayer)
             return docRef.id
           } catch (err) {
@@ -160,12 +163,11 @@ export const mixinAddEditPlayer = {
       try {
         await firebaseStore
           .collection('users')
-          .doc(user.userID)
+          .doc(user.uid)
           .set({
             playerID: user.playerID,
             email: user.email,
-            phoneNumber: user.phoneNumber,
-            isAdmin: false
+            phoneNumber: user.phoneNumber
           })
         return true
       } catch (error) {

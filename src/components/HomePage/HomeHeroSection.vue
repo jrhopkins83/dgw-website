@@ -21,7 +21,7 @@
                 Final Table
               </q-item-section>
               <q-item-section class="text-weight-bold" side>
-                {{ pool.final_table}}
+                {{ formattedFinalTable }}
               </q-item-section>
             </q-item>
             <q-item class="q-py-xs">
@@ -29,7 +29,7 @@
                 POY
               </q-item-section>
               <q-item-section class="text-weight-bold" side>
-                {{ pool.POY }}
+                {{ formattedPOY }}
               </q-item-section>
             </q-item>
             <q-item class="q-py-xs">
@@ -37,7 +37,7 @@
                 DGW
               </q-item-section>
               <q-item-section class="text-weight-bold" side>
-                {{ pool.DGW }}
+                {{ formattedDGW }}
               </q-item-section>
             </q-item>
           </q-list>
@@ -53,18 +53,29 @@ import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      pool: {
-        final_table: '$1,420',
-        POY: '$200',
-        DGW: '$180'
-      },
       hero_message: 'Another great turnout for our Tournament with 22 participating.  Congrats to Scotty Lusk for getting the win and $886.  Ron continues to be strong with his 2nd place showing and $627.  Eddy was 3rd and collected $418 and Paul donked his way into 4th and got a reward of $209.  Our next tournament is the $40 Rebuy and Addon.  Remember, be online at 7 p.m. and get a bonus chip! '
     }
   },
+  props: ['bank'],
   computed: {
-    ...mapGetters('leagueSettings', ['userInfo'])
+    ...mapGetters('leagueSettings', ['userInfo']),
+    formattedFinalTable: function () {
+      return this.formatValue(this.bank.finalTable)
+    },
+    formattedPOY: function () {
+      return this.formatValue(this.bank.playerOfTheYear)
+    },
+    formattedDGW: function () {
+      return this.formatValue(this.bank.DGW)
+    }
   },
   methods: {
+    formatValue (amount) {
+      const options2 = { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }
+      const numberFormat2 = new Intl.NumberFormat('en-US', options2)
+
+      return numberFormat2.format(amount)
+    }
   }
 }
 </script>

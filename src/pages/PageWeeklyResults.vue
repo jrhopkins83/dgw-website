@@ -2,15 +2,19 @@
   <q-page style="min-height: inherit;">
     <div
       class="container"
-      v-if="standingsLoaded"
+      v-if="resultsLoaded && gamesLoaded"
     >
       <div class="left-column">
         <div class="left-column__header text-white">
           <div class="left-column__header--title text-h3">
-            Season Standings
+            Weekly Results for the week of
           </div>
-          <div class="left-column__header--date text-h3">
-            through {{ txtLastDate }}
+          <div class="div left-column__header--date date">
+            <modal-pick-date
+              :pickDate="pickDate"
+              :gameDates="gameDates"
+              @updateGameDate="updateGameDate"
+            />
           </div>
         </div>
         <div class="left-column__search-bar q-pa-xs q-ma-md">
@@ -19,12 +23,12 @@
         </div>
         <div class="left-column__player-rankings">
           <player-rankings
-            :standings="standingsFiltered"
+            :weeklyResults="resultsFiltered"
           >
           </player-rankings>
         </div>
       </div>
-      <div class="right-column">
+      <div class="right-column gt-xs">
         <div class="right-column__image"></div>
       </div>
     </div>
@@ -32,22 +36,74 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { date } from 'quasar'
+import { showMessage } from 'src/functions/functions-common'
+import { firebaseStore, Timestamp } from 'boot/firebase'
 
 export default {
-  name: 'PageSeasonStandings',
+  name: 'PageWeeklyResults',
   components: {
-    playerRankings: require('components/Rankings/SeasonStandings.vue').default,
+    playerRankings: require('components/Rankings/WeeklyResults.vue').default,
+    modalPickDate: require('src/components/Modals/ModaPickDate.vue').default,
     search: require('components/Rankings/Search.vue').default
+  },
+  data () {
+    return {
+      gameDate: null,
+      pickDate: null
+    }
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
-    ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
-    txtLastDate: function () {
-      return date.formatDate(this.leagueInfo.lastTourneyDate.toDate(), 'dddd MMMM D')
+    ...mapGetters('games', ['completedGames', 'gamesLoaded', 'gameDates']),
+    ...mapGetters('weeklyResults', ['search', 'resultsLoaded', 'resultsFiltered']),
+    completedGamesArr: function () {
+      return Object.values(this.completedGames)
+    },
+    txtPickDate: function () {
+      return date.formatDate(this.gameDate.toDate(), 'MM / DD')
     }
 
+  },
+  methods: {
+    ...mapActions('weeklyResults', ['setResultsLoaded', 'bindResultsRef']),
+    async loadWeeklyResults (gameDate) {
+      try {
+        const resultsRef = firebaseStore.collection('weeklyResults')
+          .where('gameDate', '==', gameDate)
+
+        await this.bindResultsRef(resultsRef)
+
+        this.setResultsLoaded(true)
+      } catch (err) {
+        switch (err) {
+          case 'permission-denied':
+            showMessage('error', "You don't have access to standings data.")
+            break
+          case 'not-found':
+            showMessage('error', 'Record not found in database')
+            break
+          default:
+            showMessage('error', 'Error getting season standings: ' + err)
+        }
+        this.setResultsLoaded(true)
+      }
+    },
+    updateGameDate (date) {
+      console.log('date updated with ', date)
+      this.pickDate = date
+      const txtGameDate = date + ' 19:00:00'
+      this.gameDate = Timestamp.fromDate(new Date(txtGameDate))
+      this.loadWeeklyResults(this.gameDate)
+    }
+  },
+
+  async beforeMount () {
+    if (this.completedGamesArr[0].gameDate) {
+      this.gameDate = this.completedGamesArr[0].gameDate
+      this.loadWeeklyResults(this.gameDate)
+    }
   }
 }
 </script>
@@ -77,7 +133,7 @@ export default {
       right: 0px;
       bottom: 0px;
       left: 0px;
-      background: transparent linear-gradient(307deg, #060607 0%, #28AD41 43%, #1E1F20 100%) 0% 0% no-repeat padding-box;;
+      background: transparent linear-gradient(228deg, #AA0604 0%, #550302 100%) 0% 0% no-repeat padding-box;
       background-repeat: no-repeat;
       // background-size: 60% 100%;
     }
@@ -96,11 +152,25 @@ export default {
         margin-top: 1rem;
 
         &--title {
+          display: flex;
           justify-self: end;
         }
 
         &--date {
+          display: flex;
           align-self: end;
+
+        }
+
+        &--date.text {
+          width: 18rem;
+        }
+
+        &--date.date {
+          align-self: center;
+          justify-self: start;
+          width: 14rem;
+          color: black;
         }
       }
 
@@ -116,8 +186,8 @@ export default {
         position: relative;
         width: 98%;
         background-color: $off-white;
+        opacity: 1;
         border-radius: 2.5rem;
-        opacity: .9;
         margin: 16px
       }
     }
@@ -125,13 +195,14 @@ export default {
     .right-column {
       &__image {
         position: relative;
-        min-height: 45rem;
+        min-height: 23rem;
         width: 100%;
         top: 0px;
         right: 0px;
         bottom: 0px;
         left: 0px;
-        background-image: url(poker_table2_blurred.png);
+        background-image: url(RedPocketAces.png);
+        background-repeat: no-repeat;
         background-size: cover;
 
       }

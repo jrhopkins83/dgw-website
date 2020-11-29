@@ -5,32 +5,26 @@
         <ol class='collection collection-container player-table q-mb-sm'>
           <!-- The first list item is the header of the table -->
           <li class='item item-container player-table__heading-row'>
-            <div class='attribute'>Rank</div>
+            <div class='attribute'>Position</div>
             <div class='attribute'>Player</div>
             <!-- Enclose semantically similar attributes as a div hierarchy -->
             <div class='attribute-container player-information'>
               <div class='attribute-container player-names'>
-                <div class='attribute'>Name</div>
+                <div class='attribute gt-xs'>Name</div>
                 <div class='attribute gt-xs'>Nickname</div>
-                <div class='attribute'>Online Name</div>
+                <div class='attribute gt-xs'>Online Name</div>
               </div>
             </div>
             <div class='attribute-container points'>
-              <div class='attribute'>Points</div>
+              <div class='attribute'>Pts</div>
             </div>
-            <div class='attribute-container games gt-xs'>
-              <div class='attribute'>Games</div>
-            </div>
-            <div class='attribute-container average gt-xs'>
-              <div class='attribute average'>Pts / Game</div>
-            </div>
-            <!-- <div class='attribute-container winnings'>
+            <div class='attribute-container gt-xs winnings'>
               <div class='attribute'>Winnings</div>
-            </div> -->
+            </div>
           </li>
           <!-- The rest of the items in the list are the actual data -->
           <player-rank
-            v-for='(player, playerID) in standings'
+            v-for='(player, playerID) in weeklyResults'
             :key='playerID'
             :player='player'
             @select='viewPlayerDetails'
@@ -44,10 +38,11 @@
 
 <script>
 export default {
+  name: 'WeeklyResults',
   components: {
-    playerRank: require('components/Rankings/PlayerRanking.vue').default
+    playerRank: require('components/Rankings/PlayerResult.vue').default
   },
-  props: ['standings'],
+  props: ['weeklyResults'],
   data () {
     return {
 
@@ -84,23 +79,12 @@ export default {
     }
 
     &__players {
-      background-color: white;
+      background-color:$off-white;
       height: 74vh;
       max-width: 120rem;
       overflow: scroll;
       border-radius: 2.5rem;
-      opacity: .9;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        bottom: 0px;
-        left: 0px;
-        background-color: rgba(0,0,0,0.25);
-        border-radius: 2.5rem;
-      }
+      opacity: 1;
 
       .player-table {
         margin: 0 1.6rem 1.6rem 1.6rem;
@@ -109,9 +93,10 @@ export default {
 
         &__heading-row {
           position: sticky;
+          z-index: 1;
           top: 0;
-          background-color: white;
-          opacity: .9;
+          background-color: $off-white;
+          opacity: 1;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
@@ -121,8 +106,24 @@ export default {
           margin-bottom: .8rem;
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
-          z-index: 1;
+          text-decoration: underline;
         }
+
+        /* The maximum column width, that can wrap */
+          .item-container {
+              display: grid;
+              grid-template-columns: 4em 5em 8fr 2fr 2fr;
+          }
+
+          .attribute-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+          }
+
+          /* Definition of wrapping column width for attribute groups. */
+          .player-information {
+              --column-width-min: 8.2em;
+          }
 
       }
     }
@@ -141,22 +142,6 @@ export default {
 /* Tabular Layout */
 @media screen and (min-width: 360px) {
   .rankings-section {
-
-    /* The maximum column width, that can wrap */
-      .item-container {
-          display: grid;
-          grid-template-columns: 4em 5em 8fr 2fr 2fr 2fr;
-      }
-
-      .attribute-container {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-      }
-
-      /* Definition of wrapping column width for attribute groups. */
-      .player-information {
-          --column-width-min: 8.2em;
-      }
 
   /* Center header labels */
   .collection-container > .item-container:first-child .attribute {

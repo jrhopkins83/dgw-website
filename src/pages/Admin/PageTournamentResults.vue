@@ -2,7 +2,7 @@
   <q-page style="min-height: inherit;">
     <div
       class="container"
-      v-if="resultsLoaded && leagueInfoLoaded"
+      v-if="resultsLoaded && finishedLoaded && leagueInfoLoaded"
     >
       <div class="row header">
         <div class="col-12">
@@ -12,7 +12,7 @@
         </div>
         <div class="col-12">
           <div class="header__date text-center">
-            {{ txtNextDate }}
+            {{ txtTournamentDate }}
           </div>
         </div>
         <div class="header__subheading">
@@ -27,14 +27,14 @@
             <div class="attribute">Total knocked out: {{ numFinished }}</div>
             <div class="attribute">Total remaining: {{ remaining }}</div>
           </div>
-          <div class="edit-button" v-if="!reorder">
+          <div class="edit-button" v-if="!reorderFlag">
             <q-btn
               color="white"
               label="Edit"
               text-color="black"
               align="center"
               size="sm"
-              @click="reorder=true"
+              @click="setReorderFlag(true)"
             />
           </div>
           <div class="edit-button" v-else>
@@ -44,7 +44,7 @@
               text-color="black"
               align="center"
               size="sm"
-              @click="reorder=false"
+              @click="setReorderFlag(false)"
             />
           </div>
         </div>
@@ -56,13 +56,15 @@
             :type="'checked-in'"
           >
           </players-list>
+
         </div>
+
         <div
-          v-if="!reorder"
+          v-if="!reorderFlag"
           class="results-section__right-column"
         >
           <players-list
-            :players="finishedPlayersSorted"
+            :players="finishedPlayers"
             :type="'finished'"
           >
           </players-list>
@@ -72,7 +74,7 @@
           class="results-section__right-column"
         >
           <reorder-players
-            :players="finishedPlayersSorted"
+            :remaining="remaining"
             :type="'finished'"
           >
           </reorder-players>
@@ -94,6 +96,7 @@
             label="Enter Payouts"
             text-color="white"
             align="center"
+            @click="enterPayouts"
           />
         </div>
       </div>
@@ -104,6 +107,20 @@
           @close="showAddPlayer=false"
         />
       </q-dialog>
+      <q-dialog v-model="showProceed" persistent>
+        <q-card style="min-width: 250px">
+          <q-card-section>
+            <div class="text-h4">Proceed?</div>
+          </q-card-section>
+          <q-card-section>
+            {{ proceed_msg }}
+          </q-card-section>
+          <q-card-actions align="right" class="text-primary">
+            <q-btn  color="blue-10" label="Yes" @click="$router.push({ name: 'EnterPayouts' })" />
+            <q-btn color="negative" label="No" @click="showProceed=false"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -111,10 +128,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
-// import { firebaseStore } from 'boot/firebase'
-// import { showMessage } from 'src/functions/functions-common'
-import { date } from 'quasar'
+// import { firebaseStore, firebaseFunctions } from 'boot/firebase'
 import { firebaseStore } from 'src/boot/firebase'
+import { showMessage } from 'src/functions/functions-common'
+import { date } from 'quasar'
 
 export default {
   name: 'TournamentResults',
@@ -125,32 +142,40 @@ export default {
     reorderPlayers: require('components/Admin/Results/PlayersListReorder.vue').default
   },
   mixins: [mixinAddEditPlayer],
+  props: {
+    id: {
+      type: String,
+      default: ''
+    }
+  },
   data () {
     return {
       showAddPlayer: false,
+      showProceed: false,
+      proceed_msg: '',
       reorder: false,
       results: 0
     }
   },
   watch: {
     tournamentResults: function () {
-      this.getFinishedPlayersLS()
       this.getNumCheckedIn()
+      this.setResultsLoaded(true)
     }
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded']),
-    ...mapGetters('tourneyResults', ['tournamentResults', 'resultsLoaded', 'finishedPlayers', 'finishedPlayersSorted']),
-    ...mapGetters('tourneyResults', ['resultsSorted', 'remainingPlayers', 'numCheckedIn', 'numFinished', 'tournamentInfo']),
-    txtNextDate: function () {
-      return date.formatDate(this.leagueInfo.nextTourneyDate.toDate(), 'dddd MMMM D')
+    ...mapGetters('tourneyResults', ['tournamentID', 'tournamentResults', 'resultsLoaded', 'finishedLoaded', 'finishedPlayers']),
+    ...mapGetters('tourneyResults', ['reorderFlag', 'resultsSorted', 'resultsFiltered', 'remainingPlayers', 'numCheckedIn', 'tournamentInfo']),
+    txtTournamentDate: function () {
+      return date.formatDate(this.tournamentInfo.gameDate.toDate(), 'dddd MMMM D')
     },
     remaining: function () {
-      return this.numCheckedIn - this.finishedPlayersSorted.length
+      return this.numCheckedIn - this.numFinished
     },
-    resultsLength: function () {
+    numFinished: function () {
       if (this.tournamentResults) {
-        return Object.keys(this.tournamentResults)
+        return Object.keys(this.finishedPlayers).length
       } else {
         return null
       }
@@ -158,16 +183,20 @@ export default {
 
   },
   methods: {
-    ...mapActions('tourneyResults', ['fbResults', 'setResultsLoaded', 'getFinishedPlayersLS', 'getNumCheckedIn', 'fbEventInfo', 'fbTournamentInfo']),
-    async loadTournamentResults () {
-    },
+    ...mapActions('tourneyResults', ['fbResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
+    ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setReorderFlag', 'setFinishedLoaded']),
     async savePlayer (newPlayer) {
+      this.setResultsLoaded(false)
+      this.setFinishedLoaded(false)
+      this.$q.loading.show({
+        message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+      })
       const newPlayerNames = {
         firstName: newPlayer.firstName,
         lastName: newPlayer.lastName,
         nickName: newPlayer.nickName,
-        onlineName: newPlayer.onlineName
-
+        onlineName: newPlayer.onlineName,
+        avatar: null
       }
       const newPlayerID = await this.addNewPlayer(newPlayerNames)
       if (newPlayerID) {
@@ -200,24 +229,93 @@ export default {
         const resultsRef = firebaseStore.collection('tournamentResults')
         const resultDoc = await resultsRef.add(newPlayerResult)
         if (resultDoc.id) {
+          this.resortFinishedPlayers(true)
           this.showAddPlayer = false
         } else {
           return false
         }
+        this.setResultsLoaded(true)
+        this.setFinishedLoaded(true)
+        this.$q.loading.hide()
       }
     },
-    setTournamentResults () {
-      this.getFinishedPlayersLS()
-      this.getNumCheckedIn()
-      this.setResultsLoaded(true)
+    enterPayouts () {
+      if (Object.keys(this.remainingPlayers).length > 0) {
+        this.proceed_msg = `There are still ${Object.keys(this.remainingPlayers).length} remaining players.  If you continue their results won't count.  Do you still want to proceed?`
+        this.showProceed = true
+      } else {
+        this.$router.push({ name: 'EnterPayouts' })
+      }
     }
   },
   async beforeMount () {
-    if (this.leagueInfo.nextTourneyDate) {
-      await this.fbTournamentInfo(this.leagueInfo.nextTourneyDate)
-      await this.fbResults(this.leagueInfo.nextTourneyDate)
-      this.setTournamentResults()
+    if (this.tournamentID) {
+      await this.fbTournamentInfo(this.tournamentID)
+      // Get tournament results if loaded.  If not loaded, call function to create
+      await this.fbResults(this.tournamentID)
+      if (this.tournamentInfo.type && !this.tournamentResults.length) {
+        try {
+          // TO-DO: convert to FB function
+          // First check tournaments loaded just in case vuexFire is lagging
+          const resultsRef = firebaseStore.collection('tournamentResults')
+            .where('eventID', '==', this.tournamentID)
+            .limit(1)
+          const snapShot = await resultsRef.get()
+          if (snapShot.empty) {
+            // const createResults = firebaseFunctions.httpsCallable('createTournamentResults')
+            // createResults({ event: this.tournamentInfo }).then(result => {
+            //   const msg = 'Results created'
+            //   showMessage(msg)
+            // })
+            createTournamentResults(this.tournamentInfo, this.tournamentID).then(async () => {
+              // Reload results
+              await this.fbResults(this.tournamentID)
+            })
+          }
+        } catch (error) {
+          showMessage('error', `Error loading results, error: ${error.message}`)
+          this.updating = false
+        }
+      }
     }
+    this.getFinishedPlayersLS()
+    this.getNumCheckedIn()
+  }
+}
+async function createTournamentResults (tournamentInfo, id) {
+  try {
+    const playersRef = firebaseStore.collection('players')
+
+    // For each player add a new invite to invitations collection
+    const snapshot = await playersRef.get()
+    if (!snapshot.empty) {
+      const promises = []
+      const resultsRef = firebaseStore.collection('tournamentResults')
+      snapshot.forEach(async player => {
+        const newPlayer = {
+          date: tournamentInfo.date,
+          eventID: id,
+          playerID: player.id,
+          firstName: player.data().firstName,
+          lastName: player.data().lastName,
+          nickName: player.data().nickName,
+          onlineName: player.data().onlineName,
+          avatar: player.data().avatar,
+          RSVPd: false,
+          checkedIn: false,
+          finished: false,
+          finishedPosition: 0
+        }
+        promises.push(resultsRef.add(newPlayer))
+      })
+      return Promise.all(promises)
+    }
+  } catch (error) {
+    const updateCode = error.code
+    const updatdeMessage = error.message
+    const updateError = `Error creating tournament results :  ${updateCode} -  ${updatdeMessage}`
+    console.log(updateError)
+    return new Error(error)
   }
 }
 

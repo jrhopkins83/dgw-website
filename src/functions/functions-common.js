@@ -22,30 +22,6 @@ export function myDateToTimeStamp (date) {
   return timeStamp
 }
 
-export function calcCourseHcp (hcpParms) {
-  let fullHandicap = hcpParms.fullHandicap
-  const rating = hcpParms.rating
-  const slope = hcpParms.slope
-  const par = hcpParms.par
-  let courseHandicap = 0
-  if (!fullHandicap) {
-    fullHandicap = 14.5
-  }
-  courseHandicap = parseFloat((fullHandicap * (slope / 113) + (rating - par)).toFixed(1))
-  return courseHandicap
-}
-
-// Forces signing on a number, returned as a string
-export function getNumber (theNumber) {
-  if (theNumber > 0) {
-    return '+' + theNumber
-  } else if (theNumber === 0) {
-    return 'E'
-  } else {
-    return theNumber.toString()
-  }
-}
-
 export function toTitleCase (str) {
   if (str) {
     return str.replace(/\w\S*/g, (txt) => {
@@ -115,3 +91,11 @@ export function compareValues (key, order = 'asc') {
     )
   }
 }
+
+export const currencyFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  // These options are needed to round to whole numbers if that's what you want.
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+  currency: 'USD'
+})

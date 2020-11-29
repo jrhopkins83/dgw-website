@@ -13,7 +13,6 @@ const initialState = () => {
     leagueInfo: {},
     leagueInfoLoaded: false,
     points: {},
-    leagueDates: [],
     userInfo: {},
     leagueID: 1
   }
@@ -35,7 +34,7 @@ const mutations = {
     Object.assign(state.leagueInfo, leagueInfo)
   },
   SET_LEAGUE_DATES (state, value) {
-    state.leagueDates = value
+    state.completedGameDates = value
   },
   SET_LEAGUE_INFO_LOADED (state, value) {
     state.leagueInfoLoaded = value
@@ -69,6 +68,8 @@ const actions = {
 
           if (idTokenResult.claims.isAdmin) {
             userInfo.isAdmin = true
+          } else {
+            userInfo.isAdmin = false
           }
           commit('SET_USER_INFO', userInfo)
           dispatch('saveUserInfoLS')
@@ -87,12 +88,27 @@ const actions = {
   async fbLeagueInfo ({ state, dispatch, commit }) {
     try {
       const leagueID = '1'
+
+      // Get basic league info
       const leagueRef = firebaseStore.collection('leagueInfo').doc(leagueID)
       await dispatch('bindLeagueInfo', leagueRef)
-      const datesRef = firebaseStore.collection('eventDates')
-      await dispatch('bindLeagueDates', datesRef)
-      const pointsRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('points')
+
+      // Get points assigments by position finished
+      const pointsRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('pointsAssignments').orderBy('position')
       await dispatch('bindLeaguePoints', pointsRef)
+
+      // Get completed games
+      const success = await dispatch('games/fbGetGames', null, {
+        root: true
+      })
+      // let datesRef = firebaseStore.collection('gameDates')
+      //   .orderBy('gameDate')
+
+      // await dispatch('bindLeagueDates', datesRef)
+
+      if (success) {
+
+      }
       commit('SET_LEAGUE_INFO_LOADED', true)
     } catch (error) {
       showMessage('error', 'Error getting league Info:', error)
@@ -105,12 +121,6 @@ const actions = {
   unbindLeagueInfo: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('leagueInfo')
   }),
-  bindLeagueDates: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('leagueDates', ref)
-  }),
-  unbindLeagueDates: firestoreAction((context, ref) => {
-    context.unbindFirestoreRef('leagueDates')
-  }),
   bindLeaguePoints: firestoreAction((context, ref) => {
     context.bindFirestoreRef('points', ref)
   }),
@@ -121,9 +131,9 @@ const actions = {
     LocalStorage.remove('players')
     LocalStorage.remove('UserInfo')
 
-    commit('players/RESET_PLAYERS', null, {
-      root: true
-    })
+    // commit('players/RESET_PLAYERS', null, {
+    //   root: true
+    // })
 
     commit('standings/RESET_STANDINGS', null, {
       root: true
@@ -132,7 +142,9 @@ const actions = {
 
   clearSetupInfo ({ commit, dispatch }) {
     dispatch('clearSessionInfo')
-    dispatch('unbindLeagueDates')
+    dispatch('games/unbindLeagueDates', null, {
+      root: true
+    })
     dispatch('unbindLeaguePoints')
     dispatch('unbindLeagueInfo')
     commit('RESET_LEAGUEINFO')
@@ -149,8 +161,8 @@ const getters = {
   leagueInfo: state => {
     return state.leagueInfo
   },
-  leagueDates: state => {
-    return state.leagueDates
+  gameDates: state => {
+    return state.gameDates
   },
   points: state => {
     return state.points

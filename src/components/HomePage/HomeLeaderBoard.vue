@@ -75,6 +75,7 @@ export default {
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('standings', ['standingsLoaded']),
+    ...mapGetters('games', ['lastCompletedDate']),
     updating () {
       const stillLoading = !this.standingsLoaded // TO-DO: add other loading events
       return stillLoading
@@ -94,7 +95,7 @@ export default {
       return finalTableList
     },
     txtLastDate: function () {
-      return date.formatDate(this.leagueInfo.lastTourneyDate.toDate(), 'dddd MMMM D')
+      return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
     }
   },
   methods: {

@@ -2,11 +2,11 @@
   <div>
     <section class="schedule-section">
       <div class="schedule-section__games q-mb-sm">
-        <div class="row justify-evenly games-card">
-          <div class="title q-ml-lg q-mt-sm text-h4 text-bold">
+        <div class="row games-card">
+          <div class="title q-mx-lg q-mt-sm text-h4 text-bold">
             Upcoming Games
           </div>
-          <div class="actions gt-xs q-py-none">
+          <div class="actions large-screen gt-xs q-py-none">
             <q-tabs
               v-model="tab"
               dense
@@ -19,7 +19,7 @@
               <q-tab name="cash" label="Cash" />
             </q-tabs>
           </div>
-          <div class="actions xs q-py-none">
+          <div class="actions mobile xs q-py-none">
             <q-btn
               class="mobile-menu"
               icon="filter_alt"
@@ -27,13 +27,13 @@
               dense
               flat
               round
-              @click="filterGames"
+              @input="filterGames"
             >
               <q-menu
                 transition-show="jump-down"
                 transition-hide="jump-up"
               >
-              <q-list style="min-width: 10rem">
+              <q-list style="min-width: 120rem">
                 <q-item clickable>
                   <q-item-section>ALL</q-item-section>
                 </q-item>
@@ -52,104 +52,72 @@
 
           </div>
         </div>
-
-        <ol class="collection collection-container game-table">
-          <!-- The first list item is the header of the table -->
-          <li class="item item-container game-table__heading">
-            <div class="attribute date">Date</div>
-            <!-- Enclose semantically similar attributes as a div hierarchy -->
-            <div class="attribute-container game-information">
-              <div class="attribute-container game-names">
+        <div class="div games-section">
+          <ol class="collection collection-container games-section__games--table q-mb-sm">
+            <!-- The first list item is the header of the table -->
+            <li class="item item-container heading-row q-mt-xs" >
+              <!-- Enclose semantically similar attributes as a div hierarchy -->
+              <div class="attribute-container game-information">
+                <div class="attribute date">Date</div>
+                <div class="attribute buy-in">Buy-In</div>
                 <div class="attribute type">Type</div>
-                <div class="attribute buyin">Buy In</div>
+              </div>
+              <div class="attribute-container game-structure">
                 <div class="attribute structure">Structure</div>
+                <div class="attribute details"></div>
               </div>
-            </div>
-          </li>
-          <!-- The rest of the items in the list are the actual data -->
-          <li class="item item-container game-table__items q-py-sm"
-            v-for="(game, gamesID) in games"
-            :key="gamesID"
-            :game="game"
-            @select="viewGameDetails"
-          >
-            <div class="attribute date">{{ game.date }}</div>
-            <!-- Enclose semantically similar attributes as a div hierarchy -->
-            <div class="attribute-container game-information">
-              <div class="attribute-container game-names">
-                <div class="attribute type">{{ game.type }}</div>
-                <div class="attribute buyin">{{ game.buyin}}</div>
-                <div class="attribute structure">{{ game.structure }}</div>
-              </div>
-            </div>
-          </li>
-        </ol>
+            </li>
+
+            <game
+              v-for='(game, index) in next4Games'
+              :key='index'
+              :id='game.id'
+              :game='game'
+            >
+            </game>
+          </ol>
+        </div>
       </div>
     </section>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
+    game: require('src/components/HomePage/Game.vue').default
   },
   data () {
     return {
-      tab: 'all',
-      games: [
-        {
-          date: '09/17/2020',
-          startTime: '6:30 PM',
-          buyin: 100,
-          rebuy: null,
-          addOn: null,
-          type: 'MTT',
-          structure: 'Freezeout',
-          notes: 'Some notes abou the game',
-          location: 'Pokerbros'
-        },
-        {
-          date: '09/19/2020',
-          startTime: '7:00 PM',
-          buyin: null,
-          rebuy: null,
-          addOn: null,
-          type: 'Cash',
-          structure: '.5/$1 NLH and PLO',
-          notes: 'Some notes abou the game',
-          location: 'Pokerbros'
-        },
-        {
-          date: '09/21/2020',
-          startTime: '7:00 PM',
-          buyin: null,
-          rebuy: null,
-          addOn: null,
-          type: 'SNG',
-          structure: '6-max Sit-N-Go',
-          notes: 'Multiple tables of $10, $20 and $50 buy-in NLH and PLO. Tournament starts when all 6 seats are filled',
-          location: 'Pokerbros'
-        },
-        {
-          date: '09/24/2020',
-          startTime: '6:30 PM',
-          buyin: 40,
-          rebuy: 40,
-          addOn: 40,
-          type: 'MTT',
-          structure: 'Rebuy with add-on',
-          notes: 'Unlimited rebuys until level 10.  $40 add-on after level 10.',
-          location: 'Pokerbros'
-        }
-      ]
+      tab: 'all'
     }
   },
   computed: {
+    ...mapGetters('games', ['upcomingGames']),
+    next4Games () {
+      const next4 = []
+      const gamesKeys = Object.keys(this.upcomingGames)
+      let limit = 0
+      if (gamesKeys.length > 4) {
+        limit = 4
+      } else {
+        limit = gamesKeys.length
+      }
+      for (let i = 0; i < limit; i++) {
+        const key = gamesKeys[i]
+        let game = {}
+        game = this.upcomingGames[key]
+        next4.push(game)
+      }
 
+      return next4
+    }
   },
   methods: {
     filterGames (value) {
-
+      console.log(value.payload)
     },
     viewGameDetails (value) {
 
@@ -181,12 +149,47 @@ export default {
       background: transparent linear-gradient(180deg, #5AD5D5 0%, #00382B 100%) 0% 0% no-repeat padding-box;
     }
 
-    ol.collection {
+    .actions.large-screen {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+
+    }
+    &__games {
       position: relative;
+      max-width:60rem;
+      min-height: 26rem;
+      background: $white 0% 0% no-repeat padding-box;
+      border: 1px solid $light-grey;
+      border-radius: 1.7rem;
+      opacity: .8;
+
+      .games-card {
+        position: relative;
+        width:100%;
+        height: 95%;
+        // background-color: $royal-blue;
+        min-height: 90%;
+        border-radius: 19px;
+        opacity: 1;
+        margin-bottom: 1.6rem;
+
+        &__title {
+          color: $white;
+        }
+
+        &__actions {
+          color: $white;
+        }
+      }
+    }
+  .games-section {
+    font-size: 18px;
+
+    ol.collection {
       margin: 0 1.6rem 1.6rem 1.6rem;
       padding: 0px;
       max-width: 120rem;
-      color: black;
     }
 
     li {
@@ -198,59 +201,61 @@ export default {
     }
 
     &__games {
-      position: relative;
-      max-width:80rem;
-      min-height: 26rem;
-      background: $white 0% 0% no-repeat padding-box;
-      border: 1px solid $light-grey;
-      border-radius: 1.7rem;
-      opacity: .8;
+      height: 66vh;
+      width: 100%;
+      overflow: scroll;
+      border-radius: 2.5rem;
+      opacity: 0.8;
 
-    .games-card {
-      position: relative;
-      width:100%;
-      height: 95%;
-      // background-color: $royal-blue;
-      min-height: 90%;
-      border-radius: 19px;
-      opacity: 1;
-      margin-bottom: 8px;
+      .no-games {
+        max-width: 90vw;
+        font-size: 2.4rem;
 
-      &__title {
-        color: $white;
       }
+      &--table {
+        margin: 0 .6rem .6rem .6rem;
+        position: relative;
+        max-width: 120rem;
 
-      &__actions {
-        color: $white;
-      }
-    }
-
-      .game-table {
-        margin: 0 1.6rem 1.6rem 1.6rem;
-
-        &__heading-row {
-          // color: $white;
+        .heading-row {
+          position: sticky;
+          top: 0;
+          color:  black;
+          align-items:flex-end;
+          justify-content: center;
+          text-overflow: initial;
+          white-space: normal;
           font-weight: bold;
-          margin-bottom: 8px;
-        }
-        &__items {
-          color: $black;
-          // background-color: $light-blue;
-          border-bottom: solid $lightest-grey;
-          width: 100%;
+          text-decoration-line: underline;
+          margin-top: 1rem;
+          margin-bottom: .8rem;
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
+          display: grid;
+          grid-template-columns: 1fr 4fr;
+          grid-gap: 1rem;
 
-          .attribute.rank {
-            font-weight: bold;
-            color: $primary
+          .attribute-container.game-information {
+            display: grid;
+            grid-template-columns: 8rem 6rem 6rem;
+            grid-gap: 1rem;
           }
 
-          .attribute-container.points {
-            font-weight: bold;
-            color: $primary
+          .attribute-container.game-structure {
+            display: grid;
+            grid-template-columns: 26rem 5rem;
+
+            .attribute.structure {
+              display: flex;
+              align-items: flex-start;
+              justify-content: flex-start;
+            }
           }
+
         }
       }
     }
+
   }
 
   .q-page {
@@ -263,42 +268,9 @@ export default {
   }
 }
 
-/* Tabular Layout */
-@media screen and (min-width: 360px) {
-  .schedule-section {
-
-    /* The maximum column width, that can wrap */
-      .item-container {
-          display: grid;
-          grid-template-columns: 1fr 5fr;
-      }
-
-      .attribute-container {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-      }
-
-      /* Definition of wrapping column width for attribute groups. */
-      .game-information {
-          --column-width-min: 8.2em;
-      }
-
-  /* Center header labels */
-  .collection-container > .item-container:first-child .attribute {
-    display: flex;
-    align-items:flex-end;
-    justify-content: flex-start;
-    text-overflow: initial;
-    overflow: auto;
-    white-space: normal;
-    font-weight: bold;
-    margin: 8px 0 4px 0
-  }
-
   .date {
     margin-right: 16px;
     }
   }
 
-}
 </style>

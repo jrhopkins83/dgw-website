@@ -13,7 +13,7 @@
         <template v-else>
           <ol class="collection collection-container players-list__players--table q-mb-sm">
             <!-- The first list item is the header of the table -->
-            <li class="item item-container player-table__items q-mt-xs"
+            <li class="item item-container player-table__heading-row q-mt-xs"
               :class="type"
             >
               <div class="attribute position text-center">{{ showType }}</div>
@@ -24,14 +24,15 @@
                 <div class="attribute nick-name">Nickname</div>
                 <div class="attribute online-name">Online Name</div>
               </div>
+              <div class="attribute position text-center" v-if="type==='checked-in'">KO</div>
             </li>
             <player
-              v-for='(player, index) in players'
+              v-for='(player, index) in playersSorted'
               :key='index'
               :id='player.id'
               :player='player'
               :type='type'
-              @selectPlayer="changePlayerStatus"
+              @koPlayer="changePlayerStatus"
             >
             </player>
         </ol>
@@ -57,14 +58,46 @@ export default {
   props: ['players', 'type'],
   data () {
     return {
-      noPlayersMsg: 'No players have been knocked out',
       playerSorted: false
     }
   },
   computed: {
-    ...mapGetters('tourneyResults', ['numFinished', 'numCheckedIn']),
+    ...mapGetters('tourneyResults', ['numFinished', 'numCheckedIn', 'finishedLoaded', 'finishedPlayers']),
+    noPlayersMsg: function () {
+      if (this.type === 'finished') {
+        return 'No players have been knocked out'
+      } else {
+        return 'Everyone has been knocked out'
+      }
+    },
     showType: function () {
       return toTitleCase(this.type)
+    },
+    playersSorted: function () {
+      if (this.type === 'finished') {
+        const finishedSorted = [],
+          keysOrdered = Object.keys(this.players)
+
+        keysOrdered.sort((a, b) => {
+          const playerAProp = this.players[a].finishedPosition
+          const playerBProp = this.players[b].finishedPosition
+
+          if (playerAProp > playerBProp) return 1
+          else if (playerAProp < playerBProp) return -1
+          else return 0
+        })
+
+        let player = null
+        keysOrdered.forEach((key) => {
+          player = this.players[key]
+          // player.id = key
+          finishedSorted.push(player)
+        })
+
+        return finishedSorted
+      } else {
+        return this.players
+      }
     }
   },
   watch: {
@@ -83,12 +116,28 @@ export default {
     },
     sort () {
       if (this.type === 'finished') {
-        return this.players.sort((a, b) => a.finishedPosition - b.finishedPosition)
+        const finishedSorted = [],
+          keysOrdered = Object.keys(this.players)
+
+        keysOrdered.sort((a, b) => {
+          const playerAProp = this.players[a].finishedPosition
+          const playerBProp = this.players[b].finishedPosition
+
+          if (playerAProp > playerBProp) return 1
+          else if (playerAProp < playerBProp) return -1
+          else return 0
+        })
+
+        let player = null
+        keysOrdered.forEach((key) => {
+          player = this.players[key]
+          // player.id = key
+          finishedSorted.push(player)
+        })
+
+        return finishedSorted
       }
     }
-  },
-  beforeMount () {
-    this.sort()
   }
 }
 </script>
@@ -154,6 +203,7 @@ export default {
         .player-table__heading-row {
           position: sticky;
           top: 0;
+          z-index: 1;
           color:  black;
           align-items:flex-end;
           justify-content: center;

@@ -1,4 +1,3 @@
-import { date } from 'quasar'
 import { firestoreAction, firestoreOptions } from 'vuexfire'
 
 // always wait for bindings to be resolved
@@ -6,32 +5,21 @@ firestoreOptions.wait = true
 
 const initialState = () => {
   return {
-    weeklyResultsLoaded: false,
-    weeklyResults: [{
-      playerID: null,
-      playerNames: null,
-      firstName: null,
-      lastName: null,
-      nickName: null,
-      onlineName: null,
-      eventID: null,
-      position: null,
-      points: null,
-      prizeMoney: null
-    }],
+    resultsLoaded: false,
+    weeklyResults: [],
     search: ''
   }
 }
 const state = initialState()
 
 const mutations = {
-  RESET_POINTS (state) {
+  RESET_RESULTS (state) {
     const newState = initialState()
     Object.keys(newState).forEach(key => {
       state[key] = newState[key]
     })
   },
-  RESET_POINTS_OBJECT (state, key) {
+  RESET_RESULTS_OBJECT (state, key) {
     const newState = initialState()
     state[key] = newState[key]
   },
@@ -42,7 +30,7 @@ const mutations = {
     state.txtRoundDt = value
   },
   SET_WEEKLY_RESULTS_LOADED (state, value) {
-    state.weeklyResultsLoaded = value
+    state.resultsLoaded = value
   },
   SET_WEEKLY_RESULTS (state, value) {
     Object.assign(state.weeklyResults, value)
@@ -51,10 +39,10 @@ const mutations = {
 
 const actions = {
   resetPoints ({ commit }) {
-    commit('RESET_POINTS')
+    commit('RESET_RESULTS')
   },
   resetPointsObject ({ commit }, object) {
-    commit('RESET_POINTS_OBJECT', object)
+    commit('RESET_RESULTS_OBJECT', object)
   },
   setSearch ({ commit }, value) {
     commit('SET_SEARCH', value)
@@ -62,106 +50,70 @@ const actions = {
   setTxtRoundDt ({ commit }, value) {
     commit('SET_TXT_ROUND_DT', value)
   },
-  setWeeklyResultsLoaded ({ commit }, value) {
+  setResultsLoaded ({ commit }, value) {
     commit('SET_WEEKLY_RESULTS_LOADED', value)
   },
   setWeeklyResults ({ commit }, payload) {
     commit('SET_WEEKLY_RESULTS', payload)
   },
-  bindScoresRef: firestoreAction((context, ref) => {
+  bindResultsRef: firestoreAction((context, ref) => {
     context.bindFirestoreRef('weeklyResults', ref)
   })
 }
 
 const getters = {
-  holeScoresLoaded: state => {
-    return state.holeScoreLoaded
+  resultsLoaded: state => {
+    return state.resultsLoaded
   },
-  scorecardsLoaded: state => {
-    return state.scorecardsLoaded
+  search: state => {
+    return state.search
   },
-  leagueScoresLoaded: state => {
-    return state.leagueScoresLoaded
-  },
-  holeInfo: state => {
-    return state.holeInfo
-  },
-  holeScores: state => {
-    return state.holeScores
-  },
-  scoresSaved: state => {
-    return state.scoresSaved
-  },
-  scoreCardScores: state => {
-    return state.scoreCardScores
-  },
-  scoreCardTotals: state => {
-    return state.scoreCardTotals
+  weeklyResults: state => {
+    return state.weeklyResults
   },
   txtRoundDt: state => {
     return state.txtRoundDt
   },
-  scores: state => {
-    return state.scores
-  },
-  seasonScores: state => {
-    return state.seasonScores
-  },
-  leagueScores: getters => {
-    const scores = getters.scores,
-      leagueScores = []
-    scores.forEach((score) => {
-      const fullName = score.lastName + ', ' + score.firstName
-      score.fullName = fullName
-      score.roundDate = date.formatDate(score.roundDt.toDate(), 'MM/DD/YYYY')
-      leagueScores.push(score)
+  resultsSorted: (state, getters) => {
+    const resultsSorted = {},
+      keysOrdered = Object.keys(state.weeklyResults)
+
+    keysOrdered.sort((a, b) => {
+      const playerAProp = state.weeklyResults[a].finishedPosition
+      const playerBProp = state.weeklyResults[b].finishedPosition
+
+      if (playerAProp > playerBProp) return 1
+      else if (playerAProp < playerBProp) return -1
+      else return 0
     })
-    return leagueScores
+
+    keysOrdered.forEach((key) => {
+      const id = state.weeklyResults[key].id
+      resultsSorted[id] = state.weeklyResults[key]
+    })
+    return resultsSorted
   },
-  filteredScores: (state, getters) => {
-    const leagueScores = getters.leagueScores,
-      scoresFiltered = []
+  resultsFiltered: (state, getters, commit) => {
+    const resultsSorted = getters.resultsSorted,
+      resultsFiltered = []
+
     if (state.search) {
-      leagueScores.forEach((score) => {
-        const golferNameLowerCase = score.lastName.toLowerCase() + ', ' + score.firstName.toLowerCase(),
-          searchLowerCase = state.search.toLowerCase()
-        if (golferNameLowerCase.includes(searchLowerCase)) {
-          scoresFiltered.push(score)
+      resultsSorted.forEach((player) => {
+        const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName} `
+        player.fullName = fullName
+
+        const playerNameLowerCase = fullName.toLowerCase()
+        const searchLowerCase = state.search.toLowerCase()
+
+        player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
+
+        if (playerNameLowerCase.includes(searchLowerCase)) {
+          resultsFiltered.push(player)
         }
       })
-      return scoresFiltered
+      return resultsFiltered
     }
-    return leagueScores
-  },
-  seasonScoresSorted: getters => {
-    const scores = getters.seasonScores,
-      seasonScoresArr = []
-
-    let rank = 1
-
-    scores.forEach((score) => {
-      const fullName = score.lastName + ', ' + score.firstName
-      score.fullName = fullName
-      score.rank = rank++
-      // score.txtLastPlayedDt = date.formatDate(score.lastDatePlayed.toDate(), 'DD-MM-YYYY')
-      seasonScoresArr.push(score)
-    })
-    return seasonScoresArr
-  },
-  seasonScoresFiltered: (state, getters) => {
-    const leagueScores = getters.seasonScoresSorted,
-      scoresFiltered = []
-    if (state.search) {
-      leagueScores.forEach((score) => {
-        const golferNameLowerCase = score.lastName.toLowerCase() + ', ' + score.firstName.toLowerCase(),
-          searchLowerCase = state.search.toLowerCase()
-        if (golferNameLowerCase.includes(searchLowerCase)) {
-          scoresFiltered.push(score)
-        }
-      })
-      return scoresFiltered
-    }
-    return leagueScores
+    return resultsSorted
   }
 
 }

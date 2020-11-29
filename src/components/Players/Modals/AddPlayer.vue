@@ -168,14 +168,36 @@ export default {
         this.formHasError = true
       }
 
+      let emailOptin = false
+      let notificationOptin = false
+      let nickName = null
+      let onlineName = null
+
       if (!this.formHasError) {
+        if (this.formData.email) {
+          emailOptin = true
+        }
+        if (this.formData.phoneNumber) {
+          notificationOptin = true
+        }
+
+        if (this.formData.nickName) {
+          nickName = this.formData.nickName.trim()
+        }
+
+        if (this.formData.onlineName) {
+          onlineName = this.formData.onlineName.trim()
+        }
+
         this.playerToSubmit = {
           firstName: toTitleCase(this.formData.firstName).trim(),
           lastName: toTitleCase(this.formData.lastName).trim(),
           email: this.formData.email,
           phoneNumber: this.formData.phoneNumber,
-          nickName: this.formData.nickName.trim(),
-          onlineName: this.formData.onlineName.trim()
+          nickName: nickName,
+          onlineName: onlineName,
+          notificationOptin: notificationOptin,
+          emailOptin: emailOptin
         }
 
         this.$emit('save', this.playerToSubmit)

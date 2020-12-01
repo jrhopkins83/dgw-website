@@ -90,7 +90,7 @@
             @click="showAddPlayer=true"
           />
         </div>
-        <div class="text-center">
+        <div class="text-center" v-if="!reorderFlag">
           <q-btn
             color="blue-8"
             label="Enter Payouts"
@@ -240,8 +240,8 @@ export default {
       }
     },
     enterPayouts () {
-      if (Object.keys(this.remainingPlayers).length > 0) {
-        this.proceed_msg = `There are still ${Object.keys(this.remainingPlayers).length} remaining players.  If you continue their results won't count.  Do you still want to proceed?`
+      if (this.remaining > 0) {
+        this.proceed_msg = `There are still ${this.remaining} remaining players.  If you continue their results won't count.  Do you still want to proceed?`
         this.showProceed = true
       } else {
         this.$router.push({ name: 'EnterPayouts' })

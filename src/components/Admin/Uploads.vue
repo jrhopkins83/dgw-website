@@ -2,7 +2,7 @@
   <div
     class="q-pa-xs"
     style="max-width: 400px"
-    v-if="leagueInfoLoaded"
+    v-if="true"
   >
     <q-card class="my-card">
       <q-card-section class="q-pa-xs">
@@ -174,11 +174,27 @@ export default {
           if (this.gameDates.length) {
             results.forEach(async (player) => {
               try {
+                let uid = null
+                let nickName = null
+                let onlineName = null
+                if (player.email) {
+                  uid = await this.createNewUser(player.email, 'dgw2020')
+                }
+                if (uid) {
+                  player.uid = uid
+                }
+                if (player.nickName.length > 0) {
+                  nickName = player.nickName.trim()
+                }
+                if (player.onlineName.length > 0) {
+                  onlineName = player.onlineName.trim()
+                }
                 const newPlayer = {}
+                newPlayer.uid = player.uid
                 newPlayer.firstName = toTitleCase(player.firstName).trim()
                 newPlayer.lastName = toTitleCase(player.lastName).trim()
-                newPlayer.nickName = player.nickName
-                newPlayer.onlineName = player.onlineName
+                newPlayer.nickName = nickName
+                newPlayer.onlineName = onlineName
                 newPlayer.phone = player.phone
                 newPlayer.email = player.email
                 newPlayer.avatar = player.avatar
@@ -190,12 +206,9 @@ export default {
                 if (player.playerID) {
                   const playerTotals = await this.uploadWeeklyResults(player)
                   await this.createPlayerStanding(player, playerTotals)
-                  if (player.email) {
-                    player.uid = await this.createNewUser(player.email, 'dgw2020')
-                    if (player.uid) {
-                      await this.createUserPlayerRef(player)
-                    }
-                  }
+                }
+                if (player.playerID && player.uid) {
+                  await this.createUserPlayerRef(player)
                 }
               } catch (error) {
                 console.error('Error adding document: ', error)
@@ -416,7 +429,7 @@ export default {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
           const newGame = {}
-          const lastCompletedDate = '11/12/2020 19:00:00'
+          const lastCompletedDate = '11/25/2020 19:00:00'
           const lastCompletedDtTm = Timestamp.fromDate(new Date(lastCompletedDate))
           results.forEach(async (game) => {
             try {

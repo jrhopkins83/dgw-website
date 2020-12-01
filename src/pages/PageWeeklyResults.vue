@@ -91,7 +91,6 @@ export default {
       }
     },
     updateGameDate (date) {
-      console.log('date updated with ', date)
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'
       this.gameDate = Timestamp.fromDate(new Date(txtGameDate))

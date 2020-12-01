@@ -192,11 +192,6 @@ export default {
         message: '<b>Updating results</b> is in progress.<br/><span class="text-info">Hang on...</span>'
       })
       this.confirm = false
-      try {
-      } catch (error) {
-        message = ' '
-        messageType = 'Error'
-      }
 
       // Create weekly results documents
       this.updateWeeklyResults()
@@ -247,8 +242,6 @@ export default {
 
     async markGameComplete () {
       const gamesRef = firebaseStore.collection('gameDates').doc(this.tournamentInfo.id)
-      console.log('gamesRef: ', gamesRef)
-      console.log('tournamentInfo: ', this.tournamentInfo)
       return await gamesRef.update({
         complete: true
       })
@@ -257,15 +250,19 @@ export default {
     async updateWeeklyResults () {
       if (Object.keys(this.finishedPlayers).length) {
         const resultsRef = firebaseStore.collection('weeklyResults')
-        console.table(Object.values(this.finishedPlayers))
         const promises = []
         Object.values(this.finishedPlayers).forEach(player => {
+          let position = 0
           if (player.finishedPosition <= this.formData.finalTablePlayers) {
             player.finalTable = true
+            position = player.finishedPosition
           } else {
-            player.position = this.formData.finalTablePlayers
+            position = this.formData.finalTablePlayers + 1
           }
-          player.points = this.points[player.finishedPosition - 1].points
+          console.log('finishedPosition ', player.finishedPosition)
+          console.log('points ', this.points)
+          console.log('position points ', this.points[position - 1])
+          player.points = this.points[position - 1].points
 
           if (player.finishedPosition <= this.formData.placesPaid) {
             let amount = 0

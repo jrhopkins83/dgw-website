@@ -34,15 +34,10 @@ if (window.location.hostname === 'localhost') {
   firebaseFunctions.useFunctionsEmulator('http://localhost:5001')
 }
 
-// *** Use firebase server ***
-// firebase.firestore().enablePersistence()
-//   .catch(function (err) {
-//     if (err.code === 'failed-precondition') {
-//       console.log('persistence failed-precondition')
-//     } else if (err.code === 'unimplemented') {
-//       console.log('persistence unimplemented')
-//     }
-//   })
+// firebaseStore.settings({
+//   ssl: false,
+//   ignoreUndefinedProperties: true
+// })
 
 // firebase.firestore().enablePersistence()
 //   .catch(function (err) {

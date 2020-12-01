@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 import auth from './store-auth'
 import leagueSettings from './store-league-settings'
-import players from './store-players'
+import games from './store-games'
 import weeklyResults from './store-weekly-results'
 import tourneyResults from './store-tourney-results'
 import standings from './store-season-standings'
@@ -22,18 +22,19 @@ import { vuexfireMutations } from 'vuexfire'
 // initial state
 const initialState = {
   leagueSettings: leagueSettings.state,
-  players: players.state,
+  games: games.state,
   weeklyResults: weeklyResults.state,
   tourneyResults: tourneyResults.state,
   standings: standings.state
 }
 
+let store = null
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       auth,
       leagueSettings,
-      players,
+      games,
       tourneyResults,
       weeklyResults,
       standings
@@ -51,6 +52,8 @@ export default function (/* { ssrContext } */) {
     // for dev mode only
     strict: process.env.DEV
   })
-
+  store = Store
   return Store
 }
+
+export { store }

@@ -101,20 +101,13 @@ const mutations = {
     for (let i = 0; i < players.length; i++) {
       const key = players[i].id
       Vue.set(state.finishedPlayers[key], 'finishedPosition', newPosition)
-      console.log('udated position')
-      console.log(state.finishedPlayers[key].finishedPosition)
       newPosition++
     }
   },
   RESORT_FINISHED_PLAYERS (state, value) {
     Object.keys(state.finishedPlayers).forEach(key => {
       state.finishedPlayers[key].finishedPosition = state.finishedPlayers[key].finishedPosition + value
-      console.log('after finished update')
-      console.log(state.finishedPlayers[key].firstName)
-      console.log(state.finishedPlayers[key].finishedPosition)
     })
-    console.log('after all players updated')
-    console.log(state.finishedPlayers)
   }
 
 }
@@ -370,7 +363,7 @@ const getters = {
 
     if (state.search) {
       tournamentResults.forEach((player) => {
-        const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName} `
+        const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName}`
         player.fullName = fullName
 
         const playerNameLowerCase = fullName.toLowerCase()

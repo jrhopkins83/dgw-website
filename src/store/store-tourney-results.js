@@ -27,7 +27,8 @@ const initialState = () => {
     finishedPlayers: {},
     numRSVPd: 0,
     numCheckedIn: 0,
-    search: ''
+    search: '',
+    sortBy: [{ property: 'onlineName' }]
   }
 }
 const state = initialState()
@@ -45,6 +46,9 @@ const mutations = {
   },
   SET_SEARCH (state, value) {
     state.search = value
+  },
+  SET_SORT (state, value) {
+    state.sortBy = value
   },
   SET_TOURNAMENT_ID (state, value) {
     state.tournamentID = value
@@ -121,6 +125,23 @@ const actions = {
   },
   setSearch ({ commit }, value) {
     commit('SET_SEARCH', value)
+  },
+  setSort ({ commit }, property) {
+    let sortBy = []
+    sortBy = property === 'name' ? [
+      { property: 'firstName', direction: 1 },
+      { property: 'lastName', direction: 1 }
+    ]
+      : property === 'checkedIn' ? [
+        { property: 'checkedIn', direction: -1 },
+        { property: 'onlineName', direction: 1 },
+        { property: 'firstName', direction: 1 },
+        { property: 'lastName', direction: 1 }
+      ]
+        : [
+          { property: 'onlineName', direction: 1 }
+        ]
+    commit('SET_SORT', sortBy)
   },
   setResultsLoaded ({ commit }, value) {
     commit('SET_RESULTS_LOADED', value)
@@ -339,14 +360,15 @@ const getters = {
       keysOrdered = Object.keys(state.tournamentResults)
 
     keysOrdered.sort((a, b) => {
-      const playerAName = state.tournamentResults[a].lastName + ', ' + state.tournamentResults[a].firstName
-      const playerAProp = playerAName.toLowerCase()
-      const playerBName = state.tournamentResults[b].lastName + ', ' + state.tournamentResults[b].firstName
-      const playerBProp = playerBName.toLowerCase()
-
-      if (playerAProp > playerBProp) return 1
-      else if (playerAProp < playerBProp) return -1
-      else return 0
+      let i = 0, result = 0
+      while (i < state.sortBy.length && result === 0) {
+        const sortByProp = state.sortBy[i].property
+        const propA = state.tournamentResults[a][sortByProp].toString().toLowerCase()
+        const propB = state.tournamentResults[b][sortByProp].toString().toLowerCase()
+        result = state.sortBy[i].direction * (propA < propB ? -1 : (propA > propB ? 1 : 0))
+        i++
+      }
+      return result
     })
 
     keysOrdered.forEach((key) => {

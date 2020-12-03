@@ -13,7 +13,7 @@
             :structure="structure"
             @enterPayouts="enterPayouts"
             @cancel="$router.push({ name: 'EnterResults' })"
-         >
+          >
           </payout-pool>
         </div>
         <div class="col justify-center payout-section__form" v-else>

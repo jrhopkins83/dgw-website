@@ -18,8 +18,8 @@
         <div class="header__subheading">
           <div class="attribute-container header_searchbox">
             <div class="header__search-bar q-pa-xs">
-              <search>
-              </search>
+              <search />
+              <!-- <sort-field /> -->
             </div>
           </div>
           <div class="attribute-container total-information">
@@ -27,25 +27,50 @@
             <div class="attribute">Total knocked out: {{ numFinished }}</div>
             <div class="attribute">Total remaining: {{ remaining }}</div>
           </div>
-          <div class="edit-button" v-if="!reorderFlag">
-            <q-btn
-              color="white"
-              label="Edit"
-              text-color="black"
-              align="center"
-              size="sm"
-              @click="setReorderFlag(true)"
-            />
-          </div>
-          <div class="edit-button" v-else>
-            <q-btn
-              color="white"
-              label="Done"
-              text-color="black"
-              align="center"
-              size="sm"
-              @click="setReorderFlag(false)"
-            />
+          <div class="attribute-container button-section">
+            <div class="attribute edit-button" v-if="!reorderFlag">
+              <q-btn
+                color="white"
+                icon="edit"
+                round
+                text-color="black"
+                align="center"
+                size="md"
+                @click="setReorderFlag(true)"
+              >
+              </q-btn>
+            </div>
+            <div class="attribute edit-button" v-else>
+              <q-btn
+                color="white"
+                round
+                icon="check_circle_outline"
+                text-color="black"
+                align="center"
+                size="md"
+                @click="setReorderFlag(false)"
+              >
+                <q-tooltip>
+                  Edit the finish order.
+                </q-tooltip>
+              </q-btn>
+            </div>
+            <div class="attribute payout-button text-center">
+              <q-btn
+                color="green"
+                round
+                icon="monetization_on"
+                text-color="white"
+                align="center"
+                size="md"
+                :disabled="reorderFlag"
+                @click="enterPayouts"
+              >
+                <q-tooltip>
+                  Finalize the order and enter payouts.
+                </q-tooltip>
+              </q-btn>
+            </div>
           </div>
         </div>
       </div>
@@ -80,33 +105,6 @@
           </reorder-players>
         </div>
       </div>
-      <div class="button-section">
-        <div class="text-center">
-          <q-btn
-            color="grey-4"
-            label="Add Player"
-            text-color="black"
-            align="center"
-            @click="showAddPlayer=true"
-          />
-        </div>
-        <div class="text-center" v-if="!reorderFlag">
-          <q-btn
-            color="blue-8"
-            label="Enter Payouts"
-            text-color="white"
-            align="center"
-            @click="enterPayouts"
-          />
-        </div>
-      </div>
-      <q-dialog v-model="showAddPlayer">
-        <add-player
-          :player="null"
-          @save="savePlayer"
-          @close="showAddPlayer=false"
-        />
-      </q-dialog>
       <q-dialog v-model="showProceed" persistent>
         <q-card style="min-width: 250px">
           <q-card-section>
@@ -136,10 +134,10 @@ import { date } from 'quasar'
 export default {
   name: 'TournamentResults',
   components: {
-    search: require('components/Admin/Results/Search.vue').default,
-    addPlayer: require('components/Players/Modals/AddPlayer.vue').default,
     playersList: require('components/Admin/Results/PlayersList.vue').default,
-    reorderPlayers: require('components/Admin/Results/PlayersListReorder.vue').default
+    reorderPlayers: require('components/Admin/Results/PlayersListReorder.vue').default,
+    // sortField: require('components/Shared/Sort.vue').defaul,
+    search: require('components/Admin/Results/Search.vue').default
   },
   mixins: [mixinAddEditPlayer],
   props: {
@@ -184,61 +182,7 @@ export default {
   },
   methods: {
     ...mapActions('tourneyResults', ['fbResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
-    ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setReorderFlag', 'setFinishedLoaded']),
-    async savePlayer (newPlayer) {
-      this.setResultsLoaded(false)
-      this.setFinishedLoaded(false)
-      this.$q.loading.show({
-        message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
-      })
-      const newPlayerNames = {
-        firstName: newPlayer.firstName,
-        lastName: newPlayer.lastName,
-        nickName: newPlayer.nickName,
-        onlineName: newPlayer.onlineName,
-        avatar: null
-      }
-      const newPlayerID = await this.addNewPlayer(newPlayerNames)
-      if (newPlayerID) {
-        if (newPlayer.email) {
-          const newUserID = await this.createNewUser(newPlayer.email, 'dgwpassword')
-          if (newUserID) {
-            const playerContactInfo = {
-              playerID: newPlayerID,
-              email: newPlayer.email,
-              phoneNumber: newPlayer.phoneNumber,
-              userID: newUserID
-            }
-            await this.createUserPlayerRef(playerContactInfo)
-          }
-        }
-        const newPlayerResult = {
-          date: this.tournamentInfo.date,
-          eventID: this.tournamentInfo.id,
-          playerID: newPlayerID,
-          firstName: newPlayerNames.firstName,
-          lastName: newPlayerNames.lastName,
-          nickName: newPlayerNames.nickName,
-          onlineName: newPlayerNames.onlineName,
-          avatar: null,
-          RSVPd: false,
-          checkedIn: true,
-          finished: false,
-          finishedPosition: 0
-        }
-        const resultsRef = firebaseStore.collection('tournamentResults')
-        const resultDoc = await resultsRef.add(newPlayerResult)
-        if (resultDoc.id) {
-          this.resortFinishedPlayers(true)
-          this.showAddPlayer = false
-        } else {
-          return false
-        }
-        this.setResultsLoaded(true)
-        this.setFinishedLoaded(true)
-        this.$q.loading.hide()
-      }
-    },
+    ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setSort', 'setReorderFlag', 'setFinishedLoaded']),
     enterPayouts () {
       if (this.remaining > 0) {
         this.proceed_msg = `There are still ${this.remaining} remaining players.  If you continue their results won't count.  Do you still want to proceed?`
@@ -280,6 +224,7 @@ export default {
     }
     this.getFinishedPlayersLS()
     this.getNumCheckedIn()
+    this.setSort('onlineName')
   }
 }
 async function createTournamentResults (tournamentInfo, id) {
@@ -362,13 +307,26 @@ async function createTournamentResults (tournamentInfo, id) {
       &__subheading {
         width: 100%;
         display: grid;
-        grid-template-columns: 7fr 4fr 10em;
+        grid-template-columns: 6fr 2fr 2fr;
 
         .attribute-container {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
 
         }
+
+        .button-section {
+          --column-width-min: 7.2em;
+
+          .edit-button {
+            justify-self: flex-end;
+          }
+
+          .payout-button {
+            justify-self: flex-start;
+          }
+        }
+
         .edit-button {
           display: flex;
           align-items: center;

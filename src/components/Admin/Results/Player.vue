@@ -6,10 +6,11 @@
 
       <div v-if="type!=='finished'" class="position">
         <q-checkbox
-          v-model="checkedIn"
+          v-model="checkedInStatus"
+          :disabled="reorderFlag"
           type="number"
-          @input="updateCheckedIn"
         />
+          <!-- @input="updateCheckedIn" -->
       </div>
       <div v-else class="position">
         {{ player.finishedPosition}}
@@ -28,12 +29,13 @@
         <div class="attribute online-name">{{ player.onlineName }}
         </div>
       </div>
-      <div v-if="type!=='finished' && !reorderFlag" class="eliminate">
+      <div v-if="type!=='finished'" class="eliminate">
         <q-btn
           color="secondary"
           icon="not_interested"
           round
           size="sm"
+          :disabled="reorderFlag"
           @click="koPlayer"
         />
       </div>
@@ -57,6 +59,18 @@ export default {
   },
   computed: {
     ...mapGetters('tourneyResults', ['reorderFlag']),
+    checkedInStatus: {
+      get () {
+        return this.player.checkedIn
+      },
+      set (value) {
+        const newResult = {
+          docID: this.player.id,
+          checkedIn: value
+        }
+        this.updateCheckedInPlayer(newResult)
+      }
+    },
     player_avatar: function () {
       if (this.player.avatar) {
         return this.player.avatar
@@ -70,13 +84,6 @@ export default {
   },
   methods: {
     ...mapActions('tourneyResults', ['updateCheckedInPlayer']),
-    updateCheckedIn () {
-      const newResult = {
-        docID: this.player.id,
-        checkedIn: this.checkedIn
-      }
-      this.updateCheckedInPlayer(newResult)
-    },
     koPlayer () {
       if (this.player.checkedIn) {
         const playerToChange = {

@@ -11,7 +11,7 @@
           </div>
           <div class="div left-column__header--date date">
             <modal-pick-date
-              :pickDate="pickDate"
+              :pickDate="txtPickDate"
               :gameDates="gameDates"
               @updateGameDate="updateGameDate"
             />

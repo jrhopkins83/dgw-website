@@ -33,7 +33,7 @@
 <script>
 import { required } from 'src/utils/validators'
 import { date } from 'quasar'
-const { addToDate, formatDate } = date
+const { formatDate } = date
 
 export default {
   props: ['pickDate', 'gameDates'],
@@ -44,14 +44,6 @@ export default {
     }
   },
   computed: {
-    txtCurrDate: function () {
-      const currDate = new Date()
-      return formatDate(currDate, 'YYYY/MM/DD')
-    },
-    txtEndDate: function () {
-      const endDate = addToDate(new Date(), { days: 0, month: 2 })
-      return formatDate(endDate, 'YYYY/MM/DD')
-    },
     completedDates: function () {
       const dateArrary = []
       this.gameDates.forEach(game => {
@@ -68,10 +60,6 @@ export default {
     closeDialog (event) {
       this.$emit('updateGameDate', event)
       this.showPicker = false
-    },
-    optionsFn (date) {
-      return date >= this.txtCurrDate && date <= this.txtEndDate
-      // return date >= '08-12-2020' && date <= '09-11-2020'
     }
   }
 }

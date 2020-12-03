@@ -16,8 +16,22 @@
             <li class="item item-container player-table__heading-row q-mt-xs"
               :class="type"
             >
-              <div class="attribute position text-center">{{ showType }}</div>
-              <div class="attribute">Player</div>
+              <div
+                clickable
+                @click="setSortColumn('checkedIn')"
+                class="attribute position text-center cursor-pointer"
+              >
+                {{ showType }}
+                <q-tooltip>
+                  Finalize the order and enter payouts.
+                </q-tooltip>
+              </div>
+              <div class="attribute cursor-pointer"
+                clickable
+                @click="setSortColumn('name')"
+              >
+                Player
+              </div>
               <!-- Enclose semantically similar attributes as a div hierarchy -->
               <div class="attribute-container player-information">
                 <div class="attribute last-name"></div>
@@ -38,26 +52,43 @@
         </ol>
         </template>
       </div>
+
+      <div class="absolute-bottom text-center q-mb-lg no-pointer-events" v-if="type==='checked-in'">
+        <q-btn
+          @click="showAddPlayer = true"
+          round
+          class="all-pointer-events"
+          color="blue-5"
+          size="20px"
+          icon="add"
+        />
+      </div>
+      <q-dialog v-model="showAddPlayer">
+        <add-player
+          :player="null"
+          @save="savePlayer"
+          @close="showAddPlayer=false"
+        />
+      </q-dialog>
     </section>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-// import { Container, Draggable } from 'vue-smooth-dnd'
-// import { applyDrag } from '../utils/helpers'
+import { firebaseStore } from 'src/boot/firebase'
 import { toTitleCase } from 'src/functions/functions-common'
 
 export default {
   components: {
     player: require('src/components/Admin/Results/Player.vue').default,
-    noPlayers: require('components/Shared/NoPlayers.vue').default
-    // Container,
-    // Draggable
+    noPlayers: require('components/Shared/NoPlayers.vue').default,
+    addPlayer: require('components/Players/Modals/AddPlayer.vue').default
   },
   props: ['players', 'type'],
   data () {
     return {
+      showAddPlayer: false,
       playerSorted: false
     }
   },
@@ -106,12 +137,71 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['knockoutPlayer', 'restorePlayer']),
+    ...mapActions('tourneyResults', ['knockoutPlayer', 'restorePlayer', 'setSort']),
     changePlayerStatus (payload) {
       if (this.type === 'checked-in') {
         this.knockoutPlayer(payload)
       } else {
         this.restorePlayer(payload)
+      }
+    },
+    setSortColumn (property) {
+      if (this.type === 'checked-in') {
+        this.setSort(property)
+      }
+    },
+    async savePlayer (newPlayer) {
+      this.setResultsLoaded(false)
+      this.setFinishedLoaded(false)
+      this.$q.loading.show({
+        message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+      })
+      const newPlayerNames = {
+        firstName: newPlayer.firstName,
+        lastName: newPlayer.lastName,
+        nickName: newPlayer.nickName,
+        onlineName: newPlayer.onlineName,
+        avatar: null
+      }
+      const newPlayerID = await this.addNewPlayer(newPlayerNames)
+      if (newPlayerID) {
+        if (newPlayer.email) {
+          const newUserID = await this.createNewUser(newPlayer.email, 'dgwpassword')
+          if (newUserID) {
+            const playerContactInfo = {
+              playerID: newPlayerID,
+              email: newPlayer.email,
+              phoneNumber: newPlayer.phoneNumber,
+              userID: newUserID
+            }
+            await this.createUserPlayerRef(playerContactInfo)
+          }
+        }
+        const newPlayerResult = {
+          date: this.tournamentInfo.date,
+          eventID: this.tournamentInfo.id,
+          playerID: newPlayerID,
+          firstName: newPlayerNames.firstName,
+          lastName: newPlayerNames.lastName,
+          nickName: newPlayerNames.nickName,
+          onlineName: newPlayerNames.onlineName,
+          avatar: null,
+          RSVPd: false,
+          checkedIn: true,
+          finished: false,
+          finishedPosition: 0
+        }
+        const resultsRef = firebaseStore.collection('tournamentResults')
+        const resultDoc = await resultsRef.add(newPlayerResult)
+        if (resultDoc.id) {
+          this.resortFinishedPlayers(true)
+          this.showAddPlayer = false
+        } else {
+          return false
+        }
+        this.setResultsLoaded(true)
+        this.setFinishedLoaded(true)
+        this.$q.loading.hide()
       }
     },
     sort () {

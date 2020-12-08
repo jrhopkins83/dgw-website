@@ -43,9 +43,10 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
+    ...mapGetters('games', ['lastCompletedDate']),
     ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
     txtLastDate: function () {
-      return date.formatDate(this.leagueInfo.lastTourneyDate.toDate(), 'dddd MMMM D')
+      return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
     }
 
   }

@@ -11,6 +11,7 @@ const initialState = () => {
   return {
     devMode: 'test',
     leagueInfo: {},
+    gameTemplates: {},
     leagueInfoLoaded: false,
     points: {},
     userInfo: {},
@@ -97,6 +98,12 @@ const actions = {
       const pointsRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('pointsAssignments').orderBy('position')
       await dispatch('bindLeaguePoints', pointsRef)
 
+      // Get game templates used to add new games
+      const templatesRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('gameTemplates')
+        .orderBy('type')
+        .orderBy('structure')
+      await dispatch('bindGameTemplates', templatesRef)
+
       // Get completed games
       const success = await dispatch('games/fbGetGames', null, {
         root: true
@@ -126,6 +133,12 @@ const actions = {
   }),
   unbindLeaguePoints: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('points')
+  }),
+  bindGameTemplates: firestoreAction((context, ref) => {
+    context.bindFirestoreRef('gameTemplates', ref)
+  }),
+  unbindGameTemplates: firestoreAction((context, ref) => {
+    context.unbindFirestoreRef('gameTemplates')
   }),
   async clearSessionInfo ({ dispatch, commit }) {
     LocalStorage.remove('players')
@@ -167,8 +180,8 @@ const getters = {
   points: state => {
     return state.points
   },
-  leagueCourses: state => {
-    return state.leagueCourses
+  gameTemplates: state => {
+    return state.gameTemplates
   },
   leagueInfoLoaded: state => {
     return state.leagueInfoLoaded

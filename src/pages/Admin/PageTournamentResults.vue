@@ -202,7 +202,7 @@ export default {
           // TO-DO: convert to FB function
           // First check tournaments loaded just in case vuexFire is lagging
           const resultsRef = firebaseStore.collection('tournamentResults')
-            .where('eventID', '==', this.tournamentID)
+            .where('gameID', '==', this.tournamentID)
             .limit(1)
           const snapShot = await resultsRef.get()
           if (snapShot.empty) {
@@ -239,7 +239,7 @@ async function createTournamentResults (tournamentInfo, id) {
       snapshot.forEach(async player => {
         const newPlayer = {
           date: tournamentInfo.date,
-          eventID: id,
+          gameID: id,
           playerID: player.id,
           firstName: player.data().firstName,
           lastName: player.data().lastName,

@@ -2,13 +2,13 @@
   <div class="row q-mb-sm">
     <q-input
       outlined
-      label="Due date"
-      :value="dueDate"
-      @input="$emit('update:submitDate', $event)"
+      label="Game date"
+      :value="pickDate"
+      @input="$emit('update:pickDate', $event)"
     >
       <template v-slot:append>
         <q-icon
-          v-if="dueDate"
+          v-if="pickDate"
           @click="$emit('clear')"
           name="close"
           class="cursor-pointer"
@@ -17,10 +17,12 @@
           name="event"
           class="cursor-pointer"
         >
-          <q-popup-proxy>
+          <q-popup-proxy v-model="showPicker">
             <q-date
-              :value="dueDate"
-              @input="$emit('update:submitDate', $event)"
+              mask="MM/DD/YYYY"
+              minimal
+              :value="pickDate"
+              @input="closeDialog($event)"
             />
           </q-popup-proxy>
         </q-icon>
@@ -31,6 +33,17 @@
 
 <script>
 export default {
-  props: ['submitDate']
+  props: ['pickDate'],
+  data () {
+    return {
+      showPicker: false
+    }
+  },
+  methods: {
+    closeDialog (event) {
+      this.$emit('update:pickDate', event)
+      this.showPicker = false
+    }
+  }
 }
 </script>

@@ -78,7 +78,7 @@ const actions = {
     commit('SET_GAMES', games)
   },
   setGamesLoaded ({ commit }, value) {
-    commit('SET_GAMES_DOWNLOADED', value)
+    commit('SET_GAMES_LOADED', value)
   },
   reset_players ({ dispatch, commit }) {
     dispatch('unBindPlayersRef')

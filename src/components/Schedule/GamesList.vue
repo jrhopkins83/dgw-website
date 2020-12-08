@@ -31,37 +31,37 @@
                 <div class="attribute complete"></div>
               </div>
             </li>
-            <game
+            <game-row
               v-for='(game, index) in upcomingGames'
               :key='index'
               :id='game.id'
               :game='game'
               :isAdmin="isAdmin"
               :adminButtons="adminButtons"
-              @edit="editPlayer"
-              @delete="deletePlayer"
-              @invite="sendInvite"
+              @editGame="editGame"
+              @deleteGame="deleteGame"
+              @sendInvite="sendInvite"
               @enterResults="enterResults"
             >
-            </game>
-            <game
+            </game-row>
+            <game-row
               v-for='(game, index) in completedGames'
               :key='index'
               :id='game.id'
               :game='game'
               :isAdmin="isAdmin"
               :adminButtons="adminButtons"
-              @edit="editPlayer"
-              @delete="deletePlayer"
+              @edit="editGame"
+              @delete="deleteGame"
             >
-            </game>
+            </game-row>
         </ol>
         </template>
       </div>
 
-      <div class="absolute-bottom text-center q-mb-lg no-pointer-events">
+      <div class="absolute-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
         <q-btn
-          @click="showAddGame = true"
+          @click="addGame"
           round
           class="all-pointer-events"
           color="grey-7"
@@ -70,16 +70,29 @@
         />
       </div>
     </section>
+      <q-dialog
+        v-model="showEditGame"
+      >
+        <game-details
+          :game="game"
+          :id="id"
+          :mode="mode"
+          @save="saveGame"
+          @close="showEditGame=false"
+        />
+      </q-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { firebaseStore, Timestamp } from 'src/boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
 
 export default {
   components: {
-    game: require('src/components/Schedule/Game.vue').default,
+    gameRow: require('src/components/Schedule/Game.vue').default,
+    gameDetails: require('src/components/Admin/EditGameDetails.vue').default,
     noGames: require('components/Shared/NoGames.vue').default
   },
   props: [
@@ -91,7 +104,10 @@ export default {
   data () {
     return {
       gameSorted: false,
-      showAddGame: false
+      showEditGame: false,
+      mode: '',
+      game: {},
+      id: ''
     }
   },
   computed: {
@@ -101,16 +117,70 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['setTournamentID']),
-    ...mapActions('tourneyResults', ['setReorderFlag']),
-    editPlayer () {
-
+    ...mapActions('games', ['setGamesLoaded']),
+    addGame () {
+      this.mode = 'add'
+      this.showEditGame = true
     },
-    deletePlayer () {
+    editGame (value) {
+      this.mode = 'edit'
+      this.game = value[0]
+      this.id = value[1]
+      this.showEditGame = true
+    },
+    deleteGame () {
 
     },
     sendInvite () {
 
+    },
+    async saveGame (game) {
+      this.setGamesLoaded(false)
+      this.$q.loading.show({
+        message: '<b>Adding New Games</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+      })
+      try {
+        const gameID = game.id
+        const gameDateTime = `${game.gameDate} ${game.gameTime}`
+        const gameTimeStamp = Timestamp.fromDate(new Date(gameDateTime))
+
+        // Strip out currency format
+        const buyIn = game.buyIn.replace(/^\W|,/g, '')
+        const rebuy = game.rebuy.replace(/^\W|,/g, '')
+        const addOn = game.addOn.replace(/^\W|,/g, '')
+
+        const saveGame = {
+          type: game.type,
+          gameDate: gameTimeStamp,
+          structure: game.structure,
+          buyIn: buyIn,
+          rebuy: rebuy,
+          addOn: addOn,
+          location: game.location,
+          notes: game.notes
+        }
+        const gamesRef = firebaseStore.collection('gameDates')
+        if (this.mode === 'add') {
+          await gamesRef.add(saveGame)
+        } else {
+          await gamesRef.doc(gameID).update(saveGame)
+        }
+        this.setGamesLoaded(true)
+        this.game = {}
+        this.showEditGame = false
+        this.$q.loading.hide()
+      } catch (err) {
+        switch (err) {
+          case 'permission-denied':
+            showMessage('error', "You don't have access to add data.")
+            break
+          case 'not-found':
+            showMessage('error', 'Record not found in database')
+            break
+          default:
+            showMessage('error', 'Error saving game: ' + err)
+        }
+      }
     },
     enterResults (value) {
       this.setTournamentID(value)
@@ -210,6 +280,12 @@ export default {
   min-height: auto;
 }
 
+.dialog-game {
+  background-color: #707070;
+  display: flex;
+  height: 90%;
+  width: 90%;
+}
 @media screen and (max-width: 600px) {
   .online-name-header {
     display: none;

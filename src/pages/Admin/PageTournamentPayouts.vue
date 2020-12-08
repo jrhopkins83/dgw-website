@@ -274,7 +274,7 @@ export default {
 
           const newResult = {
             playerID: player.playerID,
-            eventID: this.tournamentInfo.id,
+            gameID: this.tournamentInfo.id,
             gameDate: this.tournamentInfo.gameDate,
             firstName: player.firstName,
             lastName: player.lastName,

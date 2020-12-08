@@ -247,7 +247,7 @@ const actions = {
     try {
       if (id) {
         const resultsRef = firebaseStore.collection('tournamentResults')
-          .where('eventID', '==', id)
+          .where('gameID', '==', id)
           .orderBy('checkedIn', 'desc')
           .orderBy('onlineName')
           .orderBy('lastName')
@@ -363,8 +363,14 @@ const getters = {
       let i = 0, result = 0
       while (i < state.sortBy.length && result === 0) {
         const sortByProp = state.sortBy[i].property
-        const propA = state.tournamentResults[a][sortByProp].toString().toLowerCase()
-        const propB = state.tournamentResults[b][sortByProp].toString().toLowerCase()
+        let propA = state.tournamentResults[a][sortByProp]
+        if (propA) {
+          propA = propA.toString().toLowerCase()
+        }
+        let propB = state.tournamentResults[a][sortByProp]
+        if (propB) {
+          propB = propB.toString().toLowerCase()
+        }
         result = state.sortBy[i].direction * (propA < propB ? -1 : (propA > propB ? 1 : 0))
         i++
       }

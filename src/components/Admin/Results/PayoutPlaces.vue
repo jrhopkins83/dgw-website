@@ -254,8 +254,12 @@ export default {
 .places-move {
   transition: transform .6s;
 }
-.places-enter-active, .places-leave-active {
+.places-enter-active {
   transition: all .6s;
+}
+.places-leave-active {
+  transition: all .6s;
+  position: absolute;
 }
 .places-enter, .places-leave-to {
   opacity: 0;

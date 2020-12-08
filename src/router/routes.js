@@ -36,6 +36,14 @@ const routes = [{
       },
       component: () => import('pages/PageGameSchedule.vue')
     }, {
+      path: 'announcements',
+      name: 'Announcements',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('pages/PageAnnouncements.vue')
+    }, {
       path: 'league-info',
       name: 'LeagueInfo',
       meta: {

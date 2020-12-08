@@ -44,6 +44,11 @@
             name = ''
             :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
           />
+          <q-route-tab
+            label = 'Announcements'
+            name = 'Announcements'
+            to = '/announcements'
+          />
           <!-- <q-route-tab
             v-for="nav in userNavs"
             :key="nav.label"
@@ -51,52 +56,54 @@
             :to="nav.to"
             class="q-pa-sm"
           /> -->
-          <q-btn-dropdown
-            class="auto-close stretch flat label"
-            label="Admin"
-            auto-close
-            flat
-            stretch
-          >
-            <q-list style="min-width: 27rem">
-              <q-item
-                clickable
-                ripple
-                to="/league-info"
-              >
-                <q-item-section>
-                  LEAGUE INFO
-                </q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                ripple
-                :to = '{ name: "GameSchedule" , params: { mode: "edit" } }'
-              >
-                <q-item-section>
-                  EDIT SCHEDULE
-                </q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                ripple
-                to="/"
-              >
-                <q-item-section>
-                  EDIT PLAYERS
-                </q-item-section>
-              </q-item>
-              <q-item
-                clickable
-                ripple
-                to="/"
-              >
-                <q-item-section>
-                  EDIT ANNOUNCEMENTS
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          <template v-if="userInfo.isAdmin">
+            <q-btn-dropdown
+              class="auto-close stretch flat label"
+              label="Admin"
+              auto-close
+              flat
+              stretch
+            >
+              <q-list style="min-width: 27rem">
+                <q-item
+                  clickable
+                  ripple
+                  to="/league-info"
+                >
+                  <q-item-section>
+                    LEAGUE INFO
+                  </q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  ripple
+                  :to = '{ name: "GameSchedule" , params: { mode: "edit" } }'
+                >
+                  <q-item-section>
+                    EDIT SCHEDULE
+                  </q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  ripple
+                  to="/"
+                >
+                  <q-item-section>
+                    EDIT PLAYERS
+                  </q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  ripple
+                  to="/"
+                >
+                  <q-item-section>
+                    EDIT ANNOUNCEMENTS
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </template>
         </q-tabs>
         <q-btn
           class="mobile-menu"
@@ -158,10 +165,10 @@
             <q-item
               clickable
               ripple
-              to="/"
+              to="/announcements"
             >
               <q-item-section>
-                NEWS
+                ANNOUNCEMENTS
               </q-item-section>
             </q-item>
           </q-list>

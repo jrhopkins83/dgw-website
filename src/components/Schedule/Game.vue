@@ -17,7 +17,7 @@
             icon="edit"
             flat
             size="md"
-            @click="$emit('editGame')"
+            @click="$emit('editGame', [game, id])"
           />
         </div>
         <div class="attribute delete">
@@ -25,7 +25,7 @@
             icon="delete"
             flat
             size="md"
-            @click="$emit('deleteGame')"
+            @click="$emit('deleteGame', [game, id])"
           />
         </div>
         <div class="attribute invite" v-if="showButton">
@@ -33,7 +33,7 @@
             icon="forward_to_inbox"
             flat
             size="md"
-            @click="$emit('sendInvite')"
+            @click="$emit('sendInvite', $event)"
           />
         </div>
         <div class="attribute complete" v-if="showButton">

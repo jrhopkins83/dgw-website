@@ -68,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leagueInfo', 'userInfo']),
+    ...mapGetters('leagueSettings', ['leagueInfo', 'userInfo', 'gameTemplates']),
     ...mapGetters('games', ['gameDates', 'upcomingGames', 'completedGames']),
     isAdmin: function () {
       if (this.userInfo.isAdmin && this.mode === 'edit') {

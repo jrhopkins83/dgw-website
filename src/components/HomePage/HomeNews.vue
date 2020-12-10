@@ -1,40 +1,15 @@
 <template>
   <div>
-    <div class="news-section">
-      <div class="news-section__content col-12 text-h2 text-bold q-pa-md">
-        <div class="news-section__content--title col-10">News / Announcements</div>
-        <div class="news-section__content--list">
-          <div class="news_item"
-            v-for="(item, id) in news_items"
+    <div class="news-section" v-if="announcementsLoaded">
+      <div class="news-section__content col-12 q-pa-md">
+        <div class="news-section__content--title col-10 text-h2 text-bold">News / Announcements</div>
+          <news-item
+            v-for="(announcement, id) in announcements"
+            :announcement="announcement"
             :key="id"
+            :id="id"
           >
-            <div class="news_item-headline row wrap justify-between items-start content-start">
-              <div class="headline--subject">
-                <div>
-                  <div>{{ item.subject}}</div>
-                </div>
-              </div>
-              <div class="headline-button">
-                <div>
-                  <q-btn
-                    color="white"
-                    label="Read more..."
-                    flat
-                    @click="viewNewsItem"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="news--detail">
-              <div class="row text-h4 news-date">
-                {{ item.date }}
-              </div>
-              <div class="col-12 text-body1 news-body">
-                {{ item.news_text }}
-              </div>
-            </div>
-          </div>
-        </div>
+          </news-item>
       </div>
     </div>
   </div>
@@ -42,39 +17,33 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
+  components: {
+    newsItem: require('components/News/announcementShort.vue').default
+  },
   data () {
     return {
-      news_items: [
-        {
-          id: '1',
-          subject: 'Weekly Update',
-          date: '7 October, 2020',
-          news_text: 'A quick reminder that tonight is our Sit n Go mini tournaments and tomorrow is our $100 Freeze Out Tournament.  A lot of shuffling in our Top 14 for the Final Table.  A lot of games to go, so plenty of time to move yourself into the Year End Final Table'
-        },
-        {
-          id: '2',
-          subject: 'Zoom meetings for Thursday tournaments',
-          date: '16 September, 2020',
-          news_text: 'I am going to do Zoom again and encourage you to give it a try! Each week it grows and is a ton of fun to share a beer and bust some.....aces.'
-        },
-        {
-          id: '3',
-          subject: 'Weekly Update',
-          date: '17 September, 2020',
-          news_text: 'A quick reminder that Wednesday is our SNG mini tournaments and that Thursday is our $100 Freezeout Tournament.  We had 23 join us last week for the Bounty Tournament.  Congratulations to Pete for bringing down 1st place.  Will was runner up, followed by Mike and Andrew.'
-        }
-      ]
+
     }
   },
   computed: {
+    ...mapGetters('announcements', ['announcementsLoaded', 'announcements'])
 
   },
   methods: {
+    ...mapActions('announcements', ['fbGetAnnouncements', 'setAnnouncementsLoaded']),
     viewNewsItem () {
       console.log('News item clicked')
     }
+  },
+  async mounted () {
+    if (!this.announcementsLoaded) {
+      await this.fbGetAnnouncements()
+    }
   }
+
 }
 </script>
 

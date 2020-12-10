@@ -6,6 +6,7 @@ Vue.use(Vuex)
 import auth from './store-auth'
 import leagueSettings from './store-league-settings'
 import games from './store-games'
+import announcements from './store-announcements'
 import weeklyResults from './store-weekly-results'
 import tourneyResults from './store-tourney-results'
 import standings from './store-season-standings'
@@ -23,6 +24,7 @@ import { vuexfireMutations } from 'vuexfire'
 const initialState = {
   leagueSettings: leagueSettings.state,
   games: games.state,
+  announcements: announcements.state,
   weeklyResults: weeklyResults.state,
   tourneyResults: tourneyResults.state,
   standings: standings.state
@@ -35,6 +37,7 @@ export default function (/* { ssrContext } */) {
       auth,
       leagueSettings,
       games,
+      announcements,
       tourneyResults,
       weeklyResults,
       standings

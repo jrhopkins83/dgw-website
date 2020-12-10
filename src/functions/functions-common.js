@@ -99,3 +99,11 @@ export const currencyFormat = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0,
   currency: 'USD'
 })
+
+export function stripHTML (str) {
+  if (str) {
+    return str.replace(/(<([^>]+)>)/gi, '')
+  } else {
+    return str
+  }
+}

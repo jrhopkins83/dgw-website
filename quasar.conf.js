@@ -19,7 +19,7 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-
+      // 'routerAuth',
       'axios'
     ],
 
@@ -111,7 +111,14 @@ module.exports = function (/* ctx */) {
 
     // animations: 'all', // --- includes all animations
     // https://quasar.dev/options/animations
-    animations: [],
+    animations: [
+      'zoomIn',
+      'zoomOut',
+      'slideInLeft',
+      'slideInRight',
+      'slideOutLeft',
+      'slideOutRight'
+    ],
 
     // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {

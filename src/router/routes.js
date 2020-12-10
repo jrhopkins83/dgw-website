@@ -52,13 +52,13 @@ const routes = [{
       },
       component: () => import('pages/Admin/PageUpdateLeagueInfo.vue')
     }, {
-      path: 'enter-results',
-      name: 'EnterResults',
+      path: 'edit-announcements',
+      name: 'EditAnnouncements',
       meta: {
         requiresAuth: true,
         requiresAdmin: true
       },
-      component: () => import('pages/Admin/PageTournamentResults.vue')
+      component: () => import('pages/Admin/PageEditAnnouncements.vue')
     }, {
       path: 'enter-payouts',
       name: 'EnterPayouts',

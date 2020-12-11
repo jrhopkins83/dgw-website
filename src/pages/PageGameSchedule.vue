@@ -18,12 +18,13 @@
               dense
               align="left"
               content-class="filter-tabs"
+              @input="filterGames"
               :breakpoint="0"
             >
-              <q-tab name="all" label="All" content-class="header__filter-tabs" @select="filter"/>
-              <q-tab name="mtt" label="MTT" content-class="header__filter-tabs" @click="filter"/>
-              <q-tab name="sng" label="SNG" content-class="header__filter-tabs" @click="filter"/>
-              <q-tab name="cash" label="Cash"  content-class="header__filter-tabs" @click="filter"/>
+              <q-tab name="all" label="All" content-class="header__filter-tabs"/>
+              <q-tab name="mtt" label="MTT" content-class="header__filter-tabs"/>
+              <q-tab name="sng" label="SNG" content-class="header__filter-tabs"/>
+              <q-tab name="cash" label="Cash"  content-class="header__filter-tabs"/>
             </q-tabs>
           </div>
         </div>
@@ -86,10 +87,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['getNumCheckedIn', 'setReorderFlag']),
-    filter (value) {
-      const msg = `${value} was selected`
-      alert(msg)
+    ...mapActions('games', ['setGameFilter']),
+    filterGames (value) {
+      this.setGameFilter(value)
     }
   },
   async beforeMount () {

@@ -89,7 +89,7 @@ html, body, .grid-container { height: 100%; margin: 0; }
   width: 100%;
   color: white;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 2fr 1fr;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
   gap: 0px 0px;
   grid-template-areas:
@@ -138,7 +138,7 @@ html, body, .grid-container { height: 100%; margin: 0; }
   grid-area: right-image;
   position: relative;
   min-height: 13rem;
-  width: 29rem;
+  width: 21rem;
   // top: 1rem;
   right: 0px;
   bottom: 0px;

@@ -7,7 +7,6 @@
     </div>
     <div class="news--detail">
       <div class="row text-h4 text-bold news-date">
-        <!-- {{ formattedDate }} -->
         {{ formattedDate}}
       </div>
       <div

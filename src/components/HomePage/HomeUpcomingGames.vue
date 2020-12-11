@@ -11,7 +11,7 @@
               v-model="tab"
               dense
               class="text-h4"
-              @click="filterGames"
+              @input="filterGames"
             >
               <q-tab name="all" label="ALL" />
               <q-tab name="mtt" label="MTT" />
@@ -73,25 +73,39 @@
               :key='index'
               :id='game.id'
               :game='game'
+              @viewGameDetails="viewGame"
             >
             </game>
           </ol>
         </div>
       </div>
     </section>
+    <q-dialog
+      v-model="showViewGame"
+    >
+      <view-game-details
+        :game="game"
+        :id="id"
+        @close="showViewGame=false"
+      />
+    </q-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
-    game: require('src/components/HomePage/Game.vue').default
+    game: require('src/components/HomePage/Game.vue').default,
+    viewGameDetails: require('src/components/Modals/ModalViewGameDetails.vue').default
   },
   data () {
     return {
-      tab: 'all'
+      tab: 'all',
+      showViewGame: false,
+      game: {},
+      id: ''
     }
   },
   computed: {
@@ -116,11 +130,14 @@ export default {
     }
   },
   methods: {
+    ...mapActions('games', ['setGameFilter']),
     filterGames (value) {
-      console.log(value.payload)
+      this.setGameFilter(value)
     },
-    viewGameDetails (value) {
-
+    viewGame (value) {
+      this.game = value[0]
+      this.id = value[1]
+      this.showViewGame = true
     }
   }
 }

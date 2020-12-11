@@ -9,7 +9,16 @@
       </div>
       <div class="attribute-container game-structure">
         <div class="attribute structure">{{ game.structure}}</div>
-        <a href="" @click="viewGameDetails()" class="attribute details">Details</a>
+          <q-btn
+            flat
+            label="Details"
+            text-color="blue-9"
+            no-caps
+            size="16px"
+            @click="$emit('viewGameDetails', [game, id])"
+            class="attribute details"
+          >
+          </q-btn>
       </div>
     </li>
   </div>

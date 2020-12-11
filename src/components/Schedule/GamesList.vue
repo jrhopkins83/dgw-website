@@ -38,8 +38,9 @@
               :game='game'
               :isAdmin="isAdmin"
               :adminButtons="adminButtons"
+              @viewGameDetails="viewGame"
               @editGame="editGame"
-              @deleteGame="deleteGame"
+              @deleteGame="confirmDelete"
               @sendInvite="sendInvite"
               @enterResults="enterResults"
             >
@@ -70,17 +71,54 @@
         />
       </div>
     </section>
-      <q-dialog
-        v-model="showEditGame"
-      >
-        <game-details
-          :game="game"
-          :id="id"
-          :mode="mode"
-          @save="saveGame"
-          @close="showEditGame=false"
-        />
-      </q-dialog>
+    <q-dialog
+      v-model="showEditGame"
+    >
+      <edit-game-details
+        :game="game"
+        :id="id"
+        :mode="mode"
+        @save="saveGame"
+        @close="showEditGame=false"
+      />
+    </q-dialog>
+    <q-dialog
+      v-model="showViewGame"
+    >
+      <view-game-details
+        :game="game"
+        :id="id"
+        @close="showViewGame=false"
+      />
+    </q-dialog>
+    <q-dialog
+      v-model="confirm"
+    >
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h3">
+            {{ dialogHeader}}
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          {{ dialogMsg }}
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn
+            @click="deleteGame"
+            color="blue-10"
+            label="Confirm"
+          />
+          <q-btn
+            v-close-popup
+            color="negative"
+            label="Cancel"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -92,7 +130,8 @@ import { showMessage } from 'src/functions/functions-common'
 export default {
   components: {
     gameRow: require('src/components/Schedule/Game.vue').default,
-    gameDetails: require('src/components/Admin/EditGameDetails.vue').default,
+    editGameDetails: require('src/components/Modals/ModalEditGameDetails.vue').default,
+    viewGameDetails: require('src/components/Modals/ModalViewGameDetails.vue').default,
     noGames: require('components/Shared/NoGames.vue').default
   },
   props: [
@@ -105,7 +144,11 @@ export default {
     return {
       gameSorted: false,
       showEditGame: false,
+      showViewGame: false,
       mode: '',
+      confirm: false,
+      dialogHeader: '',
+      dialogMsg: '',
       game: {},
       id: ''
     }
@@ -128,8 +171,43 @@ export default {
       this.id = value[1]
       this.showEditGame = true
     },
-    deleteGame () {
-
+    viewGame (value) {
+      this.game = value[0]
+      this.id = value[1]
+      this.showViewGame = true
+    },
+    confirmDelete (value) {
+      this.game = value[0]
+      this.dialogHeader = 'Confirm Delete?'
+      this.dialogMsg = `Are you sure you want to delete this announcement subject: ${this.announcement.subject}?`
+      this.confirm = true
+    },
+    async deleteGame (value) {
+      this.game = value[0]
+      this.id = value[1]
+      this.setGamesLoaded(false)
+      this.$q.loading.show({
+        message: '<b>Adding New Games</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+      })
+      try {
+        const gamesRef = firebaseStore.collection('gameDates')
+        await gamesRef.doc(this.id).delete()
+        this.setGamesLoaded(true)
+        this.game = {}
+        this.showViewGame = false
+        this.$q.loading.hide()
+      } catch (err) {
+        switch (err) {
+          case 'permission-denied':
+            showMessage('error', "You don't have access to add data.")
+            break
+          case 'not-found':
+            showMessage('error', 'Record not found in database')
+            break
+          default:
+            showMessage('error', 'Error deleting game: ' + err)
+        }
+      }
     },
     sendInvite () {
 

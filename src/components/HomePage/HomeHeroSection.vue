@@ -1,18 +1,6 @@
 <template>
   <div class="flex-center column">
     <div class="row hero-section">
-      <q-card class="hero-section__headline transparent text-white">
-        <q-item>
-          <q-item-section>
-            <q-item-label class="hero-section__headline--title text-h2 text-center">Donkey's Gone Wild</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-card-section horizontal>
-          <q-card-section class="hero-section__headline--message tq-pa-none">
-            {{ hero_message }}
-          </q-card-section>
-        </q-card-section>
-      </q-card>
       <q-card class="hero-section__pool" flat >
         <q-card-section>
           <q-list>
@@ -43,22 +31,35 @@
           </q-list>
         </q-card-section>
       </q-card>
+      <q-card class="hero-section__headline transparent text-white">
+        <q-item>
+          <q-item-section>
+            <q-item-label class="hero-section__headline--title text-h2 text-center">Donkey's Gone Wild</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-card-section horizontal>
+          <q-card-section class="hero-section__headline--message q-pa-none" v-html="lastHeroHeadline">
+          </q-card-section>
+        </q-card-section>
+      </q-card>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import { stripHTML } from 'src/functions/functions-common'
 
 export default {
   data () {
     return {
-      hero_message: 'Another great turnout for our Tournament with 22 participating.  Congrats to Scotty Lusk for getting the win and $886.  Ron continues to be strong with his 2nd place showing and $627.  Eddy was 3rd and collected $418 and Paul donked his way into 4th and got a reward of $209.  Our next tournament is the $40 Rebuy and Addon.  Remember, be online at 7 p.m. and get a bonus chip! '
+
     }
   },
   props: ['bank'],
   computed: {
     ...mapGetters('leagueSettings', ['userInfo']),
+    ...mapGetters('announcements', ['announcementsLoaded', 'lastHeroHeadline']),
     formattedFinalTable: function () {
       return this.formatValue(this.bank.finalTable)
     },
@@ -67,6 +68,9 @@ export default {
     },
     formattedDGW: function () {
       return this.formatValue(this.bank.DGW)
+    },
+    hero_message: function () {
+      return stripHTML(this.lastHeroHeadline)
     }
   },
   methods: {
@@ -85,6 +89,7 @@ export default {
     position: relative;
     min-height: 33rem;
     width: 100%;
+    overflow: hidden;
     background-image: url(cards_in_the_air.png);
     background-size: cover;
     /* grid styles */
@@ -94,8 +99,8 @@ export default {
     grid-gap: 3rem;
 
       &__headline {
-        overflow: auto;
         justify-self: center;
+        max-height: 28rem;
         min-width: 280px;
         max-width: 500px;
         margin-left: 4rem;
@@ -118,10 +123,17 @@ export default {
       right: 0px;
       bottom: 0px;
       left: 0px;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(0,0,0,0.7);
       // background-color: rgba(152, 66, 211, 0.63);
     }
   }
+
+.hero-section__headline--message {
+  overflow: scroll;
+  justify-self: center;
+  max-height: 23rem;
+
+}
 
   .q-page {
     min-height: auto;

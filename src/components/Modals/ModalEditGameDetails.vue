@@ -1,0 +1,356 @@
+<template>
+  <div class="col game-form">
+
+    <q-card class="add-game absolute-center" style="width: 700px; max-width: 80vw;">
+      <q-card-section style="min-height: 62rem">
+        <modal-header>{{ displayMode }} Game</modal-header>
+        <q-form
+          ref="gameForm"
+        >
+          <div class="form-container">
+            <div class="attribute-container structure">
+              <q-select
+                dense
+                outlined
+                ref="structure"
+                fill-input
+                v-model="formData.structure"
+                class=“no-pointer-events”
+                input-class="text-center"
+                label="Structure"
+                stack-label
+                :rules="[required]"
+                :options="structureOptions"
+                style="width: 20rem"
+              />
+              <q-select
+                dense
+                outlined
+                ref="type"
+                fill-input
+                v-model="formData.type"
+                class=“no-pointer-events”
+                input-class="text-center"
+                label="Type"
+                stack-label
+                :rules="[required]"
+                :options="typeOptions"
+                style="width: 12rem"
+              />
+            </div>
+            <div class="attribute-container date">
+              <modal-pick-date
+                outlined
+                ref="gameDate"
+                fill-input
+                :rules="[required]"
+                :pickDate.sync="formData.gameDate"
+                style="width: 20rem"
+              />
+              <modal-pick-time
+                outlined
+                ref="gameTime"
+                fill-input
+                :rules="[required]"
+                :pickTime.sync="formData.gameTime"
+                style="width: 20rem"
+              />
+            </div>
+            <div class="attribute-container buy-in">
+              <q-field
+                type="number"
+                ref="buyIn"
+                v-model="formData.buyIn"
+                bg-color="grey-1"
+                class="q-mt-lg"
+                outlined
+                label="Buy-In"
+                stack-label
+                :rules="[required]"
+                :dense="dense"
+                style="width: 12rem"
+              >
+                <template v-slot:control="{ id, floatingLabel, value, emitValue }">
+                  <money
+                    v-show="floatingLabel"
+                    v-bind="moneyFormatForComponent"
+                    :id="id"
+                    :value="value"
+                    @input="emitValue"
+                    class="q-field__input text-right"
+                  />
+                </template>
+              </q-field>
+              <q-field
+                type="number"
+                ref="rebuy"
+                v-model="formData.rebuy"
+                bg-color="grey-1"
+                class="q-mt-lg"
+                outlined
+                label="Re-buy"
+                stack-label
+                :rules="[required]"
+                :dense="dense"
+                style="width: 12rem"
+              >
+                <template v-slot:control="{ id, floatingLabel, value, emitValue }">
+                  <money
+                    v-show="floatingLabel"
+                    v-bind="moneyFormatForComponent"
+                    :id="id"
+                    :value="value"
+                    @input="emitValue"
+                    class="q-field__input text-right"
+                  />
+                </template>
+              </q-field>
+              <q-field
+                type="number"
+                ref="addOn"
+                v-model="formData.addOn"
+                bg-color="grey-1"
+                class="q-mt-lg"
+                outlined
+                label="Add-on"
+                stack-label
+                :rules="[required]"
+                :dense="dense"
+                style="width: 12rem"
+              >
+                <template v-slot:control="{ id, floatingLabel, value, emitValue }">
+                  <money
+                    v-show="floatingLabel"
+                    v-bind="moneyFormatForComponent"
+                    :id="id"
+                    :value="value"
+                    @input="emitValue"
+                    class="q-field__input text-right"
+                  />
+                </template>
+              </q-field>
+            </div>
+            <div class="attribute-container location">
+
+              <q-input
+                ref="location"
+                v-model="formData.location"
+                label="Location"
+                stack-label
+                clearable
+                clear-icon="close"
+                outlined
+                id="firstName"
+                filled
+                type="textarea"
+              />
+            </div>
+            <div class="attribute-container notes">
+              <div class="label text-bold text-white">
+                Notes
+              </div>
+              <div>
+                <q-editor v-model="formData.notes" min-height="17rem" />
+              </div>
+            </div>
+          </div>
+        </q-form>
+      </q-card-section>
+      <q-card-section>
+        <div class="attribute-container card-actions">
+          <q-card-actions align="center">
+            <q-btn
+              label="Submit"
+              color="blue-9"
+              @click="submitForm"
+            />
+
+            <q-btn
+              label="Cancel"
+              color="primary"
+              @click="$emit('close')"
+            />
+          </q-card-actions>
+        </div>
+      </q-card-section>
+    </q-card>
+  </div>
+</template>
+
+<script>
+import formMixin from 'src/mixins/form'
+import { selectAll } from 'src/directives/directive-select-all'
+import { required } from 'src/utils/validators'
+import { toTitleCase } from 'src/functions/functions-common'
+import { mapGetters } from 'vuex'
+import { Money } from 'v-money'
+import { date } from 'quasar'
+
+export default {
+  mixins: [formMixin],
+  components: {
+    Money,
+    modalHeader: require('components/Modals/Shared/ModalHeader.vue').default,
+    modalPickDate: require('src/components/Modals/Shared/ModalDate.vue').default,
+    modalPickTime: require('src/components/Modals/Shared/ModalTime.vue').default
+  },
+  props: {
+    game: {
+      type: Object
+    },
+    id: {
+      type: String
+    },
+    mode: {
+      type: String
+    }
+  },
+  data () {
+    return {
+      dense: true,
+      name,
+      formData: {
+        type: '',
+        gameDate: '',
+        gameTime: '',
+        structure: '',
+        buyIn: 0,
+        rebuy: 0,
+        addOn: 0,
+        location: '',
+        notes: '',
+        id: this.id
+      },
+      formHasError: false,
+      typeOptions: [
+        'MTT',
+        'SNG',
+        'Cash'
+      ],
+      gameToSubmit: {},
+      validation: false,
+      moneyFormatForComponent: {
+        decimal: '.',
+        thousands: ',',
+        prefix: '$ ',
+        suffix: '',
+        precision: 0,
+        masked: true
+      }
+
+    }
+  },
+  computed: {
+    ...mapGetters('leagueSettings', ['leagueInfo', 'gameTemplates']),
+    structureOptions: function () {
+      const optionArray = []
+      this.gameTemplates.forEach(template => {
+        optionArray.push(template.structure)
+      })
+      return optionArray
+    },
+    displayMode: function () {
+      return toTitleCase(this.mode)
+    }
+  },
+  methods: {
+    required,
+    async submitForm () {
+      this.$refs.structure.validate()
+      this.$refs.type.validate()
+      // this.$refs.gameDate.validate()
+      // this.$refs.gameTime.validate()
+      this.$refs.buyIn.validate()
+      this.$refs.location.validate()
+
+      // if (this.$v.$invalid) {
+      //   this.$nextTick(() => this.focusFirstStatus())
+      if (this.$refs.structure.hasError || this.$refs.type.hasError || this.$refs.buyIn.hasError || this.$refs.location.hasError) {
+        this.formHasError = true
+      }
+
+      if (!this.formHasError) {
+        this.$emit('save', this.formData)
+      } else {
+        console.log('formHasError: ', this.formHasError)
+      }
+    }
+  },
+
+  directives: {
+    selectAll
+  },
+  mounted () {
+    if (this.game) {
+      if (this.game.gameDate) {
+        const gameDate = date.formatDate(this.game.gameDate.toDate(), 'YYYY/MM/DD')
+        const gameTime = date.formatDate(this.game.gameDate.toDate(), 'HH:mm a')
+        this.formData = {
+          structure: this.game.structure,
+          type: this.game.type,
+          gameDate: gameDate,
+          gameTime: gameTime,
+          buyIn: this.game.buyIn,
+          rebuy: this.game.rebuy,
+          addOn: this.game.addOn,
+          location: this.game.location,
+          notes: this.game.notes,
+          id: this.id
+        }
+      }
+    } else {
+      this.formData.gameTime = '7:00 pm'
+    }
+  }
+
+}
+</script>
+
+<style lang="scss" scoped>
+  .game-form {
+    width: 90%;
+    background-color: #C3C3C3;
+
+    .q-card.add-game {
+      max-width: 75vw;
+      width:40vw;
+      // height:150px;
+
+      .form-container {
+        display: flex;
+        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 5rem 7rem 5rem 12rem 17rem;
+
+        .attribute-container.structure {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .attribute-container.date {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .attribute-container.buy-in {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .q-field__input {
+          font-size: 16px
+        }
+
+      }
+
+      .label {
+        font-size: 20px;
+        margin: 12px 0px 8px 0px;
+      }
+      .q-input {
+        max-width: 90%;
+      }
+    }
+  }
+</style>

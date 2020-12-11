@@ -4,27 +4,42 @@
       <div class="news-section__content col-12 q-pa-md">
         <div class="news-section__content--title col-10 text-h2 text-bold">News / Announcements</div>
           <news-item
-            v-for="(announcement, id) in announcements"
+            v-for="announcement in announcements"
             :announcement="announcement"
-            :key="id"
-            :id="id"
+            :key="announcement.id"
+            :id="announcement.id"
+            @viewAnnouncementDetails="viewNewsItem"
           >
           </news-item>
       </div>
     </div>
+    <q-dialog
+      v-model="showViewAnnouncement"
+    >
+      <view-announcement-details
+        :announcement="announcement"
+        :id="id"
+        @close="showViewAnnouncement=false"
+      />
+    </q-dialog>
   </div>
 
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    newsItem: require('components/News/announcementShort.vue').default
+    newsItem: require('components/News/announcementShort.vue').default,
+    viewAnnouncementDetails: require('src/components/Modals/ModalViewAnnouncement.vue').default
+
   },
   data () {
     return {
+      showViewAnnouncement: false,
+      announcement: {},
+      id: ''
 
     }
   },
@@ -33,17 +48,12 @@ export default {
 
   },
   methods: {
-    ...mapActions('announcements', ['fbGetAnnouncements', 'setAnnouncementsLoaded']),
-    viewNewsItem () {
-      console.log('News item clicked')
-    }
-  },
-  async mounted () {
-    if (!this.announcementsLoaded) {
-      await this.fbGetAnnouncements()
+    viewNewsItem (value) {
+      this.announcement = value[0]
+      this.id = value[1]
+      this.showViewAnnouncement = true
     }
   }
-
 }
 </script>
 

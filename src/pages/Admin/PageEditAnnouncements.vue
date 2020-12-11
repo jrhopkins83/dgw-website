@@ -11,7 +11,12 @@
 
         </div>
         <div class="announcements">
-          <div class="item-list">
+          <q-scroll-area
+            class="item-list"
+            visible
+            :thumb-style="thumbStyle"
+            :bar-style="barStyle"
+          >
             <news-item
               v-for="announcement in announcements"
               :key="announcement.id"
@@ -22,7 +27,7 @@
             >
           <!-- <news-item> -->
             </news-item>
-          </div>
+          </q-scroll-area>
 
           <div class="add-button absolute-bottom text-center no-pointer-events">
             <q-btn
@@ -98,14 +103,28 @@ export default {
       dialogMsg: '',
       mode: '',
       announcement: {},
-      id: ''
+      id: '',
+      thumbStyle: {
+        right: '4px',
+        borderRadius: '5px',
+        backgroundColor: '#B8D2C7',
+        width: '5px',
+        opacity: 0.75
+      },
+
+      barStyle: {
+        right: '2px',
+        borderRadius: '9px',
+        backgroundColor: '#027be3',
+        width: '9px',
+        opacity: 0.2
+      }
     }
   },
   computed: {
     ...mapGetters('leagueSettings', ['userInfo']),
     ...mapGetters('announcements', ['announcementsLoaded', 'announcements']),
     announcementsList: function () {
-      console.log('announcements ', this.announcements)
       return this.announcements
     }
   },
@@ -201,7 +220,7 @@ export default {
 
   .container {
     position: relative;
-    min-height: 93vh;
+    height: 93vh;
     width: 100%;
     display: flex;
     align-items: center;
@@ -260,11 +279,13 @@ export default {
 
     .announcements {
       grid-area: announcements;
+      background-color: $off-white;
       // height: 85vh;
       // overflow: hidden;
 
-      .news-list {
-        // height: 85vh;
+      .item-list {
+        height: 85vh;
+        width: 100%;
         overflow: scroll;
       }
 

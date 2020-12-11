@@ -58,7 +58,8 @@
           /> -->
           <template v-if="userInfo.isAdmin">
             <q-btn-dropdown
-              class="auto-close stretch flat label"
+              class="auto-close stretch flat label text-bold"
+              style="font-size: 15px"
               label="Admin"
               auto-close
               flat
@@ -86,10 +87,10 @@
                 <q-item
                   clickable
                   ripple
-                  to="/"
+                  to="/edit-announcements"
                 >
                   <q-item-section>
-                    EDIT PLAYERS
+                    EDIT ANNOUNCEMENTS
                   </q-item-section>
                 </q-item>
                 <q-item
@@ -98,7 +99,7 @@
                   to="/"
                 >
                   <q-item-section>
-                    EDIT ANNOUNCEMENTS
+                    EDIT PLAYERS
                   </q-item-section>
                 </q-item>
               </q-list>

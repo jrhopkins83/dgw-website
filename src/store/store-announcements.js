@@ -10,7 +10,7 @@ firestoreOptions.wait = true
 const initialState = () => {
   return {
     announcements: {},
-    lastHeroHeadline: null,
+    lastHeroHeadline: {},
     announcementsLoaded: false,
     announcementFilter: ''
   }
@@ -45,33 +45,31 @@ const actions = {
     commit('SET_ANNOUNCEMENT_FILTER', value)
   },
   async fbGetAnnouncements ({ commit, dispatch, state }) {
-    let announcementsRef = firebaseStore.collection('announcements')
+    const announcementsRef = firebaseStore.collection('announcements')
       .orderBy('postedDate', 'desc')
       .orderBy('subject', 'asc')
 
-    await dispatch('bindAnnouncements', announcementsRef)
-
-    // Get the latest announcement to use as the headline on the Home page Hero section
-    announcementsRef = firebaseStore.collection('announcements')
-      .orderBy('postedDate', 'desc')
-      .where('heroHeadline', '==', true)
-      .limit(1)
-    const announcementSnap = await announcementsRef.get()
-    let announcementDoc = null
-    if (!announcementSnap.empty) {
-      announcementSnap.forEach(doc => {
-        announcementDoc = doc.data()
-      })
-      commit('SET_LAST_HERO_HEADLINE', announcementDoc.newsText)
+    await dispatch('bindAnnouncements', announcementsRef).then(() => {
       commit('SET_ANNOUNCEMENTS_LOADED', true)
-    }
-    return true
+      return true
+    })
+      .catch((Error) => {
+        console.log('Error getting announcements: ', Error)
+        commit('SET_ANNOUNCEMENTS_LOADED', true)
+        return false
+      })
   },
   bindAnnouncements: firestoreAction((context, ref) => {
     context.bindFirestoreRef('announcements', ref)
   }),
   unbindAnnouncements: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('announcements')
+  }),
+  bindHeroHeadline: firestoreAction((context, ref) => {
+    context.bindFirestoreRef('lastHeroHeadline', ref)
+  }),
+  unbindHeroHeadline: firestoreAction((context, ref) => {
+    context.unbindFirestoreRef('lastHeroHeadline')
   }),
   setLastHeroHeadline ({ commit }, value) {
     commit('SET_LAST_HERO_HEADLINE', value)
@@ -96,8 +94,19 @@ const getters = {
     return state.announcementsLoaded
   },
   lastHeroHeadline: state => {
-    return state.lastHeroHeadline
+    let heroHeadline = ''
+    let lastHeroHeadline = false
+    const announcementKeys = Object.keys(state.announcements)
+
+    announcementKeys.forEach((key) => {
+      if (state.announcements[key].heroHeadline && !lastHeroHeadline) {
+        lastHeroHeadline = true
+        heroHeadline = state.announcements[key].newsText
+      }
+    })
+    return heroHeadline
   },
+
   announcementsSorted: (state) => {
     const announcementsSorted = {},
       keysOrdered = Object.keys(state.announcements)

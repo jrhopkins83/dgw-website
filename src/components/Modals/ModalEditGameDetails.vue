@@ -21,7 +21,13 @@
                 stack-label
                 :rules="[required]"
                 :options="structureOptions"
-                style="width: 20rem"
+                option-value="index"
+                option-label="structure"
+                option-disable="inactive"
+                emit-value
+                map-options
+                style="min-width: 250px; max-width: 300px"
+                @input="pullFromTemplate($event)"
               />
               <q-select
                 dense
@@ -244,8 +250,13 @@ export default {
     ...mapGetters('leagueSettings', ['leagueInfo', 'gameTemplates']),
     structureOptions: function () {
       const optionArray = []
-      this.gameTemplates.forEach(template => {
-        optionArray.push(template.structure)
+      let option = {}
+      this.gameTemplates.forEach((template, index) => {
+        option = {
+          index: index,
+          structure: template.structure
+        }
+        optionArray.push(option)
       })
       return optionArray
     },
@@ -274,6 +285,19 @@ export default {
       } else {
         console.log('formHasError: ', this.formHasError)
       }
+    },
+    pullFromTemplate (index) {
+      const template = this.gameTemplates[index]
+      this.formData = {
+        structure: template.structure,
+        type: template.type,
+        buyIn: template.defaults.buyIn,
+        rebuy: template.defaults.rebuy,
+        addOn: template.defaults.addOn,
+        location: template.defaults.location,
+        notes: template.defaults.notes,
+        gameTime: '7:00 PM'
+      }
     }
   },
 
@@ -284,7 +308,7 @@ export default {
     if (this.game) {
       if (this.game.gameDate) {
         const gameDate = date.formatDate(this.game.gameDate.toDate(), 'YYYY/MM/DD')
-        const gameTime = date.formatDate(this.game.gameDate.toDate(), 'HH:mm a')
+        const gameTime = date.formatDate(this.game.gameDate.toDate(), 'H:mm a')
         this.formData = {
           structure: this.game.structure,
           type: this.game.type,

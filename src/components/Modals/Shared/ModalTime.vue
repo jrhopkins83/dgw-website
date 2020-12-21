@@ -20,7 +20,7 @@
         >
           <q-popup-proxy v-model="showPicker">
             <q-time
-              mask="hh:mm A"
+              mask="h:mm A"
               :value="pickTime"
               @input="closeDialog($event)"
             />

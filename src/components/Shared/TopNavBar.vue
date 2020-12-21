@@ -172,6 +172,55 @@
                 ANNOUNCEMENTS
               </q-item-section>
             </q-item>
+            <template v-if="userInfo.isAdmin">
+              <q-btn-dropdown
+                class="auto-close stretch flat label text-bold"
+                style="font-size: 15px"
+                label="Admin"
+                auto-close
+                flat
+                stretch
+              >
+                <q-list style="min-width: 27rem">
+                  <q-item
+                    clickable
+                    ripple
+                    to="/league-info"
+                  >
+                    <q-item-section>
+                      LEAGUE INFO
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    ripple
+                    :to = '{ name: "GameSchedule" , params: { mode: "edit" } }'
+                  >
+                    <q-item-section>
+                      EDIT SCHEDULE
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    ripple
+                    to="/edit-announcements"
+                  >
+                    <q-item-section>
+                      EDIT ANNOUNCEMENTS
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    ripple
+                    to="/"
+                  >
+                    <q-item-section>
+                      EDIT PLAYERS
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </template>
           </q-list>
           </q-menu>
         </q-btn>
@@ -181,11 +230,15 @@
           round
         >
           <q-avatar size="42px">
-            <img :src="userInfo.avatar">
+            <img :src="user_avatar">
           </q-avatar>
           <q-menu>
             <q-list style="min-width: 15rem">
-              <q-item clickable @click="updateProfile">
+              <q-item
+                to="/user-profile"
+                clickable
+                ripple
+              >
                 <q-item-section>Update Profile</q-item-section>
               </q-item>
               <q-item
@@ -275,7 +328,15 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['loggedIn']),
-    ...mapGetters('leagueSettings', ['leagueInfo', 'userInfo'])
+    ...mapGetters('leagueSettings', ['leagueInfo', 'userInfo']),
+    user_avatar: function () {
+      if (this.userInfo.avatar) {
+        return this.userInfo.avatar
+      } else {
+        return 'default.jpg'
+      }
+    }
+
   },
   methods: {
     ...mapActions('auth', ['logoutUser']),

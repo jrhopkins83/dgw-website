@@ -1,8 +1,9 @@
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
+import 'firebase/storage'
 
 // TEST FIREBASE CONFIG
 var firebaseConfig = {
@@ -23,6 +24,7 @@ const firebaseFunctions = firebaseApp.functions()
 const firebaseStore = firebaseApp.firestore()
 const Timestamp = firebase.firestore.Timestamp
 const Fieldvalue = firebase.firestore.Fieldvalue
+const storage = firebase.storage()
 
 // *** Use emulators ***
 if (window.location.hostname === 'localhost') {
@@ -53,5 +55,6 @@ export {
   firebaseFunctions,
   firebaseStore,
   Timestamp,
-  Fieldvalue
+  Fieldvalue,
+  storage
 }

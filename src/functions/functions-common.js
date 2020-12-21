@@ -1,4 +1,6 @@
 import { Dialog, Loading } from 'quasar'
+// import uuid from 'uuid'
+import Pica from 'pica'
 
 export function showMessage (msgType, message) {
   Loading.hide()
@@ -49,7 +51,7 @@ export function uploadFile (elementID) {
 
 export function unpackSearch () {
   // Unpack url to get scorecard to retrieve
-  var query = window.location.search
+  let query = window.location.search
   // Skip the leading ?, which should always be there,
   // but be careful anyway
   if (query.substring(0, 1) === '?') {
@@ -106,4 +108,32 @@ export function stripHTML (str) {
   } else {
     return str
   }
+}
+
+export async function compressImage (imageCanvas) {
+  // Image loaded, let's optimize using pica now
+  const pica = Pica()
+
+  const MAX_WIDTH = 680,
+    offScreenCanvas = document.createElement('canvas'), // setup a blank, hidden canvas for pica output
+    filetype = 'image/png' // set max image width of 680px, change this if you want, set all output image to jpeg since its the smallest
+  if (imageCanvas.width > MAX_WIDTH) {
+    // if original image too big, resize to MAX_WIDTH
+    offScreenCanvas.width = MAX_WIDTH
+    offScreenCanvas.height = imageCanvas.height * (MAX_WIDTH / imageCanvas.width)
+  } else {
+    offScreenCanvas.width = imageCanvas.width
+    offScreenCanvas.height = imageCanvas.height
+  }
+  const resized = await pica.resize(imageCanvas, offScreenCanvas, {
+    unsharpAmount: 80, // default, change ifz you want
+    unsharpRadius: 0.6, // default, change if you want
+    unsharpThreshold: 2 // default, change if you want
+  })
+
+  return await pica.toBlob(resized, filetype, 0.9)
+    .then(blob => {
+      const imageFile = blob // Assign optimized blob to imageFile for Firebase Storage
+      return imageFile
+    })
 }

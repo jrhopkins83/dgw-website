@@ -44,6 +44,23 @@ const routes = [{
       },
       component: () => import('pages/PageAnnouncements.vue')
     }, {
+      path: 'players',
+      name: 'Players',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('pages/PagePlayers.vue')
+    }, {
+      path: 'user-profile',
+      name: 'UserProfile',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      // component: () => import('components/Players/Modals/Cropper/RoundCropper.vue')
+      component: () => import('pages/PageUpdateUserProfile.vue')
+    }, {
       path: 'league-info',
       name: 'LeagueInfo',
       meta: {

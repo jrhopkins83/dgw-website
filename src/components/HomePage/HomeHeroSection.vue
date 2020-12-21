@@ -31,17 +31,17 @@
           </q-list>
         </q-card-section>
       </q-card>
-      <q-card class="hero-section__headline transparent text-white">
+      <div class="hero-section__headline transparent text-white">
         <q-item>
           <q-item-section>
             <q-item-label class="hero-section__headline--title text-h2 text-center">Donkey's Gone Wild</q-item-label>
           </q-item-section>
         </q-item>
-        <q-card-section horizontal>
-          <q-card-section class="hero-section__headline--message q-pa-none" v-html="lastHeroHeadline">
-          </q-card-section>
-        </q-card-section>
-      </q-card>
+        <div>
+          <div class="hero-section__headline--message q-pa-none" v-html="lastHeroHeadline">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -94,21 +94,24 @@ export default {
     background-size: cover;
     /* grid styles */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: 2fr 3fr;
     align-items: center;
     grid-gap: 3rem;
 
       &__headline {
-        justify-self: center;
+        position: relative;
+        align-self: flex-start;
+        justify-self: flex-start;
         max-height: 28rem;
         min-width: 280px;
-        max-width: 500px;
+        max-width: 650px;
         margin-left: 4rem;
       }
 
       &__pool {
         overflow: auto;
-        justify-self: center;
+        align-self: center;
+        justify-self: flex-end;
         min-width: 220px;
         max-width: 250px;
         background-color: $off-white;
@@ -141,30 +144,33 @@ export default {
 
   @media screen and (max-width: 799px) {
     .hero-section {
-      &__headline {
-        margin-left: 1rem;
-
-        &--title {
-          font-size: 2.5rem;
-        }
-      }
-    }
-  }
-
-  @media screen and (max-width: 799px) {
-    .hero-section {
+      grid-template-columns: 1fr;
+      grid-template-rows: 2fr 1fr;
       grid-gap: 1rem;
-      &__parent {
 
-        &--pool {
-          margin: 4px auto 4px auto;
-          padding: 4px auto 4px auto;
+      &__headline {
+        grid-row-start: 1;
+        align-self: flex-start;
+        justify-self: center;
+        max-height: 36rem;
+        margin: 4px 1rem 4px 1rem;
+        padding: 4px auto 4px auto;
+
+        &--message {
+          max-height: 34rem;
         }
-        &--hero-card {
-          margin: 4px auto 4px auto;
-          padding: 4px auto 4px auto;
-        }
+      }
+
+      &__pool {
+        grid-row-start: 2;
+        overflow: auto;
+        align-self: flex-start;
+        justify-self: flex-end;
+        margin: 4px auto 4px auto;
+        padding: 4px auto 4px auto;
+
       }
     }
   }
+
 </style>

@@ -2,7 +2,7 @@
   <q-page style="min-height: inherit;">
     <div
       class="container"
-      v-if="standingsLoaded"
+      v-if="standingsLoaded && playersLoaded"
     >
       <div class="left-column">
         <div class="left-column__header text-white">
@@ -45,10 +45,26 @@ export default {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('games', ['lastCompletedDate']),
     ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
+    ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {
       return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
-    }
+    },
+    standingsList () {
+      const players = Object.values(this.playersFiltered)
+      const standings = this.standingsFiltered
 
+      if (this.standingsLoaded && players.length && standings.length) {
+        console.log(players)
+        console.log(standings)
+        const standingsMerged = standings.map(player => ({
+          ...players.find((player) => (player.id === standings.id) && player),
+          ...player
+        }))
+        return standingsMerged
+      } else {
+        return players
+      }
+    }
   }
 }
 </script>
@@ -67,7 +83,7 @@ export default {
     align-items: center;
     justify-content: center;
     display: grid;
-    grid-template-columns: 6fr 4fr;
+    grid-template-columns: 6.5fr 3.5fr;
     align-items: flex-start;
     // overflow: hidden;
 
@@ -116,7 +132,6 @@ export default {
       &__player-rankings {
         position: relative;
         width: 98%;
-        background-color: $off-white;
         border-radius: 2.5rem;
         opacity: .9;
         margin: 16px

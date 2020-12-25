@@ -161,6 +161,7 @@ export default {
   },
   methods: {
     ...mapActions('games', ['setGamesLoaded']),
+    ...mapActions('tourneyResults', ['setTournamentID']),
     addGame () {
       this.mode = 'add'
       this.showEditGame = true
@@ -179,7 +180,7 @@ export default {
     confirmDelete (value) {
       this.game = value[0]
       this.dialogHeader = 'Confirm Delete?'
-      this.dialogMsg = `Are you sure you want to delete this announcement subject: ${this.announcement.subject}?`
+      this.dialogMsg = 'Are you sure you want to delete this game?'
       this.confirm = true
     },
     async deleteGame (value) {

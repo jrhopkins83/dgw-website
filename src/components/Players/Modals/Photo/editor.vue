@@ -7,7 +7,7 @@
       <img
         ref="image"
         :alt="data.name"
-        :src="avatar"
+        :src="data.url"
         @loadstart="start"
         @load="start"
       >
@@ -349,6 +349,7 @@ export default {
       if (this.cropper) {
         this.cropper.destroy()
         this.cropper = null
+        this.$emit('close')
       }
     },
 
@@ -408,8 +409,7 @@ export default {
         }
 
         // Upload to Firebase storage
-        await this.uploadToStorage(upload)
-        return this.stop()
+        return await this.uploadToStorage(upload)
       } else {
         return null
       }

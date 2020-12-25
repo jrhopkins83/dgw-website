@@ -10,6 +10,7 @@ import announcements from './store-announcements'
 import weeklyResults from './store-weekly-results'
 import tourneyResults from './store-tourney-results'
 import standings from './store-season-standings'
+import players from './store-players'
 import { vuexfireMutations } from 'vuexfire'
 
 /*
@@ -27,7 +28,9 @@ const initialState = {
   announcements: announcements.state,
   weeklyResults: weeklyResults.state,
   tourneyResults: tourneyResults.state,
-  standings: standings.state
+  standings: standings.state,
+  players: players.players,
+  subscribers: players.subscribers
 }
 
 let store = null
@@ -40,7 +43,8 @@ export default function (/* { ssrContext } */) {
       announcements,
       tourneyResults,
       weeklyResults,
-      standings
+      standings,
+      players
     },
     mutations: {
       ...vuexfireMutations,

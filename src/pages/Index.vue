@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="leagueInfoLoaded">
+    <template v-if="leagueInfoLoaded && playersLoaded">
       <q-page style="min-height: inherit;">
         <div class="row">
           <div class="col">
@@ -20,10 +20,7 @@
         </div>
         <div class="row">
           <div class="col">
-            <home-leader-board
-              :standings="standingsFiltered"
-            >
-            </home-leader-board>
+            <home-leader-board></home-leader-board>
           </div>
         </div>
         <div class="row">
@@ -58,17 +55,23 @@ export default {
   computed: {
     ...mapGetters('standings', ['seasonStandings', 'standingsSorted', 'standingsFiltered', 'standingsLoaded']),
     ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded', 'gameDates']),
-    ...mapGetters('games', ['gameDates', 'upcomingGames', 'completedGames'])
+    ...mapGetters('announcements', ['announcementsLoaded', 'announcements']),
+    ...mapGetters('games', ['gameDates', 'upcomingGames', 'completedGames']),
+    ...mapGetters('players', ['players', 'playersLoaded'])
   },
   methods: {
+    ...mapActions('players', ['setPlayersLoaded', 'fbPlayers']),
     ...mapActions('standings', ['setStandingsLoaded', 'bindStandingsRef']),
+    ...mapActions('announcements', ['fbGetAnnouncements', 'setAnnouncementsLoaded']),
     async loadSeasonStandings () {
       try {
+        if (this.players.length) {
+          this.setPlayersLoaded(true)
+        }
+
         const season = '2020'
         const standingsRef = firebaseStore.collection('seasonStandings')
           .where('season', '==', season)
-          .orderBy('totalPoints', 'desc')
-          .orderBy('lastName')
 
         await this.bindStandingsRef(standingsRef)
 
@@ -91,6 +94,11 @@ export default {
 
   async created () {
     this.loadSeasonStandings()
+  },
+  async mounted () {
+    if (!this.announcementsLoaded) {
+      await this.fbGetAnnouncements()
+    }
   }
 
 }

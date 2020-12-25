@@ -208,7 +208,19 @@ export default {
                   await this.createPlayerStanding(player, playerTotals)
                 }
                 if (player.playerID && player.uid) {
-                  await this.createUserPlayerRef(player)
+                  const userRef = {
+                    playerID: player.playerID,
+                    uid: player.uid
+                  }
+                  await this.createUserPlayerRef(userRef)
+                  const playerContactInfo = {
+                    playerID: player.playerID,
+                    email: player.email,
+                    phoneNumber: null,
+                    emailOptin: true,
+                    notificationOptin: true
+                  }
+                  await this.createSubscriber(playerContactInfo)
                 }
               } catch (error) {
                 console.error('Error adding document: ', error)
@@ -265,11 +277,6 @@ export default {
                   playerID: player.playerID,
                   gameID: gameID,
                   gameDate: keyDtTime,
-                  firstName: player.firstName,
-                  lastName: player.lastName,
-                  nickName: player.nickName,
-                  onlineName: player.onlineName,
-                  avatar: player.avatar,
                   finishedPosition: position,
                   points: weekPoints,
                   finalTable: finalTable,
@@ -300,11 +307,6 @@ export default {
       try {
         const playerID = player.playerID
         const newStanding = {
-          firstName: player.firstName,
-          lastName: player.lastName,
-          nickName: player.nickName,
-          onlineName: player.onlineName,
-          avatar: player.avatar,
           season: '2020',
           totalPoints: player.points,
           games: player.games,

@@ -74,8 +74,27 @@ const getters = {
   txtRoundDt: state => {
     return state.txtRoundDt
   },
+  standingsMerged: (state, getters, rootState, rootGetters) => {
+    const players = Object.values(rootState.players.players)
+    const standings = state.seasonStandings
+
+    if (getters.standingsLoaded && players.length && standings.length) {
+      const standingsMerged = players.map(player => ({
+        ...standings.find((standing) => (standing.id === player.id) && standing),
+        ...player
+      }))
+      return standingsMerged
+    } else {
+      return standings
+    }
+  },
   standingsSorted: (state, getters) => {
-    const keysOrdered = JSON.parse(JSON.stringify(getters.seasonStandings))
+    const keysOrdered = JSON.parse(JSON.stringify(getters.standingsMerged))
+    // Add the player id
+    const numPlayers = keysOrdered.length
+    // for (let i = 0; i < numPlayers; i++) {
+    //   keysOrdered[i].id = state.seasonStandings[i].id
+    // }
     keysOrdered.sort((a, b) => {
       return b.totalPoints - a.totalPoints
     })
@@ -83,7 +102,6 @@ const getters = {
     try {
       let position = 1
       let totalPlayers = 1
-      const numPlayers = keysOrdered.length
       const rankedPlayers = []
 
       let a = 0, b = 0, tie = false
@@ -109,8 +127,6 @@ const getters = {
             tie = true
           }
         }
-
-        newPlayer.name = `${newPlayer.firstName.trim()} ${newPlayer.lastName.trim()}`
 
         rankedPlayers.push(newPlayer)
       }

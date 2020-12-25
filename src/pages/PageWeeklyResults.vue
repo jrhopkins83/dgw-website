@@ -2,7 +2,7 @@
   <q-page style="min-height: inherit;">
     <div
       class="container"
-      v-if="resultsLoaded && gamesLoaded"
+      v-if="resultsLoaded && gamesLoaded && playersLoaded"
     >
       <div class="left-column">
         <div class="left-column__header text-white">
@@ -39,7 +39,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { date } from 'quasar'
 import { showMessage } from 'src/functions/functions-common'
-import { firebaseStore, Timestamp } from 'boot/firebase'
+import { Timestamp } from 'boot/firebase'
 
 export default {
   name: 'PageWeeklyResults',
@@ -58,24 +58,42 @@ export default {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('games', ['completedGames', 'gamesLoaded', 'gameDates']),
     ...mapGetters('weeklyResults', ['search', 'resultsLoaded', 'resultsFiltered']),
+    ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     completedGamesArr: function () {
       return Object.values(this.completedGames)
     },
     txtPickDate: function () {
       return date.formatDate(this.gameDate.toDate(), 'MM / DD')
+    },
+    resultsMerged () {
+      const players = this.playersFiltered
+      const results = []
+      Object.keys(this.resultsFiltered).forEach(key => {
+        let result = {}
+        console.log(key)
+        console.log(this.resultsFiltered[key])
+        result = this.resultsFiltered[key]
+        result.id = this.resultsFiltered[key].playerID
+        results.push(result)
+      })
+
+      if (this.resultsLoaded && players.length && results.length) {
+        const resultsMerged = players.map(player => ({
+          ...results.find((result) => (result.id === player.id) && result),
+          ...player
+        }))
+        return resultsMerged
+      } else {
+        return null
+      }
     }
 
   },
   methods: {
-    ...mapActions('weeklyResults', ['setResultsLoaded', 'bindResultsRef']),
+    ...mapActions('weeklyResults', ['fbResults']),
     async loadWeeklyResults (gameDate) {
       try {
-        const resultsRef = firebaseStore.collection('weeklyResults')
-          .where('gameDate', '==', gameDate)
-
-        await this.bindResultsRef(resultsRef)
-
-        this.setResultsLoaded(true)
+        return await this.fbResults(gameDate)
       } catch (err) {
         switch (err) {
           case 'permission-denied':
@@ -87,7 +105,6 @@ export default {
           default:
             showMessage('error', 'Error getting season standings: ' + err)
         }
-        this.setResultsLoaded(true)
       }
     },
     updateGameDate (date) {
@@ -101,7 +118,7 @@ export default {
   async beforeMount () {
     if (this.completedGamesArr[0].gameDate) {
       this.gameDate = this.completedGamesArr[0].gameDate
-      this.loadWeeklyResults(this.gameDate)
+      await this.loadWeeklyResults(this.gameDate)
     }
   }
 }

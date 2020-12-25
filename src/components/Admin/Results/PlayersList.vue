@@ -66,6 +66,7 @@
       <q-dialog v-model="showAddPlayer">
         <add-player
           :player="null"
+          :mode="mode"
           @save="savePlayer"
           @close="showAddPlayer=false"
         />
@@ -78,18 +79,21 @@
 import { mapActions, mapGetters } from 'vuex'
 import { firebaseStore } from 'src/boot/firebase'
 import { toTitleCase } from 'src/functions/functions-common'
+import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
   components: {
     player: require('src/components/Admin/Results/Player.vue').default,
     noPlayers: require('components/Shared/NoPlayers.vue').default,
-    addPlayer: require('components/Players/Modals/AddPlayer.vue').default
+    addPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default
   },
+  mixins: [mixinAddEditPlayer],
   props: ['players', 'type'],
   data () {
     return {
       showAddPlayer: false,
-      playerSorted: false
+      playerSorted: false,
+      mode: 'add'
     }
   },
   computed: {
@@ -100,6 +104,9 @@ export default {
       } else {
         return 'Everyone has been knocked out'
       }
+    },
+    heading: function () {
+      return `${toTitleCase(this.mode)}`
     },
     showType: function () {
       return toTitleCase(this.type)
@@ -168,13 +175,19 @@ export default {
         if (newPlayer.email) {
           const newUserID = await this.createNewUser(newPlayer.email, 'dgwpassword')
           if (newUserID) {
+            const userRef = {
+              playerID: newPlayerID,
+              userID: newUserID
+            }
+            await this.createUserPlayerRef(userRef)
             const playerContactInfo = {
               playerID: newPlayerID,
               email: newPlayer.email,
               phoneNumber: newPlayer.phoneNumber,
-              userID: newUserID
+              emailOptin: true,
+              notificationOptin: true
             }
-            await this.createUserPlayerRef(playerContactInfo)
+            await this.createSubscriber(playerContactInfo)
           }
         }
         const newPlayerResult = {

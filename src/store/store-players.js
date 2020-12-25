@@ -9,19 +9,10 @@ firestoreOptions.wait = true
 
 const initialState = () => {
   return {
-    players: {
-
-    },
-    addedPlayers: {
-
-    },
-    removedPlayers: {
-
-    },
+    players: {},
+    subscribers: {},
     search: '',
-    playersLoaded: false,
-    numPlayers: 0,
-    status: 'empty'
+    playersLoaded: false
   }
 }
 
@@ -37,14 +28,8 @@ const mutations = {
   SET_PLAYERS (state, players) {
     Object.assign(state.players, players)
   },
-  SET_ADDEDPLAYER (state, payload) {
-    Vue.set(state.addedPlayers, payload.id, payload.golfer)
-  },
-  SET_REMOVEDPLAYER (state, payload) {
-    Vue.set(state.removedPlayers, payload.id, payload.golfer)
-  },
   ADD_PLAYER (state, payload) {
-    Vue.set(state.players, payload.id, payload.golfer)
+    Vue.set(state.players, payload.id, payload.player)
   },
   UPDATE_PLAYER_TOTAL (state, payload) {
     // Vue.set(state.players, payload.id, payload.player)
@@ -57,12 +42,6 @@ const mutations = {
     const index = state.players.findIndex(item => item.id === payload.id)
     Vue.set(state.players, index, payload)
     state.players.splice(index, 1, payload)
-  },
-  DELETE_ADDEDPLAYER (state, payload) {
-    Vue.delete(state.addedPlayers, payload.id)
-  },
-  DELETE_REMOVEDPLAYER (state, payload) {
-    Vue.delete(state.removedPlayers, payload.id)
   },
   SET_PLAYERS_DOWNLOADED (state, value) {
     state.playersLoaded = value
@@ -85,40 +64,6 @@ const actions = {
   setPlayersLoaded ({ commit }, value) {
     commit('SET_PLAYERS_DOWNLOADED', value)
   },
-  setAddedPlayer ({ commit }, payload) {
-    commit('SET_ADDEDPLAYER', payload)
-  },
-  updatePlayerTotal ({ commit, dispatch }, payload) {
-    commit('UPDATE_PLAYER_TOTAL', payload)
-    dispatch('savePlayersLS')
-  },
-  setRemovedPlayer ({ commit }, payload) {
-    commit('SET_REMOVEDPLAYER', payload)
-  },
-  deleteAddedPlayer ({ commit }, payload) {
-    commit('DELETE_ADDEDPLAYER', payload)
-  },
-  deleteRemovedPlayer ({ commit }, payload) {
-    commit('DELETE_REMOVEDPLAYER', payload)
-  },
-  selectPlayer ({ commit, dispatch, state }, payload) {
-    let numPlayers = state.numPlayers
-    numPlayers = numPlayers + 1
-    commit('ADD_PLAYER', payload)
-    dispatch('setSearch', '')
-    dispatch('setNumPlayers', numPlayers)
-    dispatch('savePlayersLS')
-  },
-  deselectPlayer ({ commit, dispatch, state }, payload) {
-    let numPlayers = state.numPlayers
-    numPlayers = numPlayers - 1
-    commit('DELETE_PLAYER', payload)
-    dispatch('setNumPlayers', numPlayers)
-    dispatch('savePlayersLS')
-  },
-  setNumPlayers ({ commit }, value) {
-    commit('SET_NUMPLAYERS', value)
-  },
   savePlayersLS ({ state }) {
     LocalStorage.set('players', state.players)
   },
@@ -131,18 +76,15 @@ const actions = {
       commit('SET_NUMPLAYERS', numPlayers)
     }
   },
-  async fbPlayers ({ commit, dispatch }, leagueID) {
-    if (leagueID) {
-      try {
-        const playersRef = firebaseStore.collection('players')
-          .where('leagueID', '==', leagueID)
-          .orderBy('lastName')
-        await dispatch('bindPlayersRef', playersRef)
-        commit('SET_PLAYERS_DOWNLOADED', true)
-      } catch (error) {
-        commit('SET_PLAYERS_DOWNLOADED', false)
-        showMessage('error', 'Error getting document:', error)
-      }
+  async fbPlayers ({ commit, dispatch }) {
+    try {
+      const playersRef = firebaseStore.collection('players')
+      await dispatch('bindPlayersRef', playersRef)
+      const subscribersRef = firebaseStore.collection('subscribers')
+      await dispatch('bindSubscribersRef', subscribersRef)
+      return commit('SET_PLAYERS_DOWNLOADED', true)
+    } catch (error) {
+      return showMessage('error', 'Error getting document:', error)
     }
   },
   bindPlayersRef: firestoreAction((context, ref) => {
@@ -151,26 +93,15 @@ const actions = {
   unBindPlayersRef: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('players')
   }),
-  async fbUpdateGolfer ({ commit }, golfer) {
-    var docRef = firebaseStore.collection('players').doc(golfer.playerID)
-    if (golfer.primaryEmail) {
-      const email = golfer.primaryEmail
-      return docRef.update({
-        firstName: golfer.firstName,
-        lastName: golfer.lastName,
-        primaryEmail: email,
-        fullHandicap: golfer.fullHandicap
-      })
-    } else {
-      return docRef.update({
-        firstName: golfer.firstName,
-        lastName: golfer.lastName,
-        fullHandicap: golfer.fullHandicap
-      })
-    }
-  },
+  bindSubscribersRef: firestoreAction((context, ref) => {
+    context.bindFirestoreRef('subscribers', ref)
+  }),
+  unBindSubscribersRef: firestoreAction((context, ref) => {
+    context.unbindFirestoreRef('subscribers')
+  }),
   reset_players ({ dispatch, commit }) {
     dispatch('unBindPlayersRef')
+    dispatch('unBindSubscribersRef')
     commit('RESET_PLAYERS')
   }
 }
@@ -179,70 +110,69 @@ const getters = {
   players: state => {
     return state.players
   },
-  addedPlayers: state => {
-    return state.addedPlayers
+  subscribers: state => {
+    return state.subscribers
   },
-  removedPlayers: state => {
-    return state.removedPlayers
+  playersLoaded: state => {
+    return state.playersLoaded
   },
-  numPlayers: state => {
-    return state.numPlayers
+  search: state => {
+    return state.search
   },
   playersSorted: (state) => {
     const playersSorted = {},
       keysOrdered = Object.keys(state.players)
 
     keysOrdered.sort((a, b) => {
-      const golferAName = state.players[a].lastName + ', ' + state.players[a].firstName
-      const golferAProp = golferAName.toLowerCase()
-      const golferBName = state.players[b].lastName + ', ' + state.players[b].firstName
-      const golferBProp = golferBName.toLowerCase()
+      const playerAName = state.players[a].lastName + ', ' + state.players[a].firstName
+      const playerAProp = playerAName.toLowerCase()
+      const playerBName = state.players[b].lastName + ', ' + state.players[b].firstName
+      const playerBProp = playerBName.toLowerCase()
 
-      if (golferAProp > golferBProp) return 1
-      else if (golferAProp < golferBProp) return -1
+      if (playerAProp > playerBProp) return 1
+      else if (playerAProp < playerBProp) return -1
       else return 0
     })
 
     keysOrdered.forEach((key) => {
       const id = state.players[key].id
       playersSorted[id] = state.players[key]
+      playersSorted[id].playerID = id
       playersSorted[id].fullName = playersSorted[id].lastName + ', ' + playersSorted[id].firstName
     })
 
     return playersSorted
   },
+  playersMerged: (state, getters) => {
+    const players = Object.values(getters.playersSorted)
+    const subscribers = state.subscribers
+
+    if (players.length && subscribers.length) {
+      const playersMerged = players.map(player => ({
+        ...subscribers.find((subscriber) => (subscriber.id === player.id) && subscriber),
+        ...player
+      }))
+      return playersMerged
+    } else {
+      return players
+    }
+  },
+
   playersFiltered: (state, getters) => {
-    const playersSorted = getters.playersSorted,
+    const playersMerged = getters.playersSorted,
       playersFiltered = {}
     if (state.search) {
-      Object.keys(playersSorted).forEach(function (key) {
-        const golfer = playersSorted[key],
-          golferNameLowerCase = golfer.lastName.toLowerCase() + ', ' + golfer.firstName.toLowerCase(),
+      Object.keys(playersMerged).forEach(function (key) {
+        const player = playersMerged[key],
+          playerNameLowerCase = player.lastName.toLowerCase() + ', ' + player.firstName.toLowerCase(),
           searchLowerCase = state.search.toLowerCase()
-        if (golferNameLowerCase.includes(searchLowerCase)) {
-          playersFiltered[key] = golfer
+        if (playerNameLowerCase.includes(searchLowerCase)) {
+          playersFiltered[key] = player
         }
       })
       return playersFiltered
     }
-    return playersSorted
-  },
-  availablePlayers: (state, getters) => {
-    const playersFiltered = getters.playersFiltered
-    const players = {}
-    Object.keys(playersFiltered).forEach((key) => {
-      const selectedPlayers = Object.keys(state.players)
-      if (selectedPlayers) {
-        const golfer = playersFiltered[key]
-        const isSelected = selectedPlayers.some((el) => {
-          return el === key
-        })
-        if (!isSelected) {
-          players[key] = golfer
-        }
-      }
-    })
-    return players
+    return playersMerged
   }
 }
 

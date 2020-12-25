@@ -51,9 +51,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { firebaseStore } from 'boot/firebase'
-// import { showMessage } from 'src/functions/functions-common'
+import { showMessage } from 'src/functions/functions-common'
 // import { firebaseStore } from 'src/boot/firebase'
 
 export default {
@@ -89,13 +89,14 @@ export default {
     },
     user_avatar: function () {
       if (this.userInfo.avatar) {
-        return this.player.avatar
+        return this.userInfo.avatar
       } else {
         return 'default.jpg'
       }
     }
   },
   methods: {
+    ...mapActions('leagueSettings', ['setUserInfo', 'saveUserInfoLS']),
     async savePlayer (player) {
       this.$q.loading.show({
         message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
@@ -106,17 +107,24 @@ export default {
         nickName: player.nickName,
         onlineName: player.onlineName
       }
-      const playerRef = firebaseStore.collection('players').doc(player.playerID)
+      const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
       await playerRef.update(playerNames)
+      this.setUserInfo(playerNames)
 
       const playerContactInfo = {
         email: player.email,
-        phoneNumber: player.phoneNumber
+        phoneNumber: player.phoneNumber,
+        emailOptin: player.emailOptin,
+        notificationOptin: player.notificationOptin
       }
-      const userRef = firebaseStore.collection('users').doc(player.uid)
+      const userRef = firebaseStore.collection('subscribers').doc(this.userInfo.playerID)
       await userRef.update(playerContactInfo)
+      this.setUserInfo(playerContactInfo)
+      this.saveUserInfoLS()
 
       this.$q.loading.hide()
+      showMessage('Success', 'Profile updated')
+      this.$router.go(-1)
     }
   },
   async beforeMount () {

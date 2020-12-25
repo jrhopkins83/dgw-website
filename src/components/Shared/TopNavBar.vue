@@ -45,6 +45,11 @@
             :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
           />
           <q-route-tab
+            label = 'Players'
+            name = 'Players'
+            :to = '{ name: "Players" , params: { mode: "view" } }'
+          />
+          <q-route-tab
             label = 'Announcements'
             name = 'Announcements'
             to = '/announcements'
@@ -87,19 +92,19 @@
                 <q-item
                   clickable
                   ripple
-                  to="/edit-announcements"
+                  :to = '{ name: "Players" , params: { mode: "edit" } }'
                 >
                   <q-item-section>
-                    EDIT ANNOUNCEMENTS
+                    EDIT PLAYERS
                   </q-item-section>
                 </q-item>
                 <q-item
                   clickable
                   ripple
-                  to="/"
+                  to="/edit-announcements"
                 >
                   <q-item-section>
-                    EDIT PLAYERS
+                    EDIT ANNOUNCEMENTS
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -157,7 +162,7 @@
             <q-item
               clickable
               ripple
-              to="/"
+              :to = '{ name: "Players" , params: { mode: "view" } }'
             >
               <q-item-section>
                 PLAYERS
@@ -203,19 +208,19 @@
                   <q-item
                     clickable
                     ripple
-                    to="/edit-announcements"
+                    :to = '{ name: "Players" , params: { mode: "edit" } }'
                   >
                     <q-item-section>
-                      EDIT ANNOUNCEMENTS
+                      EDIT PLAYERS
                     </q-item-section>
                   </q-item>
                   <q-item
                     clickable
                     ripple
-                    to="/"
+                    to="/edit-announcements"
                   >
                     <q-item-section>
-                      EDIT PLAYERS
+                      EDIT ANNOUNCEMENTS
                     </q-item-section>
                   </q-item>
                 </q-list>

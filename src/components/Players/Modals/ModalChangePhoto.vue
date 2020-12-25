@@ -15,12 +15,13 @@
         <div class="photo-grid">
           <div class="photo-canvas">
             <editor
-              v-if="data.loaded || userInfo.avatar"
+              v-if="data.loaded || data.url"
               ref="editor"
               :progress.sync="progress"
               :data="data"
               :userInfo="userInfo"
               @save="$emit('save', data.avatarUrl)"
+              @close="$emit('close')"
             />
             <loader
               v-else
@@ -160,6 +161,8 @@ export default {
     },
     async savePhoto () {
       await this.change('upload')
+      this.change('stop')
+      this.$emit('close')
     }
   }
 }

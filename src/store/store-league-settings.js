@@ -14,7 +14,21 @@ const initialState = () => {
     gameTemplates: {},
     leagueInfoLoaded: false,
     points: {},
-    userInfo: {},
+    userInfo: {
+      avatar: null,
+      avatarName: null,
+      email: null,
+      emailOptin: null,
+      firstName: null,
+      isAdmin: null,
+      lastName: null,
+      nickName: null,
+      notificationOptin: null,
+      onlineName: null,
+      phoneNumber: null,
+      playerID: null,
+      uid: null
+    },
     leagueID: 1
   }
 }
@@ -65,6 +79,7 @@ const actions = {
         const playerRef = await firebaseStore.collection('players').doc(playerID).get()
         if (playerRef.exists) {
           const userInfo = playerRef.data()
+          userInfo.playerID = playerID
           const idTokenResult = await firebaseAuth.currentUser.getIdTokenResult()
 
           if (idTokenResult.claims.isAdmin) {
@@ -72,7 +87,16 @@ const actions = {
           } else {
             userInfo.isAdmin = false
           }
-          commit('SET_USER_INFO', userInfo)
+
+          const userRef = await firebaseStore.collection('subscribers').doc(userInfo.playerID).get()
+          if (userRef.exists) {
+            userInfo.email = userRef.data().email
+            userInfo.phoneNumber = userRef.data().phoneNumber
+            userInfo.emailOptin = userRef.data().emailOptin
+            userInfo.notificationOptin = userRef.data().notificationOptin
+          }
+
+          dispatch('setUserInfo', userInfo)
           dispatch('saveUserInfoLS')
           success = true
         } else {
@@ -105,20 +129,20 @@ const actions = {
       await dispatch('bindGameTemplates', templatesRef)
 
       // Get completed games
-      const success = await dispatch('games/fbGetGames', null, {
+      await dispatch('games/fbGetGames', null, {
         root: true
       })
-      // let datesRef = firebaseStore.collection('gameDates')
-      //   .orderBy('gameDate')
+
+      // Get players
+      await dispatch('players/fbPlayers', null, {
+        root: true
+      })
 
       // await dispatch('bindLeagueDates', datesRef)
 
-      if (success) {
-
-      }
-      commit('SET_LEAGUE_INFO_LOADED', true)
+      return commit('SET_LEAGUE_INFO_LOADED', true)
     } catch (error) {
-      showMessage('error', 'Error getting league Info:', error)
+      return showMessage('error', 'Error getting league Info:', error)
     }
   },
 
@@ -140,6 +164,9 @@ const actions = {
   unbindGameTemplates: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('gameTemplates')
   }),
+  setUserInfo ({ commit }, userInfo) {
+    commit('SET_USER_INFO', userInfo)
+  },
   async clearSessionInfo ({ dispatch, commit }) {
     LocalStorage.remove('players')
     LocalStorage.remove('UserInfo')

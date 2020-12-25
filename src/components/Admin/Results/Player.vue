@@ -29,7 +29,7 @@
         <div class="attribute online-name">{{ player.onlineName }}
         </div>
       </div>
-      <div v-if="type!=='finished'" class="eliminate">
+      <div v-if="type!=='finished' && checkedIn" class="eliminate">
         <q-btn
           color="secondary"
           icon="not_interested"

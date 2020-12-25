@@ -161,17 +161,30 @@ export const mixinAddEditPlayer = {
     },
     async createUserPlayerRef (user) {
       try {
-        await firebaseStore
+        return await firebaseStore
           .collection('users')
           .doc(user.uid)
           .set({
-            playerID: user.playerID,
-            email: user.email,
-            phoneNumber: user.phoneNumber
+            playerID: user.playerID
           })
-        return true
       } catch (error) {
         showMessage('error', `Error adding user/player relationship: ${error.message}`)
+        return error
+      }
+    },
+    async createSubscriber (user) {
+      try {
+        return await firebaseStore
+          .collection('subscribers')
+          .doc(user.playerID)
+          .set({
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            emailOptin: user.emailOptin,
+            notificationOptin: user.notificationOptin
+          })
+      } catch (error) {
+        showMessage('error', `Error adding subscriber information: ${error.message}`)
         return error
       }
     }

@@ -259,9 +259,6 @@ export default {
           } else {
             position = this.formData.finalTablePlayers + 1
           }
-          console.log('finishedPosition ', player.finishedPosition)
-          console.log('points ', this.points)
-          console.log('position points ', this.points[position - 1])
           player.points = this.points[position - 1].points
 
           if (player.finishedPosition <= this.formData.placesPaid) {
@@ -276,11 +273,6 @@ export default {
             playerID: player.playerID,
             gameID: this.tournamentInfo.id,
             gameDate: this.tournamentInfo.gameDate,
-            firstName: player.firstName,
-            lastName: player.lastName,
-            nickName: player.nickName,
-            onlineName: player.onlineName,
-            avatar: player.avatar,
             finishedPosition: player.finishedPosition,
             finalTable: player.finalTable,
             points: player.points,

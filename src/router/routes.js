@@ -36,6 +36,14 @@ const routes = [{
       },
       component: () => import('pages/PageGameSchedule.vue')
     }, {
+      path: 'players/:mode',
+      name: 'Players',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('pages/PagePlayers.vue')
+    }, {
       path: 'announcements',
       name: 'Announcements',
       props: true,
@@ -43,14 +51,6 @@ const routes = [{
         requiresAuth: true
       },
       component: () => import('pages/PageAnnouncements.vue')
-    }, {
-      path: 'players',
-      name: 'Players',
-      props: true,
-      meta: {
-        requiresAuth: true
-      },
-      component: () => import('pages/PagePlayers.vue')
     }, {
       path: 'user-profile',
       name: 'UserProfile',
@@ -68,6 +68,22 @@ const routes = [{
         requiresAdmin: true
       },
       component: () => import('pages/Admin/PageUpdateLeagueInfo.vue')
+    }, {
+      path: 'edit-announcements',
+      name: 'EditAnnouncements',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true
+      },
+      component: () => import('pages/Admin/PageEditAnnouncements.vue')
+    }, {
+      path: 'enter-results',
+      name: 'EnterResults',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true
+      },
+      component: () => import('pages/Admin/PageTournamentResults.vue')
     }, {
       path: 'edit-announcements',
       name: 'EditAnnouncements',

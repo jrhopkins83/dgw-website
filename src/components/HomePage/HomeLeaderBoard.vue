@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="standingsLoaded">
+    <template v-if="standingsLoaded && playersLoaded">
       <div class="column container">
         <div class="col header">
           <div class="col-12 header__title text-center">
@@ -46,6 +46,7 @@ export default {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('standings', ['standingsLoaded', 'standingsFiltered']),
     ...mapGetters('games', ['lastCompletedDate']),
+    ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     updating () {
       const stillLoading = !this.standingsLoaded // TO-DO: add other loading events
       return stillLoading

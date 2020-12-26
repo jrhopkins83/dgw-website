@@ -162,7 +162,7 @@ export default {
         position: relative;
         width: 30%;
         background-color: $off-white;
-        margin-left: 17rem;
+        margin-left: 10rem;
         border-radius: 5px;
         opacity: .9f;
       }
@@ -176,7 +176,7 @@ export default {
         border: inset $lightest-grey;
         border-radius: 1.6rem;
         opacity: .8;
-        margin-left: 17rem;
+        margin-left: 10rem;
         height: 74vh;
         justify-self: center;
         overflow: hidden;
@@ -188,7 +188,7 @@ export default {
       }
 
       .player-list.isNotAdmin {
-        max-width: 60rem;
+        max-width: 80rem;
       }
 
     }

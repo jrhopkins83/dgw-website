@@ -39,12 +39,12 @@ export default {
   name: 'PageSeasonStandings',
   components: {
     playerRankings: require('components/Rankings/SeasonStandings.vue').default,
-    search: require('components/Rankings/Search.vue').default
+    search: require('components/Rankings/SearchStandings.vue').default
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('games', ['lastCompletedDate']),
-    ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
+    ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded', 'setSearch']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {
       return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
@@ -65,7 +65,11 @@ export default {
         return players
       }
     }
+  },
+  destroyed () {
+    this.setSearch('')
   }
+
 }
 </script>
 

@@ -38,7 +38,7 @@
           </player-row>
         </ol>
       </div>
-      <div class="absolute-bottom text-center q-mb-lg no-pointer-events">
+      <div class="absolute-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
         <q-btn
           @click="addPlayer"
           round
@@ -295,7 +295,7 @@ export default {
       // background-color: white;
       position: relative;
       height: 70vh;
-      max-width: 60rem;
+      max-width: 80rem;
       overflow: scroll;
       border-radius: 2.5rem;
       opacity: .9;

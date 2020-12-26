@@ -46,7 +46,7 @@ export default {
   components: {
     playerRankings: require('components/Rankings/WeeklyResults.vue').default,
     modalPickDate: require('src/components/Modals/ModaPickDate.vue').default,
-    search: require('components/Rankings/Search.vue').default
+    search: require('components/Rankings/SearchResults.vue').default
   },
   data () {
     return {
@@ -88,7 +88,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('weeklyResults', ['fbResults']),
+    ...mapActions('weeklyResults', ['fbResults', 'setSearch']),
     async loadWeeklyResults (gameDate) {
       try {
         return await this.fbResults(gameDate)
@@ -118,6 +118,9 @@ export default {
       this.gameDate = this.completedGamesArr[0].gameDate
       await this.loadWeeklyResults(this.gameDate)
     }
+  },
+  destroyed () {
+    this.setSearch('')
   }
 }
 </script>

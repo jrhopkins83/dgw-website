@@ -195,17 +195,10 @@ export default {
                 newPlayer.lastName = toTitleCase(player.lastName).trim()
                 newPlayer.nickName = nickName
                 newPlayer.onlineName = onlineName
-                newPlayer.phone = player.phone
-                newPlayer.email = player.email
-                newPlayer.avatar = player.avatar
-                newPlayer.emailOptin = true
-                newPlayer.notificationOptin = true
 
                 player.playerID = await this.addNewPlayer(newPlayer)
 
                 if (player.playerID) {
-                  const playerTotals = await this.uploadWeeklyResults(player)
-                  await this.createPlayerStanding(player, playerTotals)
                   const playerContactInfo = {
                     playerID: player.playerID,
                     email: player.email,
@@ -214,6 +207,8 @@ export default {
                     notificationOptin: true
                   }
                   await this.createSubscriber(playerContactInfo)
+                  const playerTotals = await this.uploadWeeklyResults(player)
+                  await this.createPlayerStanding(player, playerTotals)
                 }
                 if (player.playerID && player.uid) {
                   const userRef = {
@@ -353,10 +348,6 @@ export default {
               newPlayer.playerID = await this.lookupPlayerByEmail(player.email)
               if (!newPlayer.playerID) {
               } else {
-                newPlayer.firstName = player.firstName
-                newPlayer.lastName = player.lastName
-                newPlayer.nickName = player.nickName
-                newPlayer.onlineName = player.onlineName
                 newPlayer.season = '2020' // TO-DO - get from league info collection
                 newPlayer.position = player.position
                 newPlayer.points = player.points

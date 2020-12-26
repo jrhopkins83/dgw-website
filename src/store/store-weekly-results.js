@@ -120,17 +120,17 @@ const getters = {
   },
   resultsFiltered: (state, getters, commit) => {
     const resultsSorted = getters.resultsSorted,
+      keysOrdered = Object.keys(getters.resultsSorted),
       resultsFiltered = []
 
     if (state.search) {
-      resultsSorted.forEach((player) => {
+      keysOrdered.forEach((key) => {
+        const player = resultsSorted[key]
         const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName} `
         player.fullName = fullName
 
         const playerNameLowerCase = fullName.toLowerCase()
         const searchLowerCase = state.search.toLowerCase()
-
-        player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
 
         if (playerNameLowerCase.includes(searchLowerCase)) {
           resultsFiltered.push(player)

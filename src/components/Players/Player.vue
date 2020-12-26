@@ -28,7 +28,7 @@
             icon="edit"
             flat
             size="md"
-            @click="$emit('editGame', [game, id])"
+            @click="$emit('editPlayer', [player, id])"
           />
         </div>
         <div class="attribute delete">
@@ -36,7 +36,7 @@
             icon="delete"
             flat
             size="md"
-            @click="$emit('deleteGame', [game, id])"
+            @click="$emit('confirmDelete', [player, id])"
           />
         </div>
       </div>

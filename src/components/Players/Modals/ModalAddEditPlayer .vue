@@ -97,24 +97,22 @@
               />
             </div>
           </div>
-          <template v-if="mode === 'profile'">
-            <div class="q-ml-sm q-my-md">
-              <div class="q-gutter-sm">
-                <q-checkbox
-                  v-model="formData.emailOptin"
-                  color="blue-7"
-                  label="Receive email communications"
-                />
-              </div>
-              <div class="q-gutter-sm">
-                <q-checkbox
-                  v-model="formData.notificationOptin"
-                  color="blue-7"
-                  label="Receive SMS texts"
-                />
-              </div>
+          <div class="q-ml-sm q-my-md">
+            <div class="q-gutter-sm">
+              <q-checkbox
+                v-model="formData.emailOptin"
+                color="blue-7"
+                label="Receive email communications"
+              />
             </div>
-          </template>
+            <div class="q-gutter-sm">
+              <q-checkbox
+                v-model="formData.notificationOptin"
+                color="blue-7"
+                label="Receive SMS texts"
+              />
+            </div>
+          </div>
         </q-form>
 
         <q-card-actions align="center">

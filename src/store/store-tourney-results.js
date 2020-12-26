@@ -16,7 +16,7 @@ const initialState = () => {
     tournamentInfo: {
       addon: 0,
       buyIn: 0,
-      date: null,
+      gameDate: null,
       id: '',
       rebuy: 0,
       structure: '',

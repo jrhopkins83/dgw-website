@@ -32,9 +32,21 @@
             :id='player.playerID'
             :isAdmin="isAdmin"
             :adminButtons="adminButtons"
+            @editPlayer="editPlayer"
+            @confirmDelete="confirmDelete"
           >
           </player-row>
         </ol>
+      </div>
+      <div class="absolute-bottom text-center q-mb-lg no-pointer-events">
+        <q-btn
+          @click="addPlayer"
+          round
+          class="all-pointer-events"
+          color="grey-6"
+          size="20px"
+          icon="add"
+        />
       </div>
     </section>
     <q-dialog
@@ -82,10 +94,12 @@
 import { firebaseStore } from 'src/boot/firebase'
 import { toTitleCase, showMessage } from 'src/functions/functions-common'
 import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'PlayerList',
   components: {
+    editPlayerDetails: require('components/Players/Modals/ModalAddEditPlayer .vue').default,
     playerRow: require('components/Players/Player.vue').default
   },
   mixins: [mixinAddEditPlayer],
@@ -112,6 +126,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('players', ['setPlayersLoaded']),
     addPlayer () {
       this.mode = 'add'
       this.showEditPlayer = true
@@ -125,19 +140,17 @@ export default {
     confirmDelete (value) {
       this.player = value[0]
       this.dialogHeader = 'Confirm Delete?'
-      this.dialogMsg = 'Are you sure you want to delete this player?'
+      this.dialogMsg = `Are you sure you want to delete ${this.player.firstName} ${this.player.lastName}?`
       this.confirm = true
     },
     async deletePlayer (value) {
-      this.player = value[0]
-      this.id = value[1]
       this.setPlayersLoaded(false)
       this.$q.loading.show({
         message: '<b>Player Deletion</b> is in progress.<br/><span class="text-info">Hang on...</span>'
       })
       try {
         const playersRef = firebaseStore.collection('players')
-        await playersRef.doc(this.id).delete()
+        await playersRef.doc(this.player.playerID).delete()
         this.setPlayersLoaded(true)
         this.player = {}
         this.showViewPlayer = false
@@ -163,8 +176,6 @@ export default {
         nickName: player.nickName,
         onlineName: player.onlineName
       }
-      const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
-      await playerRef.update(playerNames)
 
       const playerContactInfo = {
         email: player.email,
@@ -172,8 +183,30 @@ export default {
         emailOptin: player.emailOptin,
         notificationOptin: player.notificationOptin
       }
-      const userRef = firebaseStore.collection('subscribers').doc(this.userInfo.playerID)
-      await userRef.update(playerContactInfo)
+      let playerRef = null
+      let userRef = null
+
+      if (this.mode === 'edit') {
+        playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+        await playerRef.update(playerNames)
+        userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
+        await userRef.update(playerContactInfo)
+      } else {
+        const newPlayerID = await this.addNewPlayer(playerNames)
+        if (newPlayerID) {
+          await this.createSubscriber(playerContactInfo)
+          if (player.email) {
+            const newUserID = await this.createNewUser(player.email, 'dgwpassword')
+            if (newUserID) {
+              const userRef = {
+                playerID: newPlayerID,
+                uid: newUserID
+              }
+              await this.createUserPlayerRef(userRef)
+            }
+          }
+        }
+      }
 
       this.$q.loading.hide()
       showMessage('Success', 'Player updated')

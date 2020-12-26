@@ -102,10 +102,11 @@ export default {
 .news_item {
   position: relative;
   overflow: hidden;
-  width: 100%;
+  width: 95%;
   min-height: 5rem;
   max-height: 27rem;
   margin-bottom: 1.6rem;
+  margin-left: 1.6rem;
   background-color: $off-white;
   border-radius: 8px;
 }

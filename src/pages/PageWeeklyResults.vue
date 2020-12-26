@@ -70,8 +70,6 @@ export default {
       const results = []
       Object.keys(this.resultsFiltered).forEach(key => {
         let result = {}
-        console.log(key)
-        console.log(this.resultsFiltered[key])
         result = this.resultsFiltered[key]
         result.id = this.resultsFiltered[key].playerID
         results.push(result)

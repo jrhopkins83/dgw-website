@@ -12,7 +12,7 @@
             color="white"
             label="Read more..."
             flat
-            @click="viewNewsItem"
+            @click="$emit('viewAnnouncementDetails', [announcement, id])"
           />
         </div>
       </div>
@@ -38,7 +38,7 @@ export default {
       type: Object
     },
     id: {
-      type: Number
+      type: String
     }
   },
   data () {

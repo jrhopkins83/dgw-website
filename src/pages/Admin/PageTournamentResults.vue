@@ -134,7 +134,7 @@ import { date } from 'quasar'
 export default {
   name: 'TournamentResults',
   components: {
-    playersList: require('components/Admin/Results/PlayersList.vue').default,
+    playersList: require('components/Admin/Results/ResultsPlayersList.vue').default,
     reorderPlayers: require('components/Admin/Results/PlayersListReorder.vue').default,
     // sortField: require('components/Shared/Sort.vue').defaul,
     search: require('components/Admin/Results/Search.vue').default
@@ -238,7 +238,7 @@ async function createTournamentResults (tournamentInfo, id) {
       const resultsRef = firebaseStore.collection('tournamentResults')
       snapshot.forEach(async player => {
         const newPlayer = {
-          date: tournamentInfo.date,
+          gameDate: tournamentInfo.gameDate,
           gameID: id,
           playerID: player.id,
           firstName: player.data().firstName,

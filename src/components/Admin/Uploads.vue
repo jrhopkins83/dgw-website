@@ -206,13 +206,6 @@ export default {
                 if (player.playerID) {
                   const playerTotals = await this.uploadWeeklyResults(player)
                   await this.createPlayerStanding(player, playerTotals)
-                }
-                if (player.playerID && player.uid) {
-                  const userRef = {
-                    playerID: player.playerID,
-                    uid: player.uid
-                  }
-                  await this.createUserPlayerRef(userRef)
                   const playerContactInfo = {
                     playerID: player.playerID,
                     email: player.email,
@@ -221,6 +214,13 @@ export default {
                     notificationOptin: true
                   }
                   await this.createSubscriber(playerContactInfo)
+                }
+                if (player.playerID && player.uid) {
+                  const userRef = {
+                    playerID: player.playerID,
+                    uid: player.uid
+                  }
+                  await this.createUserPlayerRef(userRef)
                 }
               } catch (error) {
                 console.error('Error adding document: ', error)

@@ -83,7 +83,7 @@ import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
   components: {
-    player: require('src/components/Admin/Results/Player.vue').default,
+    player: require('src/components/Admin/Results/ResultsPlayer.vue').default,
     noPlayers: require('components/Shared/NoPlayers.vue').default,
     addPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default
   },
@@ -97,7 +97,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('tourneyResults', ['numFinished', 'numCheckedIn', 'finishedLoaded', 'finishedPlayers']),
+    ...mapGetters('tourneyResults', ['numFinished', 'numCheckedIn', 'finishedLoaded', 'finishedPlayers', 'tournamentInfo']),
     noPlayersMsg: function () {
       if (this.type === 'finished') {
         return 'No players have been knocked out'
@@ -144,7 +144,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['knockoutPlayer', 'restorePlayer', 'setSort']),
+    ...mapActions('tourneyResults', ['knockoutPlayer', 'restorePlayer', 'setSort', 'setResultsLoaded']),
+    ...mapActions('tourneyResults', ['setFinishedLoaded', 'resortFinishedPlayers']),
     changePlayerStatus (payload) {
       if (this.type === 'checked-in') {
         this.knockoutPlayer(payload)
@@ -172,26 +173,26 @@ export default {
       }
       const newPlayerID = await this.addNewPlayer(newPlayerNames)
       if (newPlayerID) {
+        const playerContactInfo = {
+          playerID: newPlayerID,
+          email: newPlayer.email,
+          phoneNumber: newPlayer.phoneNumber,
+          emailOptin: true,
+          notificationOptin: true
+        }
+        await this.createSubscriber(playerContactInfo)
         if (newPlayer.email) {
           const newUserID = await this.createNewUser(newPlayer.email, 'dgwpassword')
           if (newUserID) {
             const userRef = {
               playerID: newPlayerID,
-              userID: newUserID
+              uid: newUserID
             }
             await this.createUserPlayerRef(userRef)
-            const playerContactInfo = {
-              playerID: newPlayerID,
-              email: newPlayer.email,
-              phoneNumber: newPlayer.phoneNumber,
-              emailOptin: true,
-              notificationOptin: true
-            }
-            await this.createSubscriber(playerContactInfo)
           }
         }
         const newPlayerResult = {
-          date: this.tournamentInfo.date,
+          gameDate: this.tournamentInfo.gameDate,
           gameID: this.tournamentInfo.id,
           playerID: newPlayerID,
           firstName: newPlayerNames.firstName,

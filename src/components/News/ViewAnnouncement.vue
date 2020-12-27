@@ -70,7 +70,7 @@ export default {
   margin-left: 1.6rem;
   margin-right: 1.6rem;
   min-height: 22rem;
-  max-height: 31rem;
+  max-height: 43rem;
 }
 .news-date {
   margin-bottom: 0.8rem;
@@ -82,7 +82,7 @@ export default {
   overflow: auto;
   margin: 0.4rem;
   min-height: 4rem;
-  max-height: 30rem;
+  max-height: 40rem;
   line-height: 2.5rem;
   font-weight: 400;
   overflow: scroll;

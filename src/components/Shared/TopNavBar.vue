@@ -15,55 +15,18 @@
         </div>
       </q-toolbar-title>
       <template v-if="loggedIn">
-        <q-tabs
-          class="desktop-menu"
-          v-model="tab"
-          indicator-color="white"
-          active-color="white"
-          shrink
-          align="right"
-          breakpoint="0"
-        >
-          <q-route-tab
-            label = 'Home'
-            name = 'home'
-            to = '/'
+        <div class="tabs">
+          <q-btn-toggle
+            value="tab"
+            flat stretch
+            nowrap
+            toggle-color="white"
+            :options="userNavs"
+            @input="navigate"
           />
-          <q-route-tab
-            label = 'Season Standings'
-            name = 'standings'
-            to = '/season-standings'
-          />
-          <q-route-tab
-            label = 'Weekly Results'
-            name = 'weekly-results'
-            to = '/weekly-results'
-          />
-          <q-route-tab
-            label = 'Schedule'
-            name = ''
-            :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
-          />
-          <q-route-tab
-            label = 'Players'
-            name = 'Players'
-            :to = '{ name: "Players" , params: { mode: "view" } }'
-          />
-          <q-route-tab
-            label = 'Announcements'
-            name = 'Announcements'
-            to = '/announcements'
-          />
-          <!-- <q-route-tab
-            v-for="nav in userNavs"
-            :key="nav.label"
-            :label="nav.label"
-            :to="nav.to"
-            class="q-pa-sm"
-          /> -->
           <template v-if="userInfo.isAdmin">
             <q-btn-dropdown
-              class="auto-close stretch flat label text-bold"
+              class="auto-close stretch flat label"
               style="font-size: 15px"
               label="Admin"
               auto-close
@@ -110,7 +73,7 @@
               </q-list>
             </q-btn-dropdown>
           </template>
-        </q-tabs>
+        </div>
         <q-btn
           class="mobile-menu"
           icon="menu"
@@ -273,60 +236,27 @@ export default {
       userNavs: [
         {
           label: 'Home',
-          name: 'home',
-          to: '/'
+          value: 'home'
         },
         {
           label: 'Season Standings',
-          name: 'standings',
-          to: 'season-standings'
+          value: 'SeasonStandings'
         },
         {
           label: 'Weekly Results',
-          name: 'weekly-results',
-          to: ''
+          value: 'WeeklyResults'
         },
         {
           label: 'Schedule',
-          // to: 'game-schedule'
-          to: "{ name: 'GameSchedule' , params: { mode: 'view' } }"
-        // },
-        // {
-        //   label: 'News',
-        //   name: 'news',
-        //   to: ''
-        // },
-        // {
-        //   label: 'Players',
-        //   name: 'players',
-        //   to: ''
-        }
-      ],
-      adminNavs: [
-        {
-          label: 'LeagueInfo',
-          to: 'league-info'
+          value: 'GameSchedule'
         },
-
         {
-          label: 'Update Schedule',
-          to: '{ name: "GameSchedule", params: { mode: "edit" } }'
-        // },
-        // {
-        //   label: 'View RSVPs',
-        //   to: 'rsvp'
-        // },
-        // {
-        //   label: 'Edit Players',
-        //   to: 'editPlayers'
-        // },
-        // {
-        //   label: 'Edit Announcements',
-        //   to: 'editAnnouncements'
-        // },
-        // {
-        //   label: 'Send Message',
-        //   to: 'sendMessage'
+          label: 'Players',
+          value: 'Players'
+        },
+        {
+          label: 'Announcements',
+          value: 'Announcements'
         }
       ]
     }
@@ -346,8 +276,18 @@ export default {
   methods: {
     ...mapActions('auth', ['logoutUser']),
     ...mapActions('leagueSettings', ['clearSetupInfo', 'clearLocalStorage']),
-    updateSchedule () {
-      console.log('update schedule clicked')
+    navigate (page) {
+      switch (page) {
+        case 'GameSchedule':
+          this.$router.push({ name: 'GameSchedule', params: { mode: 'view' } })
+          break
+        case 'Players':
+          this.$router.push({ name: 'Players', params: { mode: 'view' } })
+          break
+        default:
+          this.$router.push({ name: page })
+          break
+      }
     },
     rsvp () {
       console.log('update schedule clicked')
@@ -406,6 +346,10 @@ export default {
         }
     }
 
+    // .tabs {
+    //   max-width: 70rem;
+    // }
+
     .q-tab__label {
         font-size: 1.5rem;
         font-weight: bold;
@@ -418,17 +362,7 @@ export default {
 
   }
 
-  @media screen and (max-width: 475px) {
-    .top-nav {
-      .logo {
-          &__title {
-            display: none;
-          }
-      }
-    }
-  }
-
-  @media screen and (min-width: 476px) {
+  @media screen and (min-width: 1291px) {
     .top-nav {
       .logo {
         &__title {
@@ -446,6 +380,9 @@ export default {
           height: 5rem;
           background-size: cover;
           opacity: 1;
+        }
+        &__title {
+          display: none;
         }
       }
     }

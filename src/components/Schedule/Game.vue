@@ -20,7 +20,7 @@
         >
         </q-btn>
       </div>
-      <div class="attribute-container game-buttons" v-if="adminButtons" >
+      <div class="attribute-container game-buttons" v-if="adminButtons && !game.complete" >
         <div class="attribute edit">
           <q-btn
             icon="edit"

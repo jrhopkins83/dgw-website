@@ -52,6 +52,7 @@
               :game='game'
               :isAdmin="isAdmin"
               :adminButtons="adminButtons"
+              @viewGameDetails="viewGame"
               @edit="editGame"
               @delete="deleteGame"
             >
@@ -79,7 +80,7 @@
         :id="id"
         :mode="mode"
         @save="saveGame"
-        @close="showEditGame=false"
+        @close="closeGame"
       />
     </q-dialog>
     <q-dialog
@@ -88,7 +89,7 @@
       <view-game-details
         :game="game"
         :id="id"
-        @close="showViewGame=false"
+        @close="closeGame"
       />
     </q-dialog>
     <q-dialog
@@ -163,6 +164,8 @@ export default {
     ...mapActions('games', ['setGamesLoaded']),
     ...mapActions('tourneyResults', ['setTournamentID']),
     addGame () {
+      this.game = {}
+      this.id = ''
       this.mode = 'add'
       this.showEditGame = true
     },
@@ -171,6 +174,12 @@ export default {
       this.game = value[0]
       this.id = value[1]
       this.showEditGame = true
+    },
+    closeGame () {
+      this.game = {}
+      this.id = ''
+      this.showEditGame = false
+      this.showViewGame = false
     },
     viewGame (value) {
       this.game = value[0]
@@ -309,6 +318,8 @@ export default {
         .heading-row {
           position: sticky;
           top: 0;
+          z-index: 1;
+          background-color: $off-white;
           color:  black;
           align-items:flex-end;
           justify-content: center;

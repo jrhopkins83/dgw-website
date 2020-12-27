@@ -3,6 +3,7 @@
     <q-editor
       :value="qeditor"
       min-height="30rem"
+      max-height="35rem"
       ref="editor"
       @input="$emit('update:qeditor', $event)"
       :toolbar="[
@@ -136,7 +137,7 @@ export default {
         '#ffccccaa', '#ffe6ccaa', '#ffffccaa', '#ccffccaa',
         '#ccffe6aa', '#ccffffaa', '#cce6ffaa', '#ccccffaa', '#e6ccffaa', '#ffccffaa', '#ff0000aa', '#ff8000aa', '#ffff00aa', '#00ff00aa', '#00ff80aa', '#00ffffaa', '#0080ffaa', '#0000ffaa', '#8000ffaa', '#ff00ffaa'
       ],
-      palletteFore: ['#000000', '#ff0000', '#ff8000', '#ffff00', '#00ff00', '#00ffff', '#0080ff', '#0000ff', '#8000ff', '#ff00ff'],
+      palletteFore: ['#B80000', '#FF0001', '#FFB800', '#FEFF05', '#87C947', '#06A647', '#03A7ED', '#0164B8', '#001D55', '#652A95'],
       foreColor: '#000000',
       highlight: '#ffff00aa',
       editor: 'Select some text,' + ' then select a highlight or text color!'

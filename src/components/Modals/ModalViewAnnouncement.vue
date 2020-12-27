@@ -10,9 +10,8 @@
           </div>
           <div class="attribute-container subject">
             <div class="label text-bold">
-              Subject / Headline
+              {{ announcement.subject }}
             </div>
-            <div class="attribute location field">{{ announcement.subject }}</div>
           </div>
           <div class="attribute-container notes">
             <div v-html="announcement.newsText"/>

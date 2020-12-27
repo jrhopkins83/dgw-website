@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { date } from 'quasar'
 
 export default {
@@ -44,7 +44,7 @@ export default {
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('games', ['lastCompletedDate']),
-    ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded', 'setSearch']),
+    ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {
       return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
@@ -65,6 +65,9 @@ export default {
         return players
       }
     }
+  },
+  methods: {
+    ...mapActions('standings', ['setSearch'])
   },
   destroyed () {
     this.setSearch('')

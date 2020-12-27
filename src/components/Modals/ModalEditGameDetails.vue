@@ -12,6 +12,26 @@
               <q-select
                 dense
                 outlined
+                ref="template"
+                v-model="template"
+                fill-input
+                class=“no-pointer-events”
+                input-class="text-center"
+                label="Template"
+                stack-label
+                :rules="[required]"
+                :options="templateOptions"
+                option-value="index"
+                option-label="template"
+                option-disable="inactive"
+                emit-value
+                map-options
+                style="min-width: 250px; max-width: 300px"
+                @input="pullFromTemplate($event)"
+              />
+              <q-select
+                dense
+                outlined
                 ref="structure"
                 fill-input
                 v-model="formData.structure"
@@ -21,13 +41,7 @@
                 stack-label
                 :rules="[required]"
                 :options="structureOptions"
-                option-value="index"
-                option-label="structure"
-                option-disable="inactive"
-                emit-value
-                map-options
-                style="min-width: 250px; max-width: 300px"
-                @input="pullFromTemplate($event)"
+                style="width: 12rem"
               />
               <q-select
                 dense
@@ -228,6 +242,15 @@ export default {
         id: this.id
       },
       formHasError: false,
+      template: '',
+      structureOptions: [
+        'Freezeout',
+        'Rebuy',
+        'Bounty',
+        'Progressive Bounty',
+        'Cash',
+        'Satellite'
+      ],
       typeOptions: [
         'MTT',
         'SNG',
@@ -248,13 +271,13 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo', 'gameTemplates']),
-    structureOptions: function () {
+    templateOptions: function () {
       const optionArray = []
       let option = {}
       this.gameTemplates.forEach((template, index) => {
         option = {
           index: index,
-          structure: template.structure
+          template: template.template
         }
         optionArray.push(option)
       })
@@ -349,7 +372,7 @@ export default {
 
         .attribute-container.structure {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 2fr 1fr 1fr;
         }
 
         .attribute-container.date {

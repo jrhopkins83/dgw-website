@@ -2,7 +2,7 @@
   "name": "dgw-website",
   "version": "0.0.1",
   "description": "Donkey's Gone Wild poker league website",
-  "productName": "dgw-website",
+  "productName": "Donkey's Gone Wild",
   "author": "Roger Hopkins <jrhopkins83@gmail.com>",
   "private": true,
   "scripts": {

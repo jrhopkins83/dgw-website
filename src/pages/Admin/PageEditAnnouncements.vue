@@ -48,7 +48,7 @@
           :announcement="announcement"
           :mode="mode"
           @save="saveAnnouncement"
-          @close="showEditAnnouncement=false"
+          @close="cancelEdit"
         />
       </q-dialog>
       <q-dialog
@@ -133,6 +133,10 @@ export default {
     addAnnouncement () {
       this.mode = 'add'
       this.showAddEdit = true
+    },
+    cancelEdit () {
+      this.announcement = {}
+      this.showAddEdit = false
     },
     editAnnouncement (value) {
       this.mode = 'edit'

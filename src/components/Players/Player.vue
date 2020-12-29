@@ -92,7 +92,7 @@ export default {
 
       .item-container.isAdmin {
           display: grid;
-          grid-template-columns: 5em 3fr 2fr 9rem;
+          grid-template-columns: 5em 2.5fr 2fr 9rem;
           grid-gap: 4px;
 
       }

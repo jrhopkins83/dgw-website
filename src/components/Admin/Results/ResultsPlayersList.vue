@@ -67,7 +67,7 @@
         <add-player
           :player="null"
           :mode="mode"
-          @save="savePlayer"
+          @submit="submitForm"
           @close="showAddPlayer=false"
         />
       </q-dialog>
@@ -78,7 +78,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { firebaseStore } from 'src/boot/firebase'
-import { toTitleCase } from 'src/functions/functions-common'
+import { toTitleCase, showMessage } from 'src/functions/functions-common'
 import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
@@ -158,63 +158,44 @@ export default {
         this.setSort(property)
       }
     },
-    async savePlayer (newPlayer) {
+    async submitForm (newPlayer) {
       this.setResultsLoaded(false)
       this.setFinishedLoaded(false)
       this.$q.loading.show({
-        message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+        message: `<b>Player ${this.mode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
       })
-      const newPlayerNames = {
-        firstName: newPlayer.firstName,
-        lastName: newPlayer.lastName,
-        nickName: newPlayer.nickName,
-        onlineName: newPlayer.onlineName,
-        avatar: null
-      }
-      const newPlayerID = await this.addNewPlayer(newPlayerNames)
-      if (newPlayerID) {
-        const playerContactInfo = {
-          playerID: newPlayerID,
-          email: newPlayer.email,
-          phoneNumber: newPlayer.phoneNumber,
-          emailOptin: true,
-          notificationOptin: true
-        }
-        await this.createSubscriber(playerContactInfo)
-        if (newPlayer.email) {
-          const newUserID = await this.createNewUser(newPlayer.email, 'dgwpassword')
-          if (newUserID) {
-            const userRef = {
-              playerID: newPlayerID,
-              uid: newUserID
-            }
-            await this.createUserPlayerRef(userRef)
+      try {
+        const newPlayerID = await this.savePlayer(newPlayer)
+        if (newPlayerID) {
+          const newPlayerResult = {
+            gameDate: this.tournamentInfo.gameDate,
+            gameID: this.tournamentInfo.id,
+            playerID: newPlayerID,
+            firstName: newPlayer.firstName,
+            lastName: newPlayer.lastName,
+            nickName: newPlayer.nickName,
+            onlineName: newPlayer.onlineName,
+            avatar: null,
+            RSVPd: false,
+            checkedIn: true,
+            finished: false,
+            finishedPosition: 0
           }
+          const resultsRef = firebaseStore.collection('tournamentResults')
+          const resultDoc = await resultsRef.add(newPlayerResult)
+          if (resultDoc.id) {
+            this.resortFinishedPlayers(true)
+            this.showAddPlayer = false
+          } else {
+            return false
+          }
+          this.setResultsLoaded(true)
+          this.setFinishedLoaded(true)
+          this.$q.loading.hide()
         }
-        const newPlayerResult = {
-          gameDate: this.tournamentInfo.gameDate,
-          gameID: this.tournamentInfo.id,
-          playerID: newPlayerID,
-          firstName: newPlayerNames.firstName,
-          lastName: newPlayerNames.lastName,
-          nickName: newPlayerNames.nickName,
-          onlineName: newPlayerNames.onlineName,
-          avatar: null,
-          RSVPd: false,
-          checkedIn: true,
-          finished: false,
-          finishedPosition: 0
-        }
-        const resultsRef = firebaseStore.collection('tournamentResults')
-        const resultDoc = await resultsRef.add(newPlayerResult)
-        if (resultDoc.id) {
-          this.resortFinishedPlayers(true)
-          this.showAddPlayer = false
-        } else {
-          return false
-        }
-        this.setResultsLoaded(true)
-        this.setFinishedLoaded(true)
+      } catch (error) {
+        showMessage('error', `Error adding player - ${error}`)
+        this.setPlayersLoaded(true)
         this.$q.loading.hide()
       }
     },

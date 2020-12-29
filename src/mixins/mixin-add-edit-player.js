@@ -2,6 +2,19 @@ import { firebaseStore, firebaseFunctions } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
 
 export const mixinAddEditPlayer = {
+  data () {
+    return {
+      mode: '',
+      player: null,
+      id: '',
+      showEditPlayer: false,
+      confirm: false,
+      dialogHeader: '',
+      dialogMsg: ''
+
+    }
+  },
+
   methods: {
     async lookupLeagueCode (code) {
       const snapShot = await firebaseStore.collection('leagueAuthCodes')
@@ -64,30 +77,58 @@ export const mixinAddEditPlayer = {
         return error
       }
     },
-    async addNewPlayer (newPlayer) {
-      // First check if player already in database
-      // If not, first add to players FS collection, then add to local storage
-      try {
-        const playerExists = await this.checkPlayerExists(newPlayer)
-        if (playerExists) {
-          showMessage('error', 'A person with that name already exists')
-          return false
-        } else {
-          try {
-            // TO-DO: Manage duplicates through FS rules
-            // Delete contact info
-            delete newPlayer.email
-            delete newPlayer.phone
-            const docRef = await this.addPlayerFS(newPlayer)
-            return docRef.id
-          } catch (err) {
-            showMessage('error', `Error adding player - ${err}`)
-            return err
+    async savePlayer (player) {
+      const playerNames = {
+        firstName: player.firstName,
+        lastName: player.lastName,
+        nickName: player.nickName,
+        onlineName: player.onlineName
+      }
+
+      const playerContactInfo = {
+        email: player.email,
+        phoneNumber: player.phoneNumber,
+        emailOptin: player.emailOptin,
+        notificationOptin: player.notificationOptin
+      }
+
+      if (this.mode === 'edit') {
+        return await this.editPlayer(playerNames, playerContactInfo)
+      } else {
+        const playerID = await this.addNewPlayer(playerNames, playerContactInfo)
+        if (playerID) {
+          playerContactInfo.playerID = playerID
+          await this.createSubscriber(playerContactInfo)
+          if (playerContactInfo.email) {
+            const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
+            if (newUserID) {
+              const userRef = {
+                playerID: playerID,
+                uid: newUserID
+              }
+              await this.createUserPlayerRef(userRef)
+              return this.setUserClaim(newUserID, playerID)
+            } else {
+              return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
+            }
+          } else {
+            return new Error('New player not created')
           }
         }
-      } catch (err) {
-        showMessage('error', `Error checking if player exists: ${err}`)
-        return err
+      }
+    },
+    async addNewPlayer (playerNames) {
+      // First check if player already in database
+      // If not, first add to players FS collection, then add to local storage
+      const playerExists = await this.checkPlayerExists(playerNames)
+      if (playerExists) {
+        showMessage('error', 'A person with that name already exists')
+        return false
+      } else {
+        // TO-DO: Manage duplicates through FS rules
+        // Delete contact info
+        const docRef = await this.addPlayerFS(playerNames)
+        return docRef.id
       }
     },
     async checkPlayerExists (player) {
@@ -100,6 +141,12 @@ export const mixinAddEditPlayer = {
       } else {
         return null
       }
+    },
+    async editPlayer (playerNames, playerContactInfo) {
+      const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+      await playerRef.update(playerNames)
+      const userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
+      return await userRef.update(playerContactInfo)
     },
     async addPlayerFS (newPlayer) {
       var data = JSON.parse(JSON.stringify(newPlayer))
@@ -159,13 +206,23 @@ export const mixinAddEditPlayer = {
       }
       this.createUserPlayerRef(newUser)
     },
+    async setUserClaim (newUserID, playerID) {
+      const setPlayerClaim = firebaseFunctions.httpsCallable('setPlayerClaim')
+      setPlayerClaim({ uid: newUserID, playerID: playerID }).then(result => {
+        const msg = result.data.message
+        console.log(msg)
+        return playerID
+      })
+    },
     async createUserPlayerRef (user) {
       try {
-        return await firebaseStore
+        firebaseStore
           .collection('users')
           .doc(user.uid)
           .set({
             playerID: user.playerID
+          }).then(() => {
+            return user.playerID
           })
       } catch (error) {
         showMessage('error', `Error adding user/player relationship: ${error.message}`)

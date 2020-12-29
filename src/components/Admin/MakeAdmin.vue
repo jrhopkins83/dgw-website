@@ -62,6 +62,7 @@ import { firebaseFunctions } from 'boot/firebase'
 import commonFunctions from 'src/mixins/mixin-common-functions'
 import { showMessage } from 'src/functions/functions-common'
 import { email, required } from 'src/utils/validators'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [commonFunctions],
@@ -75,6 +76,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('leagueSettings', ['userInfo'])
   },
   methods: {
     email,
@@ -87,7 +89,7 @@ export default {
       if (!this.formHasError) {
         try {
           const addAdminRole = firebaseFunctions.httpsCallable('setAdminClaim')
-          addAdminRole({ email: this.adminEmail }).then(result => {
+          addAdminRole({ email: this.adminEmail, playerID: this.userInfo.playerID }).then(result => {
             this.clearEmail()
             const msg = result.data.message
             console.log(msg)

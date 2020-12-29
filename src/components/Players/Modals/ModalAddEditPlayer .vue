@@ -105,13 +105,14 @@
                 label="Receive email communications"
               />
             </div>
-            <div class="q-gutter-sm">
+            <!-- TO-DO: Uncomment when SMS functionality added -->
+            <!-- <div class="q-gutter-sm">
               <q-checkbox
                 v-model="formData.notificationOptin"
                 color="blue-7"
                 label="Receive SMS texts"
               />
-            </div>
+            </div> -->
           </div>
         </q-form>
 
@@ -188,8 +189,8 @@ export default {
         this.formHasError = true
       }
 
-      let emailOptin = false
-      let notificationOptin = false
+      let emailOptin = true
+      let notificationOptin = true
       let nickName = null
       let onlineName = null
 
@@ -216,11 +217,11 @@ export default {
           phoneNumber: this.formData.phoneNumber,
           nickName: nickName,
           onlineName: onlineName,
-          notificationOptin: notificationOptin,
-          emailOptin: emailOptin
+          emailOptin: emailOptin,
+          notificationOptin: notificationOptin
         }
 
-        this.$emit('save', this.playerToSubmit)
+        this.$emit('submit', this.playerToSubmit)
       }
     }
   },
@@ -230,6 +231,9 @@ export default {
   mounted () {
     if (this.player) {
       this.formData = Object.assign({}, this.player)
+    } else {
+      this.formData.emailOptin = true
+      this.formData.notificationOptin = true
     }
   }
 

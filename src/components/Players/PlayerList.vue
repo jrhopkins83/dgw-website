@@ -55,7 +55,7 @@
       <edit-player-details
         :player="player"
         :mode="mode"
-        @save="savePlayer"
+        @submit="submitForm"
         @close="showEditPlayer=false"
       />
     </q-dialog>
@@ -108,18 +108,6 @@ export default {
     'isAdmin',
     'adminButtons'
   ],
-  data () {
-    return {
-      mode: '',
-      player: null,
-      id: '',
-      showEditPlayer: false,
-      confirm: false,
-      dialogHeader: '',
-      dialogMsg: ''
-
-    }
-  },
   computed: {
     heading: function () {
       return `${toTitleCase(this.mode)} Player`
@@ -155,8 +143,8 @@ export default {
         this.player = {}
         this.showViewPlayer = false
         this.$q.loading.hide()
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to add data.")
             break
@@ -164,52 +152,27 @@ export default {
             showMessage('error', 'Record not found in database')
             break
           default:
-            showMessage('error', 'Error deleting player: ' + err)
+            showMessage('error', 'Error deleting player: ' + error)
         }
       }
     },
-    async savePlayer (player) {
+    async submitForm (player) {
       this.setPlayersLoaded(false)
-      const playerNames = {
-        firstName: player.firstName,
-        lastName: player.lastName,
-        nickName: player.nickName,
-        onlineName: player.onlineName
+      this.$q.loading.show({
+        message: `<b>Player ${this.mode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
+      })
+      try {
+        await this.savePlayer(player)
+        showMessage('Success', `Player ${this.mode} complete`)
+        this.setPlayersLoaded(true)
+        this.$q.loading.hide()
+        this.id = ''
+      } catch (error) {
+        showMessage('error', `Error adding player - ${error}`)
+        this.setPlayersLoaded(true)
+        this.$q.loading.hide()
+        this.id = ''
       }
-
-      const playerContactInfo = {
-        email: player.email,
-        phoneNumber: player.phoneNumber,
-        emailOptin: player.emailOptin,
-        notificationOptin: player.notificationOptin
-      }
-      let playerRef = null
-      let userRef = null
-
-      if (this.mode === 'edit') {
-        playerRef = firebaseStore.collection('players').doc(this.player.playerID)
-        await playerRef.update(playerNames)
-        userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
-        await userRef.update(playerContactInfo)
-      } else {
-        const newPlayerID = await this.addNewPlayer(playerNames)
-        if (newPlayerID) {
-          await this.createSubscriber(playerContactInfo)
-          if (player.email) {
-            const newUserID = await this.createNewUser(player.email, 'dgwpassword')
-            if (newUserID) {
-              const userRef = {
-                playerID: newPlayerID,
-                uid: newUserID
-              }
-              await this.createUserPlayerRef(userRef)
-            }
-          }
-        }
-      }
-
-      this.$q.loading.hide()
-      showMessage('Success', 'Player updated')
     }
   }
 }
@@ -231,7 +194,7 @@ export default {
 
       .item-container.isAdmin {
           display: grid;
-          grid-template-columns: 5em 3fr 2fr 9rem;
+          grid-template-columns: 5em 2.5fr 2fr 9rem;
           grid-gap: 4px;
 
       }

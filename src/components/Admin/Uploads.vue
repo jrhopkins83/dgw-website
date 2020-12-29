@@ -174,48 +174,67 @@ export default {
           if (this.gameDates.length) {
             results.forEach(async (player) => {
               try {
-                let uid = null
+                this.mode = 'add'
                 let nickName = null
                 let onlineName = null
-                if (player.email) {
-                  uid = await this.createNewUser(player.email, 'dgw2020')
-                }
-                if (uid) {
-                  player.uid = uid
-                }
                 if (player.nickName.length > 0) {
                   nickName = player.nickName.trim()
                 }
                 if (player.onlineName.length > 0) {
                   onlineName = player.onlineName.trim()
                 }
-                const newPlayer = {}
-                newPlayer.uid = player.uid
-                newPlayer.firstName = toTitleCase(player.firstName).trim()
-                newPlayer.lastName = toTitleCase(player.lastName).trim()
-                newPlayer.nickName = nickName
-                newPlayer.onlineName = onlineName
-
-                player.playerID = await this.addNewPlayer(newPlayer)
-
-                if (player.playerID) {
-                  const playerContactInfo = {
-                    playerID: player.playerID,
-                    email: player.email,
-                    phoneNumber: null,
-                    emailOptin: true,
-                    notificationOptin: true
-                  }
-                  await this.createSubscriber(playerContactInfo)
-                  const playerTotals = await this.uploadWeeklyResults(player)
-                  await this.createPlayerStanding(player, playerTotals)
+                const newPlayer = {
+                  firstName: toTitleCase(player.firstName).trim(),
+                  lastName: toTitleCase(player.lastName).trim(),
+                  nickName: nickName,
+                  onlineName: onlineName,
+                  email: player.email,
+                  phoneNumber: player.phoneNumber,
+                  notificationOptin: true,
+                  emailOptin: true
                 }
-                if (player.playerID && player.uid) {
-                  const userRef = {
-                    playerID: player.playerID,
-                    uid: player.uid
+
+                const playerNames = {
+                  firstName: newPlayer.firstName,
+                  lastName: newPlayer.lastName,
+                  nickName: newPlayer.nickName,
+                  onlineName: newPlayer.onlineName,
+                  avatar: {
+                    url: '',
+                    id: ''
                   }
-                  await this.createUserPlayerRef(userRef)
+                }
+
+                const playerContactInfo = {
+                  email: newPlayer.email,
+                  phoneNumber: newPlayer.phoneNumber,
+                  emailOptin: newPlayer.emailOptin,
+                  notificationOptin: newPlayer.notificationOptin
+                }
+
+                const playerID = await this.addNewPlayer(playerNames)
+                if (playerID) {
+                  playerContactInfo.playerID = playerID
+                  await this.createSubscriber(playerContactInfo)
+                  player.playerID = playerID
+                  await this.uploadWeeklyResults(player)
+                  if (playerContactInfo.email) {
+                    const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
+                    if (newUserID) {
+                      const userRef = {
+                        playerID: playerID,
+                        uid: newUserID
+                      }
+                      await this.createUserPlayerRef(userRef)
+                      return this.setUserClaim(newUserID, playerID)
+                    } else {
+                      return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
+                    }
+                  } else {
+                    return new Error('New player not created')
+                  }
+                }
+                if (playerID) {
                 }
               } catch (error) {
                 console.error('Error adding document: ', error)
@@ -239,6 +258,7 @@ export default {
         if (pointsAssignments) {
           // for each date get points value
           const dateKeys = Object.keys(player)
+          const promises = []
           dateKeys.forEach(async (key) => {
             const keyDate = key + ' 19:00:00'
             const keyDtTime = Timestamp.fromDate(new Date(keyDate))
@@ -277,24 +297,15 @@ export default {
                   finalTable: finalTable,
                   prizeMoney: 0
                 }
-                await firebaseStore.collection('weeklyResults').add(newResult)
+                promises.push(firebaseStore.collection('weeklyResults').add(newResult))
               }
             }
+            await Promise.all(promises)
+            return await this.createPlayerStanding(player, playerTotals)
           })
         }
-        return playerTotals
       } catch (error) {
         console.log(`Error adding weekly results: ${error.message}`)
-        return null
-      }
-    },
-    async createWeeklyResult (playerPoints) {
-      try {
-        const data = JSON.parse(JSON.stringify(playerPoints))
-        const docID = await firebaseStore.collection('weeklyResults').set(data)
-        return docID
-      } catch (error) {
-        console.log(`Error creating weekly result: ${error.message}`)
         return null
       }
     },
@@ -314,7 +325,7 @@ export default {
           finalTables: playerTotals.finalTables
         }
         const seasonStandings = firebaseStore.collection('seasonStandings')
-        return seasonStandings.doc(playerID).set(newStanding)
+        return await seasonStandings.doc(playerID).set(newStanding)
       } catch (error) {
         console.log(`Error adding standing: ${error.message}`)
       }
@@ -469,8 +480,8 @@ export default {
       const collection = 'gameDates'
       try {
         return await this.addObjectToFS(newDate, collection)
-      } catch (err) {
-        return err
+      } catch (error) {
+        return error
       }
     },
     // Add document to collection passed from function

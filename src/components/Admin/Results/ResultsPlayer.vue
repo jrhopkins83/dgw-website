@@ -73,7 +73,7 @@ export default {
     },
     player_avatar: function () {
       if (this.player.avatar) {
-        return this.player.avatar
+        return this.player.avatar.avatarUrl
       } else {
         return 'default.jpg'
       }

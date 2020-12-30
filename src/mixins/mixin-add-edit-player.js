@@ -82,7 +82,15 @@ export const mixinAddEditPlayer = {
         firstName: player.firstName,
         lastName: player.lastName,
         nickName: player.nickName,
-        onlineName: player.onlineName
+        onlineName: player.onlineName,
+        avatar: {
+          avatarUrl: '',
+          avatarName: ''
+        },
+        photo: {
+          photoUrl: '',
+          photoName: ''
+        }
       }
 
       const playerContactInfo = {

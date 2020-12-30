@@ -14,17 +14,36 @@
         </div>
         <div class="row profile-section q-pa-md">
           <div class="col-2 profile-section__photo q-px-xs">
-            <div class="text-center">
-              <q-avatar size="78px">
-                <img :src="user_avatar">
-              </q-avatar>
-              <q-btn
-                color="grey-10"
-                no-caps
-                label="Change Photo"
-                class="q-mt-md"
-                @click="showChangePhoto=true"
-              />
+            <div class="photo-area">
+
+              <div class="text-center q-mb-xl">
+                <q-avatar size="78px">
+                  <img :src="user_avatar.avatarUrl">
+                </q-avatar>
+                <q-btn
+                  color="grey-10"
+                  no-caps
+                  label="Change Avatar"
+                  class="q-mt-md"
+                  @click="changeAvatar"
+                >
+                  <q-tooltip content-class="bg-info">Your avatar will be displayed on all standings and results lisits</q-tooltip>
+                </q-btn>
+              </div>
+              <div class="text-center">
+                <q-avatar size="78px">
+                  <img :src="user_photo.photoUrl">
+                </q-avatar>
+                <q-btn
+                  color="grey-10"
+                  no-caps
+                  label="Change Photo"
+                  class="q-mt-md"
+                  @click="changePhoto"
+                >
+                  <q-tooltip content-class="bg-info">Your avatar will be displayed on the player list</q-tooltip>
+                </q-btn>
+              </div>
             </div>
           </div>
           <div class="col-10 profile-section__user-info q-px-md">
@@ -32,7 +51,7 @@
               :player="userInfo"
               :heading="heading"
               :mode="'profile'"
-              @save="savePlayer"
+              @submit="savePlayer"
             />
 
           </div>
@@ -41,9 +60,10 @@
     </div>
     <q-dialog v-model="showChangePhoto">
       <modal-change-photo
-        :image="userInfo.avatar.url"
-        :itemId="userInfo.avatar.id"
+        :image="user_avatar.url"
+        :imageName="user_avatar.name"
         :userInfo="userInfo"
+        :imageType="imageType"
         @close="showChangePhoto=false"
       />
     </q-dialog>
@@ -59,20 +79,24 @@ import { showMessage } from 'src/functions/functions-common'
 export default {
   name: 'EditProfile',
   components: {
-    editPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default,
-    modalChangePhoto: require('components/Players/Modals/ModalChangePhoto.vue').default
+    modalChangePhoto: require('components/Players/Modals/ModalChangePhoto.vue').default,
+    editPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default
   },
   data () {
     return {
       heading: 'Contact Info',
-      showChangePhoto: false
+      showChangePhoto: false,
+      imageType: ''
     }
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfoLoaded', 'userInfo']),
     user: function () {
       const user = {
-        avatar: this.userInfo.avatar,
+        avatar: this.userInfo.avatar.avatarUrl,
+        avatarName: this.userInfo.avatarName.avatarName,
+        photo: this.userInfo.photo.photoUrl,
+        photoName: this.userInfo.photoName,
         email: this.userInfo.email,
         emailOptin: this.userInfo.emailOptin,
         firstName: this.userInfo.firstName,
@@ -88,15 +112,38 @@ export default {
       return user
     },
     user_avatar: function () {
-      if (this.userInfo.avatar) {
+      if (this.userInfo.avatar.avatarUrl) {
         return this.userInfo.avatar
       } else {
-        return 'default.jpg'
+        const image = {
+          avatarUrl: 'default.jpg',
+          avatarName: 'default.jpg'
+        }
+        return image
+      }
+    },
+    user_photo: function () {
+      if (this.userInfo.photo.photoUrl) {
+        return this.userInfo.photo
+      } else {
+        const image = {
+          photoUrl: 'default.jpg',
+          photoName: 'default.jpg'
+        }
+        return image
       }
     }
   },
   methods: {
     ...mapActions('leagueSettings', ['setUserInfo', 'saveUserInfoLS']),
+    changePhoto () {
+      this.imageType = 'photo'
+      this.showChangePhoto = true
+    },
+    changeAvatar () {
+      this.imageType = 'avatar'
+      this.showChangePhoto = true
+    },
     async savePlayer (player) {
       this.$q.loading.show({
         message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'

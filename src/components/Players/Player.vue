@@ -65,8 +65,8 @@ export default {
       return this.$q.screen.width
     },
     player_avatar: function () {
-      if (this.player.avatar) {
-        return this.player.avatar
+      if (this.player.photo.photoUrl) {
+        return this.player.photo.photoUrl
       } else {
         return 'default.jpg'
       }

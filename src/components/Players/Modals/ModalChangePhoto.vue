@@ -6,7 +6,9 @@
       </q-card-section>
       <q-card-section tag="div" class="photo-section q-pa-none">
         <header class="header">
-          <span class="title">Photo Editor</span>
+          <span class="title" v-if="data.loaded || data.avatarUrl">
+            Use the icons below to move around, zoom-in or out or adjust the image. Click checkmark to the right to preview.
+          </span>
           <navbar
             :data="data"
             @change="change"
@@ -15,11 +17,12 @@
         <div class="photo-grid">
           <div class="photo-canvas">
             <editor
-              v-if="data.loaded || data.url"
+              v-if="data.loaded || data.avatarUrl"
               ref="editor"
               :progress.sync="progress"
               :data="data"
               :userInfo="userInfo"
+              :imageType="imageType"
               @save="$emit('save', data.avatarUrl)"
               @close="$emit('close')"
             />
@@ -100,6 +103,9 @@ export default {
     },
     itemId: {
       type: String
+    },
+    imageType: {
+      type: String
     }
   },
   data () {
@@ -114,10 +120,8 @@ export default {
         croppedUrl: '',
         roundedCanvas: '',
         type: '',
-        url: this.imageUrl,
-        itemId: this.itemId,
-        avatarUrl: '',
-        avatarName: ''
+        imageName: this.imageName,
+        imageUrl: this.imageUrl
       },
       progress: 0
     }
@@ -202,7 +206,6 @@ export default {
               color: #fff;
               display: block;
               float: left;
-              font-size: 2rem;
               line-height: 3rem;
           }
         }

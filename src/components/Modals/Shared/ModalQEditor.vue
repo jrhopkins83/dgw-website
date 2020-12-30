@@ -1,9 +1,9 @@
 <template>
-  <div class="q-pa-md q-gutter-sm">
+  <div class="q-pa-xs q-gutter-sm">
     <q-editor
       :value="qeditor"
-      min-height="30rem"
-      max-height="35rem"
+      :editorMinHeight="editorMinHeight"
+      :editorMaxHeight="editorMaxHeight"
       ref="editor"
       @input="$emit('update:qeditor', $event)"
       :toolbar="[
@@ -130,7 +130,11 @@
 <script>
 export default {
   name: 'ModalQEditor',
-  props: ['qeditor'],
+  props: [
+    'qeditor',
+    'editorMinHeight',
+    'editorMaxHeight'
+  ],
   data () {
     return {
       paletteHighlight: [

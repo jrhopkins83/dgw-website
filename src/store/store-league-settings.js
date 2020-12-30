@@ -15,8 +15,14 @@ const initialState = () => {
     leagueInfoLoaded: false,
     points: {},
     userInfo: {
-      avatar: null,
-      avatarName: null,
+      avatar: {
+        avatarUrl: null,
+        avatarName: null
+      },
+      photo: {
+        photoUrl: null,
+        phototName: null
+      },
       email: null,
       emailOptin: null,
       firstName: null,
@@ -79,7 +85,9 @@ const actions = {
         const playerRef = await firebaseStore.collection('players').doc(playerID).get()
         if (playerRef.exists) {
           const userInfo = playerRef.data()
+          userInfo.uid = userId
           userInfo.playerID = playerID
+
           const idTokenResult = await firebaseAuth.currentUser.getIdTokenResult()
 
           if (idTokenResult.claims.isAdmin) {

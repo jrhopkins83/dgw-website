@@ -14,7 +14,7 @@
             <q-avatar
               size="56px"
             >
-              <img :src="player.avatar" color="primary">
+              <img :src="player.avatar.avatarUrl" color="primary">
             </q-avatar>
           </div>
           <div class="player-img" v-else>

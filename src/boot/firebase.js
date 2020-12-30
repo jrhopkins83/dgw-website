@@ -42,10 +42,10 @@ if (window.location.hostname === 'localhost') {
 // })
 
 // firebase.firestore().enablePersistence()
-//   .catch(function (err) {
-//     if (err.code === 'failed-precondition') {
+//   .catch(function (error) {
+//     if (error.code === 'failed-precondition') {
 //       console.log('persistence failed-precondition')
-//     } else if (err.code === 'unimplemented') {
+//     } else if (error.code === 'unimplemented') {
 //       console.log('persistence unimplemented')
 //     }
 //   })

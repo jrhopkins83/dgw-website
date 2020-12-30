@@ -55,7 +55,7 @@
                   </div>
                   <div class="player-img q-px-xs q-py-none" v-if="player.avatar">
                     <q-avatar size="40px">
-                      <img :src="player.avatar" color="primary">
+                      <img :src="player.avatar.avatarUrl" color="primary">
                     </q-avatar>
                   </div>
                   <div class="player-img q-px-xs q-py-none" v-else>

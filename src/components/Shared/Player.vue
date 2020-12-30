@@ -3,7 +3,7 @@
     <li class="item item-container player-table__items q-mt-xs">
       <div class="player-img q-px-sm q-py-xs" v-if="player.avatar">
         <q-avatar>
-          <img :src="player.avatar" color="primary" />
+          <img :src="player.avatarUrl" color="primary" />
         </q-avatar>
       </div>
       <div class="player-img q-px-sm q-py-xs" v-else>
@@ -31,38 +31,38 @@
 </template>
 
 <script>
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
   // These options are needed to round to whole numbers if that's what you want.
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
-  currency: "USD",
-});
+  currency: 'USD'
+})
 
 export default {
-  name: "PlayerRank",
+  name: 'PlayerRank',
   props: {
     player: Object,
-    page: String,
+    page: String
   },
-  data() {
-    return {};
+  data () {
+    return {}
   },
   computed: {
-    winnings_formatted() {
-      return formatter.format(this.player.winnings);
+    winnings_formatted () {
+      return formatter.format(this.player.winnings)
     },
-    screenWidth() {
-      return this.$q.screen.width;
+    screenWidth () {
+      return this.$q.screen.width
     }
   },
   methods: {
-    selectPlayer() {
-      this.$emit("select", this.player.playerID);
+    selectPlayer () {
+      this.$emit('select', this.player.playerID)
     }
   },
-  mounted() {},
-};
+  mounted () {}
+}
 </script>
 
 <style lang="scss" scoped>

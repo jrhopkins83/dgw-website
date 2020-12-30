@@ -200,8 +200,12 @@ export default {
                   nickName: newPlayer.nickName,
                   onlineName: newPlayer.onlineName,
                   avatar: {
-                    url: '',
-                    id: ''
+                    avatarUrl: '',
+                    avatarName: ''
+                  },
+                  photo: {
+                    photoUrl: '',
+                    photoName: ''
                   }
                 }
 

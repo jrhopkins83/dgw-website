@@ -189,19 +189,10 @@ export default {
         this.formHasError = true
       }
 
-      let emailOptin = true
-      let notificationOptin = true
       let nickName = null
       let onlineName = null
 
       if (!this.formHasError) {
-        if (this.formData.emailOptin) {
-          emailOptin = this.formData.emailOptin
-        }
-        if (this.formData.notificationOptin) {
-          notificationOptin = this.formData.notificationOptin
-        }
-
         if (this.formData.nickName) {
           nickName = this.formData.nickName.trim()
         }
@@ -217,8 +208,8 @@ export default {
           phoneNumber: this.formData.phoneNumber,
           nickName: nickName,
           onlineName: onlineName,
-          emailOptin: emailOptin,
-          notificationOptin: notificationOptin
+          emailOptin: this.formData.emailOptin,
+          notificationOptin: this.formData.notificationOptin
         }
 
         this.$emit('submit', this.playerToSubmit)

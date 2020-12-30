@@ -6,8 +6,8 @@
     >
       <img
         ref="image"
-        :alt="data.name"
         :src="data.url"
+        :alt="data.name"
         @loadstart="start"
         @load="start"
       >
@@ -119,6 +119,9 @@ export default {
   props: {
     userInfo: {
       type: Object
+    },
+    imageType: {
+      type: String
     },
     data: {
       type: Object,
@@ -314,7 +317,7 @@ export default {
       }
 
       this.cropper = new Cropper(this.$refs.image, {
-        autoCrop: false,
+        autoCrop: true,
         aspectRatio: 1,
         viewMode: 3,
         minContainerHeight: 300,
@@ -349,7 +352,7 @@ export default {
       if (this.cropper) {
         this.cropper.destroy()
         this.cropper = null
-        this.$emit('close')
+        // this.$emit('close')
       }
     },
 
@@ -404,6 +407,7 @@ export default {
         const fileName = `${this.userInfo.firstName}_${this.userInfo.lastName}.png`
 
         const upload = {
+          imageType: this.imageType,
           uploadFile: uploadFile,
           name: fileName
         }
@@ -423,7 +427,8 @@ export default {
 
       // Upload file and metadata to the folder_open user_avatars storage folder
       const storageRef = storage.ref()
-      const uploadTask = storageRef.child('user_avatars/' + upload.name).put(upload.uploadFile, metadata)
+      const storagePath = `user_${upload.imageType}s/${upload.name}`
+      const uploadTask = storageRef.child(storagePath).put(upload.uploadFile, metadata)
 
       // Listen for state changes, errors, and completion of the upload.
       uploadTask.on('state_changed', // or 'state_changed'
@@ -462,22 +467,46 @@ export default {
         }, () => {
           // Upload completed successfully, now we can get the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(async (downloadURL) => {
-            this.update({
-              loading: false,
-              avatarUrl: downloadURL,
-              avatarName: upload.name
-            })
-            if (this.data.avatarUrl) {
-              const playerAvatar = {
-                avatar: this.data.avatarUrl,
-                avatarName: this.data.avatarName
+            if (upload.imageType === 'avatar') {
+              this.update({
+                loading: false,
+                avatar: downloadURL,
+                avatarName: upload.name
+              })
+              if (this.data.avatar) {
+                const playerAvatar = {
+                  avatar: {
+                    avatarUrl: this.data.avatar,
+                    avatarName: this.data.avatarName
+                  }
+                }
+                const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
+                playerRef.update(playerAvatar)
+                  .then(() => {
+                    this.setUserInfo(playerAvatar)
+                    // return this.$emit('completed')
+                  })
               }
-              const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
-              playerRef.update(playerAvatar)
-                .then(() => {
-                  this.setUserInfo(playerAvatar)
-                  // return this.$emit('completed')
-                })
+            } else {
+              this.update({
+                loading: false,
+                photo: downloadURL,
+                photoName: upload.name
+              })
+              if (this.data.photo) {
+                const playerPhoto = {
+                  photo: {
+                    photoUrl: this.data.photo,
+                    photoName: this.data.photoName
+                  }
+                }
+                const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
+                playerRef.update(playerPhoto)
+                  .then(() => {
+                    this.setUserInfo(playerPhoto)
+                    // return this.$emit('completed')
+                  })
+              }
             }
           })
         })

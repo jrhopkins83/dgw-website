@@ -87,7 +87,7 @@ export default {
 
     .item-container {
         display: grid;
-        grid-template-columns: 4em 5em 7fr 6fr;
+        grid-template-columns: 4em 5em 8fr 6fr;
     }
 
     .attribute-container {
@@ -101,7 +101,7 @@ export default {
     }
 
     .stats {
-        --column-width-min: 5.2em;
+        --column-width-min: 4.2em;
     }
 
     .rank, .points , .games, .average, .winnings {

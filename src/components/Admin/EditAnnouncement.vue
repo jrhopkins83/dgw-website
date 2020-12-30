@@ -21,13 +21,15 @@
                 style="width: 60rem"
               />
             </div>
-            <div class="q-gutter-sm">
+            <div class="q-gutter-sm q-mt-sm">
               <q-checkbox v-model="formData.heroHeadline" label="Headline on Home Page?" />
             </div>
             <div class="attribute-container text">
               <modal-q-editor
                 ref="newsText"
                 :qeditor.sync="formData.newsText"
+                :editorMinHeight="editorMinHeight"
+                :editorMaxHeight="editorMaxHeight"
               >
               </modal-q-editor>
             </div>
@@ -86,7 +88,9 @@ export default {
         heroHeadline: false,
         id: ''
       },
-      formHasError: false
+      formHasError: false,
+      editorMinHeight: '10rem',
+      editorMaxHeight: '40rem'
     }
   },
   computed: {

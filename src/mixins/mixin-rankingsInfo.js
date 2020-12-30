@@ -93,13 +93,13 @@ export const scoreMixin = {
             this.createScoreCardsIdb(params, this.holes, this.db).then(() => {
               this.changeHole()
             })
-          } catch (err) {
-            showMessage('error', 'Error adding score card data: ' + err)
-            return err
+          } catch (error) {
+            showMessage('error', 'Error adding score card data: ' + error)
+            return error
           }
-        } catch (err) {
-          showMessage('error', 'Error adding leader board data ' + err)
-          return err
+        } catch (error) {
+          showMessage('error', 'Error adding leader board data ' + error)
+          return error
         }
         return null
       }
@@ -540,8 +540,8 @@ export const scoreMixin = {
         // Call function to update hole score
         try {
           await this.updateScoreCardsIdb(scoreInput)
-        } catch (err) {
-          showMessage('error', 'error updating scorecards ' + err)
+        } catch (error) {
+          showMessage('error', 'error updating scorecards ' + error)
         }
 
         // Next update daily leaderboard if scores not previously saved
@@ -613,8 +613,8 @@ export const scoreMixin = {
         // Call function to update hole score
         try {
           await this.updateScoreCardsIdb(scoreInput)
-        } catch (err) {
-          showMessage('error', 'error updating scorecards ' + err)
+        } catch (error) {
+          showMessage('error', 'error updating scorecards ' + error)
         }
 
         // Next update daily leaderboard if scores not previously saved
@@ -714,8 +714,8 @@ export const scoreMixin = {
             // Commit the batch
             return batch.commit()
           })
-          .catch(err => {
-            switch (err) {
+          .catch(error => {
+            switch (error) {
               case 'permission-denied':
                 showMessage('error', "You don't have access to that data.")
                 break
@@ -725,7 +725,7 @@ export const scoreMixin = {
                 break
 
               default:
-                showMessage('error', 'Error getting data: ' + err)
+                showMessage('error', 'Error getting data: ' + error)
             }
           })
       }
@@ -972,8 +972,8 @@ export const scoreMixin = {
       // Perform query to get scorecard documents for group
       try {
         await this.delDocsFromFS('dailyScores', params)
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to that data.")
             break
@@ -983,7 +983,7 @@ export const scoreMixin = {
             break
 
           default:
-            showMessage('error', 'Error getting data: ' + err)
+            showMessage('error', 'Error getting data: ' + error)
         }
       }
     }, // End function clearScores

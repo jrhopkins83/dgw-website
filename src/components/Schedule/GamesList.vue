@@ -206,8 +206,8 @@ export default {
         this.game = {}
         this.showViewGame = false
         this.$q.loading.hide()
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to add data.")
             break
@@ -215,7 +215,7 @@ export default {
             showMessage('error', 'Record not found in database')
             break
           default:
-            showMessage('error', 'Error deleting game: ' + err)
+            showMessage('error', 'Error deleting game: ' + error)
         }
       }
     },
@@ -257,8 +257,8 @@ export default {
         this.game = {}
         this.showEditGame = false
         this.$q.loading.hide()
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to add data.")
             break
@@ -266,14 +266,14 @@ export default {
             showMessage('error', 'Record not found in database')
             break
           default:
-            showMessage('error', 'Error saving game: ' + err)
+            showMessage('error', 'Error saving game: ' + error)
         }
       }
     },
     enterResults (value) {
       this.setTournamentID(value)
-      this.$router.push({ name: 'EnterResults' }).catch((err) => {
-        showMessage('error', `Problem handling something: ${err}.`)
+      this.$router.push({ name: 'EnterResults' }).catch((error) => {
+        showMessage('error', `Problem handling something: ${error}.`)
       })
     }
   }

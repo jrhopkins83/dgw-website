@@ -54,8 +54,6 @@ export default {
       const standings = this.standingsFiltered
 
       if (this.standingsLoaded && players.length && standings.length) {
-        console.log(players)
-        console.log(standings)
         const standingsMerged = standings.map(player => ({
           ...players.find((player) => (player.id === standings.id) && player),
           ...player

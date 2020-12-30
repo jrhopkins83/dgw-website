@@ -76,8 +76,8 @@ export default {
         await this.bindStandingsRef(standingsRef)
 
         this.setStandingsLoaded(true)
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to standings data.")
             break
@@ -85,7 +85,7 @@ export default {
             showMessage('error', 'Record not found in database')
             break
           default:
-            showMessage('error', 'Error getting season standings: ' + err)
+            showMessage('error', 'Error getting season standings: ' + error)
         }
         this.setStandingsLoaded(true)
       }

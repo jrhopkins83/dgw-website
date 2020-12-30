@@ -266,8 +266,8 @@ const actions = {
         return commit('SET_RESULTS_LOADED', true)
         // }
       }
-    } catch (err) {
-      switch (err) {
+    } catch (error) {
+      switch (error) {
         case 'permission-denied':
           showMessage('error', "You don't have access to this data.")
           break
@@ -275,9 +275,9 @@ const actions = {
           showMessage('error', 'Record not found in database')
           break
         default:
-          showMessage('error', 'Error getting tournament results: ' + err)
+          showMessage('error', 'Error getting tournament results: ' + error)
       }
-      return err
+      return error
     }
   },
   bindResultsRef: firestoreAction((context, ref) => {

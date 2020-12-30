@@ -16,7 +16,7 @@ exports.addAdminRole = functions.https.onCall((data, context) => {
     return {
       message: `Success! ${data.email} has been made an admin.`
     }
-  }).catch(err => {
-    return err
+  }).catch(error => {
+    return error
   })
 })

@@ -5,7 +5,7 @@
         <ol class='collection collection-container player-table q-mb-sm'>
           <!-- The first list item is the header of the table -->
           <li class='item item-container player-table__heading-row q-pb-sm'>
-            <div class='attribute rank'>Rank</div>
+            <div class='attribute rank q-ml-xs'>Rank</div>
             <div class='attribute player'>Player</div>
             <!-- Enclose semantically similar attributes as a div hierarchy -->
             <div class='attribute-container player-information'>
@@ -74,7 +74,7 @@ export default {
 
       .item-container {
           display: grid;
-          grid-template-columns: 4em 5em 7fr 6fr;
+          grid-template-columns: 4em 5em 8fr 6fr;
 
       }
 
@@ -94,7 +94,7 @@ export default {
       }
 
       .stats {
-          --column-width-min: 5.2em;
+          --column-width-min: 4.2em;
       }
 
       // .rank, .player, .points, .games, .average, .winnings {

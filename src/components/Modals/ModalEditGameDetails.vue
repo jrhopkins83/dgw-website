@@ -8,7 +8,7 @@
           ref="gameForm"
         >
           <div class="form-container">
-            <div class="attribute-container structure">
+            <div class="attribute-container structure q-mb-lg">
               <q-select
                 dense
                 outlined
@@ -19,14 +19,13 @@
                 input-class="text-center"
                 label="Template"
                 stack-label
-                :rules="[required]"
                 :options="templateOptions"
                 option-value="index"
                 option-label="template"
                 option-disable="inactive"
                 emit-value
                 map-options
-                style="min-width: 250px; max-width: 300px"
+                style="min-width: 250px; max-width: 300px; margin-bottom: 2rem"
                 @input="pullFromTemplate($event)"
               />
               <q-select
@@ -151,7 +150,6 @@
               </q-field>
             </div>
             <div class="attribute-container location">
-
               <q-input
                 ref="location"
                 v-model="formData.location"
@@ -160,18 +158,23 @@
                 clearable
                 clear-icon="close"
                 outlined
-                id="firstName"
-                filled
                 type="textarea"
+                :input-style="locationStyle"
               />
             </div>
             <div class="attribute-container notes">
-              <div class="label text-bold text-white">
+              <div class="label text-bold">
                 Notes
               </div>
-              <div>
-                <q-editor v-model="formData.notes" min-height="17rem" />
-              </div>
+              <div class="attribute-container text">
+                <modal-q-editor
+                  ref="newsText"
+                  :qeditor.sync="formData.notes"
+                  :editorMinHeight="editorMinHeight"
+                  :editorMaxHeight="editorMaxHeight"
+                >
+                </modal-q-editor>
+            </div>
             </div>
           </div>
         </q-form>
@@ -182,6 +185,7 @@
             <q-btn
               label="Submit"
               color="blue-9"
+              text-color="white"
               @click="submitForm"
             />
 
@@ -212,7 +216,8 @@ export default {
     Money,
     modalHeader: require('components/Modals/Shared/ModalHeader.vue').default,
     modalPickDate: require('src/components/Modals/Shared/ModalDate.vue').default,
-    modalPickTime: require('src/components/Modals/Shared/ModalTime.vue').default
+    modalPickTime: require('src/components/Modals/Shared/ModalTime.vue').default,
+    modalQEditor: require('components/Modals/Shared/ModalQEditor.vue').default
   },
   props: {
     game: {
@@ -258,6 +263,8 @@ export default {
       ],
       gameToSubmit: {},
       validation: false,
+      editorMinHeight: '10rem',
+      editorMaxHeight: '30rem',
       moneyFormatForComponent: {
         decimal: '.',
         thousands: ',',
@@ -265,7 +272,8 @@ export default {
         suffix: '',
         precision: 0,
         masked: true
-      }
+      },
+      locationStyle: '{ "max-height: 10rem" }'
 
     }
   },
@@ -383,6 +391,13 @@ export default {
         .attribute-container.buy-in {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
+        }
+
+        .attribute-container.location {
+          max-height: 11rem;
+          .q-textarea {
+            max-height: 10rem;
+          }
         }
 
         .q-field__input {

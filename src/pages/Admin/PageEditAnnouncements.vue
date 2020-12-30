@@ -162,8 +162,8 @@ export default {
         this.announcement = {}
         this.showAddEdit = false
         this.$q.loading.hide()
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to add data.")
             break
@@ -171,7 +171,7 @@ export default {
             showMessage('error', 'Announcement not found in database')
             break
           default:
-            showMessage('error', 'Error delete announcement: ' + err)
+            showMessage('error', 'Error delete announcement: ' + error)
         }
       }
     },
@@ -199,8 +199,8 @@ export default {
         this.announcement = {}
         this.showAddEdit = false
         this.$q.loading.hide()
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to add data.")
             break
@@ -208,7 +208,7 @@ export default {
             showMessage('error', 'Record not found in database')
             break
           default:
-            showMessage('error', 'Error saving announcement: ' + err)
+            showMessage('error', 'Error saving announcement: ' + error)
         }
       }
     }

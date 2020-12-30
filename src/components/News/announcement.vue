@@ -2,7 +2,7 @@
   <div class="news_item row wrap justify-between items-start content-start">
     <div class="headline--subject">
       <div>
-        <div class="text-h3 text-bold">{{ item.subject}}</div>
+        <div class="text-h3 text-bold q-mt-sm">{{ item.subject}}</div>
       </div>
     </div>
     <div class="attribute-container headline-buttons" v-if="adminButtons">

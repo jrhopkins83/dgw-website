@@ -42,35 +42,35 @@ const actions = {
           }
           commit('SET_ERROR_MESSAGE', LoginError)
         })
-        .catch(err => {
-          const errorCode = err.code
-          let error = {}
+        .catch(error => {
+          const errorCode = error.code
+          let returnError = {}
           switch (errorCode) {
             case 'auth/wrong-password':
-              error = {
+              returnError = {
                 errorCode: errorCode,
                 errorMessage: 'Wrong password.'
               }
               break
             case 'auth/too-many-requests':
-              error = {
+              returnError = {
                 errorCode: errorCode,
                 errorMessage: 'Forgot password? Click Reset to receive a reset password e-mail'
               }
               break
             case 'auth/user-not-found':
-              error = {
+              returnError = {
                 errorCode: errorCode,
                 errorMessage: 'e-mail not found.  Correct it or click on the Register tab to sign up.'
               }
               break
             default:
-              error = {
+              returnError = {
                 errorCode: errorCode,
                 errorMessage: error.message
               }
           }
-          commit('SET_ERROR_MESSAGE', error)
+          commit('SET_ERROR_MESSAGE', returnError)
         })
     }
     Loading.hide()
@@ -94,7 +94,7 @@ const actions = {
             })
           }
           Loading.hide()
-          this.$router.push('/').catch(err => { })
+          this.$router.push('/').catch(error => { })
         }
         commit('SET_LOGGEDIN', true)
         LocalStorage.set('loggedIn', true)
@@ -104,7 +104,7 @@ const actions = {
         LocalStorage.set('loggedIn', false)
         // eslint-disable-next-line handle-callback-err
         Loading.hide()
-        this.$router.replace('/auth').catch(err => { })
+        this.$router.replace('/auth').catch(error => { })
       }
     })
   },

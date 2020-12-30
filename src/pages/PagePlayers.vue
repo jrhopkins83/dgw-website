@@ -86,8 +86,8 @@ export default {
     async loadPlayers () {
       try {
         await this.fbPlayers()
-      } catch (err) {
-        switch (err) {
+      } catch (error) {
+        switch (error) {
           case 'permission-denied':
             showMessage('error', "You don't have access to players data.")
             break
@@ -95,7 +95,7 @@ export default {
             showMessage('error', 'Record not found in database')
             break
           default:
-            showMessage('error', 'Error getting players: ' + err)
+            showMessage('error', 'Error getting players: ' + error)
         }
         this.setResultsLoaded(true)
       }

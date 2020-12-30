@@ -52,7 +52,7 @@ export default {
       return this.$q.screen.width
     },
     player_avatar: function () {
-      if (this.player.avatar) {
+      if (this.player.avatar.avatarUrl) {
         return this.player.avatar.avatarUrl
       } else {
         return 'default.jpg'

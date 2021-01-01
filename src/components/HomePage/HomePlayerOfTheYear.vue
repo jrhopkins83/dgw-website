@@ -1,5 +1,5 @@
 <template>
-  <div class="row POYBar q-pa-xs items-center">
+  <div class="row POYBar q-pa-xs items-center" v-if="playersLoaded && standingsLoaded">
     <div class="col-2 POYBar__row-title text-h4 text-bold text-center q-mr-sm">
         Player of the Year
     </div>
@@ -10,7 +10,7 @@
     >
       <div class="row items-center">
         <div class="col-3">
-          <div class="player-img" v-if="player.avatar">
+          <div class="player-img" v-if="player.avatar.avatarUrl">
             <q-avatar
               size="56px"
             >
@@ -53,6 +53,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('players', ['playersLoaded']),
     ...mapGetters('standings', ['standingsLoaded']),
     updating () {
       const stillLoading = !this.standingsLoaded // TO-DO: add other loading events

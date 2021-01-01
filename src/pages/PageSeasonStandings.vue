@@ -48,20 +48,6 @@ export default {
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {
       return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
-    },
-    standingsList () {
-      const players = Object.values(this.playersFiltered)
-      const standings = this.standingsFiltered
-
-      if (this.standingsLoaded && players.length && standings.length) {
-        const standingsMerged = standings.map(player => ({
-          ...players.find((player) => (player.id === standings.id) && player),
-          ...player
-        }))
-        return standingsMerged
-      } else {
-        return players
-      }
     }
   },
   methods: {

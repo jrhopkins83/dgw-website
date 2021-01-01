@@ -94,7 +94,11 @@ export default {
   },
   async beforeMount () {
 
+  },
+  destroyed () {
+    this.setGameFilter('')
   }
+
 }
 
 </script>

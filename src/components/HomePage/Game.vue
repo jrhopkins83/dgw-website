@@ -77,7 +77,6 @@ export default {
 
           .attribute.buy-in {
             display: flex;
-            align-items: center;
             justify-content: center;
           }
       }

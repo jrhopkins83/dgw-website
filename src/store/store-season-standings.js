@@ -7,7 +7,8 @@ const initialState = () => {
   return {
     standingsLoaded: false,
     seasonStandings: [],
-    search: ''
+    search: '',
+    playerID: ''
   }
 }
 const state = initialState()
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_SEARCH (state, value) {
     state.search = value
+  },
+  SET_PLAYERID (state, value) {
+    state.playerID = value
   },
   SET_TXT_ROUND_DT (state, value) {
     state.txtRoundDt = value
@@ -46,6 +50,9 @@ const actions = {
   },
   setSearch ({ commit }, value) {
     commit('SET_SEARCH', value)
+  },
+  setPlayerID ({ commit }, value) {
+    commit('SET_PLAYERID', value)
   },
   setTxtRoundDt ({ commit }, value) {
     commit('SET_TXT_ROUND_DT', value)
@@ -137,6 +144,28 @@ const getters = {
     }
   },
   standingsFiltered: (state, getters, commit) => {
+    const standingsSorted = getters.standingsSorted,
+      standingsFiltered = []
+
+    if (state.search) {
+      standingsSorted.forEach((player) => {
+        const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName} `
+        player.fullName = fullName
+
+        const playerNameLowerCase = fullName.toLowerCase()
+        const searchLowerCase = state.search.toLowerCase()
+
+        player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
+
+        if (playerNameLowerCase.includes(searchLowerCase)) {
+          standingsFiltered.push(player)
+        }
+      })
+      return standingsFiltered
+    }
+    return standingsSorted
+  },
+  playerStandings: (state, getters, commit) => {
     const standingsSorted = getters.standingsSorted,
       standingsFiltered = []
 

@@ -1,30 +1,28 @@
 <template>
   <div>
-    <template v-if="standingsLoaded && playersLoaded">
-      <div class="column container">
-        <div class="col header">
-          <div class="col-12 header__title text-center">
-            <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
-              Final Table Standings
-            </div>
-            <div class="col-12 text-subtitle1 text-weight-bold q-pt-none q-pb-xs">
-              (Top {{ limit }} qualify)
-            </div>
-            <div class="col-12 text-body1 text-weight-bold q-pt-none q-pb-xs">
-              through {{ txtLastDate }}
-            </div>
+    <div class="column container">
+      <div class="col header">
+        <div class="col-12 header__title text-center">
+          <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
+            Final Table Standings
           </div>
-        </div>
-        <div class="column ranking-section">
-          <div class="ranking-section__player-rankings">
-            <player-rankings
-              :standings="finalTableList"
-            >
-            </player-rankings>
+          <div class="col-12 text-subtitle1 text-weight-bold q-pt-none q-pb-xs">
+            (Top {{ limit }} qualify)
+          </div>
+          <div class="col-12 text-body1 text-weight-bold q-pt-none q-pb-xs">
+            through {{ txtLastDate }}
           </div>
         </div>
       </div>
-    </template>
+      <div class="column ranking-section">
+        <div class="ranking-section__player-rankings">
+          <player-rankings
+            :standings="finalTableList"
+          >
+          </player-rankings>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,9 +42,7 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
-    ...mapGetters('standings', ['standingsLoaded', 'standingsFiltered']),
     ...mapGetters('games', ['lastCompletedDate']),
-    ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     updating () {
       const stillLoading = !this.standingsLoaded // TO-DO: add other loading events
       return stillLoading
@@ -57,11 +53,13 @@ export default {
     finalTableList () {
       const finalTableList = []
 
-      this.standingsFiltered.forEach(player => {
-        if (player.position <= this.limit) {
-          finalTableList.push(player)
-        }
-      })
+      if (this.standings) {
+        this.standings.forEach(player => {
+          if (player.position <= this.limit) {
+            finalTableList.push(player)
+          }
+        })
+      }
 
       return finalTableList
     },
@@ -78,10 +76,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .q-page {
-    min-height: auto;
-  }
-
   .container {
     position: relative;
     color: black;

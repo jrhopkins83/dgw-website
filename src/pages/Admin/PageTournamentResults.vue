@@ -2,7 +2,7 @@
   <q-page style="min-height: inherit;">
     <div
       class="container"
-      v-if="resultsLoaded && finishedLoaded && leagueInfoLoaded"
+      v-if="weeklyResultsLoaded && finishedLoaded && leagueInfoLoaded"
     >
       <div class="row header">
         <div class="col-12">
@@ -163,7 +163,7 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded']),
-    ...mapGetters('tourneyResults', ['tournamentID', 'tournamentResults', 'resultsLoaded', 'finishedLoaded', 'finishedPlayers']),
+    ...mapGetters('tourneyResults', ['tournamentID', 'tournamentResults', 'weeklyResultsLoaded', 'finishedLoaded', 'finishedPlayers']),
     ...mapGetters('tourneyResults', ['reorderFlag', 'resultsSorted', 'resultsFiltered', 'remainingPlayers', 'numCheckedIn', 'tournamentInfo']),
     txtTournamentDate: function () {
       return date.formatDate(this.tournamentInfo.gameDate.toDate(), 'dddd MMMM D')
@@ -181,7 +181,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('tourneyResults', ['fbResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
+    ...mapActions('tourneyResults', ['fbWeeklyResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
     ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setSort', 'setReorderFlag', 'setFinishedLoaded']),
     enterPayouts () {
       if (this.remaining > 0) {
@@ -196,7 +196,7 @@ export default {
     if (this.tournamentID) {
       await this.fbTournamentInfo(this.tournamentID)
       // Get tournament results if loaded.  If not loaded, call function to create
-      await this.fbResults(this.tournamentID)
+      await this.fbWeeklyResults(this.tournamentID)
       if (this.tournamentInfo.type && !this.tournamentResults.length) {
         try {
           // TO-DO: convert to FB function
@@ -213,7 +213,7 @@ export default {
             // })
             createTournamentResults(this.tournamentInfo, this.tournamentID).then(async () => {
               // Reload results
-              await this.fbResults(this.tournamentID)
+              await this.fbWeeklyResults(this.tournamentID)
             })
           }
         } catch (error) {

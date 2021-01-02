@@ -60,13 +60,13 @@ const actions = {
       })
   },
   bindAnnouncements: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('announcements', ref)
+    return context.bindFirestoreRef('announcements', ref)
   }),
   unbindAnnouncements: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('announcements')
   }),
   bindHeroHeadline: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('lastHeroHeadline', ref)
+    return context.bindFirestoreRef('lastHeroHeadline', ref)
   }),
   unbindHeroHeadline: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('lastHeroHeadline')

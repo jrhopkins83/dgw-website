@@ -51,8 +51,10 @@ export default {
 
   },
   methods: {
-    viewPlayerDetails () {
-
+    viewPlayerDetails (playerID) {
+      this.$router.push({ name: 'PlayerResults', params: { playerID: playerID } }).catch((err) => {
+        console.log('error', `Problem handling something: ${err}.`)
+      })
     }
   }
 }

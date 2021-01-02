@@ -9,7 +9,7 @@ firestoreOptions.wait = true
 
 const initialState = () => {
   return {
-    resultsLoaded: false,
+    weeklyResultsLoaded: false,
     finishedLoaded: false,
     reorderFlag: false,
     playersReordered: false,
@@ -54,7 +54,7 @@ const mutations = {
     state.tournamentID = value
   },
   SET_RESULTS_LOADED (state, value) {
-    state.resultsLoaded = value
+    state.weeklyResultsLoaded = value
   },
   SET_FINISHED_LOADED (state, value) {
     state.finishedLoaded = value
@@ -243,7 +243,7 @@ const actions = {
     }
     commit('SET_FINISHED_LOADED', true)
   },
-  async fbResults ({ commit, dispatch, state }, id) {
+  async fbWeeklyResults ({ commit, dispatch, state }, id) {
     try {
       if (id) {
         const resultsRef = firebaseStore.collection('tournamentResults')
@@ -284,7 +284,7 @@ const actions = {
     context.bindFirestoreRef('tournamentResults', ref)
   }),
   unbindResultsRef: firestoreAction((context) => {
-    context.bindFirestoreRef('tournamentResults')
+    context.unbindFirestoreRef('tournamentResults')
   }),
   setNumRSVPD ({ commit }, value) {
     commit('SET_NUM_RSVP', value)
@@ -322,8 +322,8 @@ const actions = {
 }
 
 const getters = {
-  resultsLoaded: state => {
-    return state.resultsLoaded
+  weeklyResultsLoaded: state => {
+    return state.weeklyResultsLoaded
   },
   finishedLoaded: state => {
     return state.finishedLoaded

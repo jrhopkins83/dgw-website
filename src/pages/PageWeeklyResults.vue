@@ -2,7 +2,7 @@
   <q-page style="min-height: inherit;">
     <div
       class="container"
-      v-if="resultsLoaded && gamesLoaded && playersLoaded"
+      v-if="weeklyResultsLoaded && gamesLoaded && playersLoaded"
     >
       <div class="left-column">
         <div class="left-column__header text-white">
@@ -57,41 +57,20 @@ export default {
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('games', ['completedGames', 'gamesLoaded', 'gameDates']),
-    ...mapGetters('weeklyResults', ['search', 'resultsLoaded', 'resultsFiltered']),
+    ...mapGetters('weeklyResults', ['search', 'weeklyResultsLoaded', 'resultsFiltered']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     completedGamesArr: function () {
       return Object.values(this.completedGames)
     },
     txtPickDate: function () {
       return date.formatDate(this.gameDate.toDate(), 'MM / DD')
-    },
-    resultsMerged () {
-      const players = this.playersFiltered
-      const results = []
-      Object.keys(this.resultsFiltered).forEach(key => {
-        let result = {}
-        result = this.resultsFiltered[key]
-        result.id = this.resultsFiltered[key].playerID
-        results.push(result)
-      })
-
-      if (this.resultsLoaded && players.length && results.length) {
-        const resultsMerged = players.map(player => ({
-          ...results.find((result) => (result.id === player.id) && result),
-          ...player
-        }))
-        return resultsMerged
-      } else {
-        return null
-      }
     }
-
   },
   methods: {
-    ...mapActions('weeklyResults', ['fbResults', 'setSearch']),
+    ...mapActions('weeklyResults', ['fbWeeklyResults', 'setSearch']),
     async loadWeeklyResults (gameDate) {
       try {
-        return await this.fbResults(gameDate)
+        return await this.fbWeeklyResults(gameDate)
       } catch (error) {
         switch (error) {
           case 'permission-denied':

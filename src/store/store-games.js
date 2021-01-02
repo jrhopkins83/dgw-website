@@ -66,7 +66,7 @@ const actions = {
     return true
   },
   bindLeagueDates: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('gameDates', ref)
+    return context.bindFirestoreRef('gameDates', ref)
   }),
   unbindLeagueDates: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('gameDates')

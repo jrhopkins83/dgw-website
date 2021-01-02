@@ -161,13 +161,13 @@ const actions = {
     context.unbindFirestoreRef('leagueInfo')
   }),
   bindLeaguePoints: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('points', ref)
+    return context.bindFirestoreRef('points', ref)
   }),
   unbindLeaguePoints: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('points')
   }),
   bindGameTemplates: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('gameTemplates', ref)
+    return context.bindFirestoreRef('gameTemplates', ref)
   }),
   unbindGameTemplates: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('gameTemplates')

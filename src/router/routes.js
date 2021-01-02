@@ -44,6 +44,14 @@ const routes = [{
       },
       component: () => import('pages/PagePlayers.vue')
     }, {
+      path: 'player-results/:playerID',
+      name: 'PlayerResults',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('pages/PagePlayerResults.vue')
+    }, {
       path: 'announcements',
       name: 'Announcements',
       props: true,

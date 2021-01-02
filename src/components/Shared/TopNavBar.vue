@@ -19,12 +19,13 @@
           <q-btn-toggle
             value="tab"
             flat stretch
-            nowrap
+            noWrap
             toggle-color="white"
             :options="userNavs"
             @input="navigate"
           />
-          <template v-if="userInfo.isAdmin">
+          <template>
+          <!-- <template v-if="userInfo.isAdmin"> -->
             <q-btn-dropdown
               class="auto-close stretch flat label"
               style="font-size: 15px"
@@ -265,8 +266,8 @@ export default {
     ...mapGetters('auth', ['loggedIn']),
     ...mapGetters('leagueSettings', ['leagueInfo', 'userInfo']),
     user_avatar: function () {
-      if (this.userInfo.avatar) {
-        return this.userInfo.avatar
+      if (this.userInfo.avatar.avatarUrl) {
+        return this.userInfo.avatar.avatarUrl
       } else {
         return 'default.jpg'
       }

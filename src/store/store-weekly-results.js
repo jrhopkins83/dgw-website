@@ -6,9 +6,12 @@ firestoreOptions.wait = true
 
 const initialState = () => {
   return {
-    resultsLoaded: false,
+    weeklyResultsLoaded: false,
+    playerResultsLoaded: false,
     weeklyResults: [],
-    search: ''
+    playerResults: [],
+    search: '',
+    playerID: ''
   }
 }
 const state = initialState()
@@ -24,6 +27,9 @@ const mutations = {
     const newState = initialState()
     state[key] = newState[key]
   },
+  SET_PLAYERID (state, value) {
+    state.playerID = value
+  },
   SET_SEARCH (state, value) {
     state.search = value
   },
@@ -31,7 +37,10 @@ const mutations = {
     state.txtRoundDt = value
   },
   SET_WEEKLY_RESULTS_LOADED (state, value) {
-    state.resultsLoaded = value
+    state.weeklyResultsLoaded = value
+  },
+  SET_PLAYER_RESULTS_LOADED (state, value) {
+    state.playerResultsLoaded = value
   },
   SET_WEEKLY_RESULTS (state, value) {
     Object.assign(state.weeklyResults, value)
@@ -39,10 +48,12 @@ const mutations = {
 }
 
 const actions = {
-  resetPoints ({ commit }) {
+  resetResults ({ commit, dispatch }) {
     commit('RESET_RESULTS')
+    dispatch('unbindResultsRef')
+    dispatch('unbindPlayerResultsRef')
   },
-  resetPointsObject ({ commit }, object) {
+  resetResultsObject ({ commit }, object) {
     commit('RESET_RESULTS_OBJECT', object)
   },
   setSearch ({ commit }, value) {
@@ -57,27 +68,51 @@ const actions = {
   setWeeklyResults ({ commit }, payload) {
     commit('SET_WEEKLY_RESULTS', payload)
   },
-  async fbResults ({ commit, dispatch, state }, gameDate) {
+  async fbPlayerResults ({ commit, dispatch, state }, playerID) {
+    const resultsRef = firebaseStore.collection('weeklyResults')
+      .where('playerID', '==', playerID)
+      .orderBy('gameDate', 'desc')
+
+    await dispatch('bindPlayerResultsRef', resultsRef)
+    return commit('SET_PLAYER_RESULTS_LOADED', true)
+  },
+  async fbWeeklyResults ({ commit, dispatch, state }, gameDate) {
     const resultsRef = firebaseStore.collection('weeklyResults')
       .where('gameDate', '==', gameDate)
 
-    dispatch('bindResultsRef', resultsRef)
+    dispatch('bindWeeklyResultsRef', resultsRef)
     return commit('SET_WEEKLY_RESULTS_LOADED', true)
   },
-  bindResultsRef: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('weeklyResults', ref)
+  bindWeeklyResultsRef: firestoreAction((context, ref) => {
+    return context.bindFirestoreRef('weeklyResults', ref)
+  }),
+  unbindResultsRef: firestoreAction((context) => {
+    context.unbindFirestoreRef('weeklyResults')
+  }),
+  bindPlayerResultsRef: firestoreAction((context, ref) => {
+    return context.bindFirestoreRef('playerResults', ref)
+  }),
+  unbindPlayerResultsRef: firestoreAction((context) => {
+    context.unbindFirestoreRef('playerResults')
   })
+
 }
 
 const getters = {
-  resultsLoaded: state => {
-    return state.resultsLoaded
+  weeklyResultsLoaded: state => {
+    return state.weeklyResultsLoaded
+  },
+  playerResultsLoaded: state => {
+    return state.playerResultsLoaded
   },
   search: state => {
     return state.search
   },
   weeklyResults: state => {
     return state.weeklyResults
+  },
+  playerResults: state => {
+    return state.playerResults
   },
   txtRoundDt: state => {
     return state.txtRoundDt
@@ -86,7 +121,7 @@ const getters = {
     const players = Object.values(rootState.players.players)
     const results = state.weeklyResults
 
-    if (getters.resultsLoaded && players.length && results.length) {
+    if (getters.weeklyResultsLoaded && players.length && results.length) {
       // const resultsMerged = players.map(player => ({
       //   ...results.find((result) => (result.playerID === player.playerID) && result),
       //   ...player

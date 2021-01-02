@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="leagueInfoLoaded && playersLoaded">
+    <template v-if="leagueInfoLoaded && playersLoaded && standingsLoaded">
       <q-page style="min-height: inherit;">
         <div class="row">
           <div class="col">
@@ -20,7 +20,10 @@
         </div>
         <div class="row">
           <div class="col">
-            <home-leader-board></home-leader-board>
+            <home-leader-board
+              :standings="standingsFiltered"
+            >
+            </home-leader-board>
           </div>
         </div>
         <div class="row">
@@ -93,12 +96,14 @@ export default {
   },
 
   async created () {
-    this.loadSeasonStandings()
-  },
-  async mounted () {
+    if (!this.standingsLoaded) {
+      this.loadSeasonStandings()
+    }
     if (!this.announcementsLoaded) {
       await this.fbGetAnnouncements()
     }
+  },
+  async mounted () {
   }
 
 }

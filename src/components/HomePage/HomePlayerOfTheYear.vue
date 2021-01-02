@@ -62,11 +62,13 @@ export default {
     top4Players () {
       const finalTableList = []
 
-      this.standings.forEach(player => {
-        if (player.position <= this.limit) {
-          finalTableList.push(player)
-        }
-      })
+      if (this.standings) {
+        this.standings.forEach(player => {
+          if (player.position <= this.limit) {
+            finalTableList.push(player)
+          }
+        })
+      }
 
       return finalTableList
     }

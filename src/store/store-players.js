@@ -88,13 +88,13 @@ const actions = {
     }
   },
   bindPlayersRef: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('players', ref)
+    return context.bindFirestoreRef('players', ref)
   }),
   unBindPlayersRef: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('players')
   }),
   bindSubscribersRef: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('subscribers', ref)
+    return context.bindFirestoreRef('subscribers', ref)
   }),
   unBindSubscribersRef: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('subscribers')

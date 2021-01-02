@@ -4,7 +4,11 @@
       class="item item-container player-table__items q-mt-xs">
       <div class="attribute rank">{{ player.position }}</div>
       <div class="player-img q-px-sm q-py-xs">
-        <q-avatar>
+        <q-avatar
+          clickable
+          ripple
+          @click="selectPlayer"
+        >
           <img :src="player_avatar" color="primary">
         </q-avatar>
       </div>
@@ -54,6 +58,7 @@ export default {
   },
   computed: {
     winnings_formatted () {
+      console.log('player: ', this.player)
       return formatter.format(this.player.winnings)
     },
     screenWidth () {

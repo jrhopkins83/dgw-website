@@ -4,7 +4,11 @@
       class="item item-container player-table__items q-mt-xs">
       <div class="attribute rank">{{ player.finishedPosition }}</div>
       <div class="player-img q-px-sm q-py-xs">
-        <q-avatar>
+        <q-avatar
+          clickable
+          ripple
+          @click="selectPlayer"
+        >
           <img :src="player_avatar" color="primary">
         </q-avatar>
       </div>

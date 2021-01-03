@@ -26,15 +26,11 @@
     "pica": "^6.1.1",
     "quasar": "^1.0.0",
     "v-money": "^0.8.1",
-    "vue-cropperjs": "^4.2.0",
-    "vue-easy-dnd": "^1.10.2",
-    "vue-smooth-dnd": "^0.8.1",
     "vuedraggable": "^2.24.3",
     "vuelidate": "^0.7.6",
     "vuexfire": "^3.2.4"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^1.1.6",
     "@quasar/app": "^2.0.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.0.1",

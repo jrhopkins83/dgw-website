@@ -130,11 +130,13 @@ const actions = {
       const pointsRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('pointsAssignments').orderBy('position')
       await dispatch('bindLeaguePoints', pointsRef)
 
-      // Get game templates used to add new games
-      const templatesRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('gameTemplates')
-        .orderBy('type')
-        .orderBy('structure')
-      await dispatch('bindGameTemplates', templatesRef)
+      // Get game templates used to add new games for admins only
+      if (state.userInfo.isAdmin) {
+        const templatesRef = firebaseStore.collection('leagueInfo').doc(leagueID).collection('gameTemplates')
+          .orderBy('type')
+          .orderBy('structure')
+        await dispatch('bindGameTemplates', templatesRef)
+      }
 
       // Get completed games
       await dispatch('games/fbGetGames', null, {

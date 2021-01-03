@@ -1,43 +1,49 @@
 <template>
   <div>
-    <template v-if="leagueInfoLoaded && playersLoaded && standingsLoaded">
-      <q-page style="min-height: inherit;">
-        <div class="row">
-          <div class="col">
-            <hero-section
-              :bank="leagueInfo.bank"
-            >
-            </hero-section>
+    <transition
+      appear
+      enter-active-class="animated fadeIn"
+      leave-active-class="animated fadeOut"
+    >
+      <template v-if="leagueInfoLoaded && playersLoaded && standingsLoaded">
+        <q-page style="min-height: inherit;">
+          <div class="row">
+            <div class="col">
+              <hero-section
+                :bank="leagueInfo.bank"
+              >
+              </hero-section>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col gt-md">
-            <home-player-of-the-year
-              :standings="standingsFiltered"
-            >
-            </home-player-of-the-year>
+          <div class="row">
+            <div class="col gt-md">
+              <home-player-of-the-year
+                :standings="standingsFiltered"
+              >
+              </home-player-of-the-year>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <home-leader-board
-              :standings="standingsFiltered"
-            >
-            </home-leader-board>
+          <div class="row">
+            <div class="col">
+              <home-leader-board
+                :standings="standingsFiltered"
+              >
+              </home-leader-board>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <home-upcoming-games></home-upcoming-games>
+          <div class="row">
+            <div class="col">
+              <home-upcoming-games></home-upcoming-games>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <home-news></home-news>
+          <div class="row">
+            <div class="col">
+              <home-news></home-news>
+            </div>
           </div>
-        </div>
-      </q-page>
-    </template>
+        </q-page>
+      </template>
+    </transition>
   </div>
 </template>
 

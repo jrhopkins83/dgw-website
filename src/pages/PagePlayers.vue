@@ -1,30 +1,36 @@
 <template>
   <q-page style="min-height: inherit;">
-    <template v-if="playersLoaded">
-      <div class="column container">
-        <div class="col header">
-          <div class="col-12 header__title text-center">
-            <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
-              Donkey's Gone Wild Playeres
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutRight"
+    >
+      <template v-if="playersLoaded">
+        <div class="column container">
+          <div class="col header">
+            <div class="col-12 header__title text-center">
+              <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
+                Donkey's Gone Wild Playeres
+              </div>
+            </div>
+          </div>
+          <div class="column player-section">
+            <div class="column player-section__search-bar q-pa-xs q-ma-md">
+              <search>
+              </search>
+            </div>
+            <div class="player-list" :class="isAdmin">
+              <player-list
+                :playerList="playerList"
+                :isAdmin="isAdmin"
+                :adminButtons="adminButtons"
+              >
+              </player-list>
             </div>
           </div>
         </div>
-        <div class="column player-section">
-          <div class="column player-section__search-bar q-pa-xs q-ma-md">
-            <search>
-            </search>
-          </div>
-          <div class="player-list" :class="isAdmin">
-            <player-list
-              :playerList="playerList"
-              :isAdmin="isAdmin"
-              :adminButtons="adminButtons"
-            >
-            </player-list>
-          </div>
-        </div>
-      </div>
-    </template>
+      </template>
+    </transition>
   </q-page>
 </template>
 

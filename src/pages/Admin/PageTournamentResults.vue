@@ -1,126 +1,132 @@
 <template>
-  <q-page style="min-height: inherit;">
-    <div
-      class="container"
-      v-if="weeklyResultsLoaded && finishedLoaded && leagueInfoLoaded"
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutRight"
     >
-      <div class="row header">
-        <div class="col-12">
-          <div class="header__title text-center text-h3 q-mt-md">
-            Tournament Results
+    <q-page style="min-height: inherit;">
+      <div
+        class="container"
+        v-if="weeklyResultsLoaded && finishedLoaded && leagueInfoLoaded"
+      >
+        <div class="row header">
+          <div class="col-12">
+            <div class="header__title text-center text-h3 q-mt-md">
+              Tournament Results
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="header__date text-center">
+              {{ txtTournamentDate }}
+            </div>
+          </div>
+          <div class="header__subheading">
+            <div class="attribute-container header_searchbox">
+              <div class="header__search-bar q-pa-xs">
+                <search />
+                <!-- <sort-field /> -->
+              </div>
+            </div>
+            <div class="attribute-container total-information">
+              <div class="attribute ">Total checked in: {{ numCheckedIn }}</div>
+              <div class="attribute">Total knocked out: {{ numFinished }}</div>
+              <div class="attribute">Total remaining: {{ remaining }}</div>
+            </div>
+            <div class="attribute-container button-section">
+              <div class="attribute edit-button" v-if="!reorderFlag">
+                <q-btn
+                  color="white"
+                  icon="edit"
+                  round
+                  text-color="black"
+                  align="center"
+                  size="md"
+                  @click="setReorderFlag(true)"
+                >
+                </q-btn>
+              </div>
+              <div class="attribute edit-button" v-else>
+                <q-btn
+                  color="white"
+                  round
+                  icon="check_circle_outline"
+                  text-color="black"
+                  align="center"
+                  size="md"
+                  @click="setReorderFlag(false)"
+                >
+                  <q-tooltip>
+                    Edit the finish order.
+                  </q-tooltip>
+                </q-btn>
+              </div>
+              <div class="attribute payout-button text-center">
+                <q-btn
+                  color="green"
+                  round
+                  icon="monetization_on"
+                  text-color="white"
+                  align="center"
+                  size="md"
+                  :disabled="reorderFlag"
+                  @click="enterPayouts"
+                >
+                  <q-tooltip>
+                    Finalize the order and enter payouts.
+                  </q-tooltip>
+                </q-btn>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-12">
-          <div class="header__date text-center">
-            {{ txtTournamentDate }}
-          </div>
-        </div>
-        <div class="header__subheading">
-          <div class="attribute-container header_searchbox">
-            <div class="header__search-bar q-pa-xs">
-              <search />
-              <!-- <sort-field /> -->
-            </div>
-          </div>
-          <div class="attribute-container total-information">
-            <div class="attribute ">Total checked in: {{ numCheckedIn }}</div>
-            <div class="attribute">Total knocked out: {{ numFinished }}</div>
-            <div class="attribute">Total remaining: {{ remaining }}</div>
-          </div>
-          <div class="attribute-container button-section">
-            <div class="attribute edit-button" v-if="!reorderFlag">
-              <q-btn
-                color="white"
-                icon="edit"
-                round
-                text-color="black"
-                align="center"
-                size="md"
-                @click="setReorderFlag(true)"
-              >
-              </q-btn>
-            </div>
-            <div class="attribute edit-button" v-else>
-              <q-btn
-                color="white"
-                round
-                icon="check_circle_outline"
-                text-color="black"
-                align="center"
-                size="md"
-                @click="setReorderFlag(false)"
-              >
-                <q-tooltip>
-                  Edit the finish order.
-                </q-tooltip>
-              </q-btn>
-            </div>
-            <div class="attribute payout-button text-center">
-              <q-btn
-                color="green"
-                round
-                icon="monetization_on"
-                text-color="white"
-                align="center"
-                size="md"
-                :disabled="reorderFlag"
-                @click="enterPayouts"
-              >
-                <q-tooltip>
-                  Finalize the order and enter payouts.
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="results-section">
-        <div class="results-section__left-column">
-          <players-list
-            :players="remainingPlayers"
-            :type="'checked-in'"
-          >
-          </players-list>
+        <div class="results-section">
+          <div class="results-section__left-column">
+            <players-list
+              :players="remainingPlayers"
+              :type="'checked-in'"
+            >
+            </players-list>
 
-        </div>
+          </div>
 
-        <div
-          v-if="!reorderFlag"
-          class="results-section__right-column"
-        >
-          <players-list
-            :players="finishedPlayers"
-            :type="'finished'"
+          <div
+            v-if="!reorderFlag"
+            class="results-section__right-column"
           >
-          </players-list>
-        </div>
-        <div
-          v-else
-          class="results-section__right-column"
-        >
-          <reorder-players
-            :remaining="remaining"
-            :type="'finished'"
+            <players-list
+              :players="finishedPlayers"
+              :type="'finished'"
+            >
+            </players-list>
+          </div>
+          <div
+            v-else
+            class="results-section__right-column"
           >
-          </reorder-players>
+            <reorder-players
+              :remaining="remaining"
+              :type="'finished'"
+            >
+            </reorder-players>
+          </div>
         </div>
+        <q-dialog v-model="showProceed" persistent>
+          <q-card style="min-width: 250px">
+            <q-card-section>
+              <div class="text-h4">Proceed?</div>
+            </q-card-section>
+            <q-card-section>
+              {{ proceed_msg }}
+            </q-card-section>
+            <q-card-actions align="right" class="text-primary">
+              <q-btn  color="blue-10" label="Yes" @click="$router.push({ name: 'EnterPayouts' })" />
+              <q-btn color="negative" label="No" @click="showProceed=false"/>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </div>
-      <q-dialog v-model="showProceed" persistent>
-        <q-card style="min-width: 250px">
-          <q-card-section>
-            <div class="text-h4">Proceed?</div>
-          </q-card-section>
-          <q-card-section>
-            {{ proceed_msg }}
-          </q-card-section>
-          <q-card-actions align="right" class="text-primary">
-            <q-btn  color="blue-10" label="Yes" @click="$router.push({ name: 'EnterPayouts' })" />
-            <q-btn color="negative" label="No" @click="showProceed=false"/>
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </div>
-  </q-page>
+    </q-page>
+    </transition>
 </template>
 
 <script>

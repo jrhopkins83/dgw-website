@@ -185,7 +185,7 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters('leagueSettings', ['LeagueInfo', 'UserInfo', 'devMode', 'leagueDates']),
+    // ...mapGetters('leagueSettings', ['LeagueInfo', 'UserInfo', 'devMode', 'gameDates']),
     // dispResponse: function () {
     //   return toTitleCase(this.rvspUpdate.response)
     // }

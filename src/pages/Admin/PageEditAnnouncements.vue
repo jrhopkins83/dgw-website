@@ -1,85 +1,91 @@
 <template>
   <div>
-    <q-page>
-      <div class="container">
-        <div class="left-image">
-        </div>
-        <div class="headline text-h2 text-white text-bold text-center">
-          Donkeys Gone Wild News & Announcements
-        </div>
-        <div class="right-image">
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutRight"
+    >
+      <q-page>
+        <div class="container">
+          <div class="left-image">
+          </div>
+          <div class="headline text-h2 text-white text-bold text-center">
+            Donkeys Gone Wild News & Announcements
+          </div>
+          <div class="right-image">
 
-        </div>
-        <div class="announcements">
-          <q-scroll-area
-            class="item-list"
-            visible
-            :thumb-style="thumbStyle"
-            :bar-style="barStyle"
-          >
-            <news-item
-              v-for="announcement in announcements"
-              :key="announcement.id"
-              :item="announcement"
-              :isAdmin="userInfo.isAdmin"
-              @editItem="editAnnouncement"
-              @deleteItem="confirmDelete"
+          </div>
+          <div class="announcements">
+            <q-scroll-area
+              class="item-list"
+              visible
+              :thumb-style="thumbStyle"
+              :bar-style="barStyle"
             >
-          <!-- <news-item> -->
-            </news-item>
-          </q-scroll-area>
+              <news-item
+                v-for="announcement in announcements"
+                :key="announcement.id"
+                :item="announcement"
+                :isAdmin="userInfo.isAdmin"
+                @editItem="editAnnouncement"
+                @deleteItem="confirmDelete"
+              >
+            <!-- <news-item> -->
+              </news-item>
+            </q-scroll-area>
 
-          <div class="add-button absolute-bottom text-center no-pointer-events">
-            <q-btn
-              @click="addAnnouncement"
-              round
-              class="all-pointer-events"
-              color="teal-10"
-              size="20px"
-              icon="add"
-            />
+            <div class="add-button absolute-bottom text-center no-pointer-events">
+              <q-btn
+                @click="addAnnouncement"
+                round
+                class="all-pointer-events"
+                color="teal-10"
+                size="20px"
+                icon="add"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <q-dialog
-        v-model="showAddEdit"
-      >
-        <announcement-details
-          :announcement="announcement"
-          :mode="mode"
-          @save="saveAnnouncement"
-          @close="cancelEdit"
-        />
-      </q-dialog>
-      <q-dialog
-        v-model="confirm"
-      >
-        <q-card style="width: 700px; max-width: 80vw;">
-          <q-card-section>
-            <div class="text-h3">
-              {{ dialogHeader}}
-            </div>
-          </q-card-section>
+        <q-dialog
+          v-model="showAddEdit"
+        >
+          <announcement-details
+            :announcement="announcement"
+            :mode="mode"
+            @save="saveAnnouncement"
+            @close="cancelEdit"
+          />
+        </q-dialog>
+        <q-dialog
+          v-model="confirm"
+        >
+          <q-card style="width: 700px; max-width: 80vw;">
+            <q-card-section>
+              <div class="text-h3">
+                {{ dialogHeader}}
+              </div>
+            </q-card-section>
 
-          <q-card-section class="q-pt-none">
-            {{ dialogMsg }}
-          </q-card-section>
+            <q-card-section class="q-pt-none">
+              {{ dialogMsg }}
+            </q-card-section>
 
-          <q-card-actions align="center">
-            <q-btn
-              @click="deleteAnnouncement"
-              color="blue-10"
-              label="Confirm"
-            />
-            <q-btn
-              v-close-popup
-              color="negative"
-              label="Cancel"
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </q-page>
+            <q-card-actions align="center">
+              <q-btn
+                @click="deleteAnnouncement"
+                color="blue-10"
+                label="Confirm"
+              />
+              <q-btn
+                v-close-popup
+                color="negative"
+                label="Cancel"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </q-page>
+    </transition>
   </div>
 </template>
 

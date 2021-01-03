@@ -72,7 +72,7 @@ export default {
       }
     },
     player_avatar: function () {
-      if (this.player.avatar) {
+      if (this.player.avatar.length > 0) {
         return this.player.avatar.avatarUrl
       } else {
         return 'default.jpg'

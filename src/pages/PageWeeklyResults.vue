@@ -1,44 +1,49 @@
 <template>
   <q-page style="min-height: inherit;">
-    <div
-      class="container"
-      v-if="weeklyResultsLoaded && gamesLoaded && playersLoaded"
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutRight"
     >
-      <div class="left-column">
-        <div class="left-column__header text-white">
-          <div class="left-column__header--title text-h3">
-            Weekly Results for the week of
+      <div
+        class="container"
+        v-if="weeklyResultsLoaded && gamesLoaded && playersLoaded"
+      >
+        <div class="left-column">
+          <div class="left-column__header text-white">
+            <div class="left-column__header--title text-h3">
+              Weekly Results for the week of
+            </div>
+            <div class="div left-column__header--date date">
+              <modal-pick-date
+                :pickDate="txtPickDate"
+                :gameDates="gameDates"
+                @updateGameDate="updateGameDate"
+              />
+            </div>
           </div>
-          <div class="div left-column__header--date date">
-            <modal-pick-date
-              :pickDate="txtPickDate"
-              :gameDates="gameDates"
-              @updateGameDate="updateGameDate"
-            />
+          <div class="left-column__search-bar q-pa-xs q-ma-md">
+            <search>
+            </search>
+          </div>
+          <div class="left-column__player-rankings">
+            <player-rankings
+              :weeklyResults="resultsFiltered"
+            >
+            </player-rankings>
           </div>
         </div>
-        <div class="left-column__search-bar q-pa-xs q-ma-md">
-          <search>
-          </search>
-        </div>
-        <div class="left-column__player-rankings">
-          <player-rankings
-            :weeklyResults="resultsFiltered"
-          >
-          </player-rankings>
+        <div class="right-column gt-xs">
+          <div class="right-column__image"></div>
         </div>
       </div>
-      <div class="right-column gt-xs">
-        <div class="right-column__image"></div>
-      </div>
-    </div>
+    </transition>
   </q-page>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { date } from 'quasar'
-import { showMessage } from 'src/functions/functions-common'
 import { Timestamp } from 'boot/firebase'
 
 export default {
@@ -68,22 +73,6 @@ export default {
   },
   methods: {
     ...mapActions('weeklyResults', ['fbWeeklyResults', 'setSearch']),
-    async loadWeeklyResults (gameDate) {
-      try {
-        return await this.fbWeeklyResults(gameDate)
-      } catch (error) {
-        switch (error) {
-          case 'permission-denied':
-            showMessage('error', "You don't have access to standings data.")
-            break
-          case 'not-found':
-            showMessage('error', 'Record not found in database')
-            break
-          default:
-            showMessage('error', 'Error getting season standings: ' + error)
-        }
-      }
-    },
     updateGameDate (date) {
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'
@@ -93,9 +82,11 @@ export default {
   },
 
   async beforeMount () {
-    if (this.completedGamesArr[0].gameDate) {
-      this.gameDate = this.completedGamesArr[0].gameDate
-      await this.loadWeeklyResults(this.gameDate)
+    if (this.completedGames) {
+      if (this.completedGamesArr[0].gameDate) {
+        this.gameDate = this.completedGamesArr[0].gameDate
+        return await this.fbWeeklyResults(this.gameDate)
+      }
     }
   },
   destroyed () {

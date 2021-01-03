@@ -1,44 +1,50 @@
 <template>
   <q-page style="min-height: inherit;">
-    <div
-      class="container"
-      v-if="gamesLoaded && leagueInfoLoaded"
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutRight"
     >
-      <div class="row header">
-        <div class="col-12 header__title">
-          <div class="header__title text-center text-h3 text-bold q-mt-md">
-            Game Schedule
+      <div
+        class="container"
+        v-if="gamesLoaded && leagueInfoLoaded"
+      >
+        <div class="row header">
+          <div class="col-12 header__title">
+            <div class="header__title text-center text-h3 text-bold q-mt-md">
+              Game Schedule
+            </div>
           </div>
-        </div>
 
-        <div :class="isAdmin" class="col-12">
-          <div>
-            <q-tabs
-              v-model="tab"
-              dense
-              align="left"
-              content-class="filter-tabs"
-              @input="filterGames"
-              :breakpoint="0"
-            >
-              <q-tab name="all" label="All" content-class="header__filter-tabs"/>
-              <q-tab name="mtt" label="MTT" content-class="header__filter-tabs"/>
-              <q-tab name="sng" label="SNG" content-class="header__filter-tabs"/>
-              <q-tab name="cash" label="Cash"  content-class="header__filter-tabs"/>
-            </q-tabs>
+          <div :class="isAdmin" class="col-12">
+            <div>
+              <q-tabs
+                v-model="tab"
+                dense
+                align="left"
+                content-class="filter-tabs"
+                @input="filterGames"
+                :breakpoint="0"
+              >
+                <q-tab name="all" label="All" content-class="header__filter-tabs"/>
+                <q-tab name="mtt" label="MTT" content-class="header__filter-tabs"/>
+                <q-tab name="sng" label="SNG" content-class="header__filter-tabs"/>
+                <q-tab name="cash" label="Cash"  content-class="header__filter-tabs"/>
+              </q-tabs>
+            </div>
           </div>
         </div>
+        <div class="games-section" :class="isAdmin">
+          <games-list
+            :upcomingGames="upcomingGames"
+            :completedGames="completedGames"
+            :isAdmin="isAdmin"
+            :adminButtons="adminButtons"
+          >
+          </games-list>
+        </div>
       </div>
-      <div class="games-section" :class="isAdmin">
-        <games-list
-          :upcomingGames="upcomingGames"
-          :completedGames="completedGames"
-          :isAdmin="isAdmin"
-          :adminButtons="adminButtons"
-        >
-        </games-list>
-      </div>
-    </div>
+    </transition>
   </q-page>
 </template>
 

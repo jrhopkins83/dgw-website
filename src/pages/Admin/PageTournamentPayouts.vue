@@ -1,54 +1,60 @@
 <template>
-  <q-page style="min-height: inherit;">
-    <div
-      class="container"
-      :class="showForm"
-      v-if="finishedLoaded"
-    >
-      <div :class="showForm">
-        <div v-if="showForm === 'pool'">
-          <payout-pool
-            :formData.sync="formData"
-            :tournament_date="tournament_date"
-            :structure="structure"
-            @enterPayouts="enterPayouts"
-            @cancel="$router.push({ name: 'EnterResults' })"
-          >
-          </payout-pool>
-        </div>
-        <div class="col justify-center payout-section__form" v-else>
-          <payout-places
-            :formData.sync="formData"
-            :tournament_date="tournament_date"
-            :structure="structure"
-            @goBack="showForm='pool'"
-            @cancel="$router.push({ name: 'EnterResults' })"
-            @finish="confirm=true"
-          >
-          </payout-places>
+  <transition
+    appear
+    enter-active-class="animated fadeInLeft"
+    leave-active-class="animated fadeOutRight"
+  >
+    <q-page style="min-height: inherit;">
+      <div
+        class="container"
+        :class="showForm"
+        v-if="finishedLoaded"
+      >
+        <div :class="showForm">
+          <div v-if="showForm === 'pool'">
+            <payout-pool
+              :formData.sync="formData"
+              :tournament_date="tournament_date"
+              :structure="structure"
+              @enterPayouts="enterPayouts"
+              @cancel="$router.push({ name: 'EnterResults' })"
+            >
+            </payout-pool>
+          </div>
+          <div class="col justify-center payout-section__form" v-else>
+            <payout-places
+              :formData.sync="formData"
+              :tournament_date="tournament_date"
+              :structure="structure"
+              @goBack="showForm='pool'"
+              @cancel="$router.push({ name: 'EnterResults' })"
+              @finish="confirm=true"
+            >
+            </payout-places>
+          </div>
         </div>
       </div>
-    </div>
-    <q-dialog
-      v-model="confirm"
-    >
-      <q-card style="width: 700px; max-width: 80vw;">
-        <q-card-section>
-          <div class="text-h3">Confirm Finish:</div>
-        </q-card-section>
+      <q-dialog
+        v-model="confirm"
+      >
+        <q-card style="width: 700px; max-width: 80vw;">
+          <q-card-section>
+            <div class="text-h3">Confirm Finish:</div>
+          </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          This will update weekly results and season standings. Proceed?
-        </q-card-section>
+          <q-card-section class="q-pt-none">
+            This will update weekly results and season standings. Proceed?
+          </q-card-section>
 
-        <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn label="OK" color="blue-10" @click="finish" />
-          <q-btn label="Cancel" color="negative" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+          <q-card-actions align="right" class="bg-white text-teal">
+            <q-btn label="OK" color="blue-10" @click="finish" />
+            <q-btn label="Cancel" color="negative" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
 
-  </q-page>
+    </q-page>
+  </transition>
 </template>
 
 <script>

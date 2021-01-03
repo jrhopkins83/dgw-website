@@ -1,33 +1,39 @@
 <template>
   <q-page style="min-height: inherit;">
-    <div
-      class="container"
-      v-if="standingsLoaded && playersLoaded"
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutRight"
     >
-      <div class="left-column">
-        <div class="left-column__header text-white">
-          <div class="left-column__header--title text-h3">
-            Season Standings
+      <div
+        class="container"
+        v-if="standingsLoaded && playersLoaded"
+      >
+        <div class="left-column">
+          <div class="left-column__header text-white">
+            <div class="left-column__header--title text-h3">
+              Season Standings
+            </div>
+            <div class="left-column__header--date text-h3">
+              through {{ txtLastDate }}
+            </div>
           </div>
-          <div class="left-column__header--date text-h3">
-            through {{ txtLastDate }}
+          <div class="left-column__search-bar q-pa-xs q-ma-md">
+            <search>
+            </search>
+          </div>
+          <div class="left-column__player-rankings">
+            <player-rankings
+              :standings="standingsFiltered"
+            >
+            </player-rankings>
           </div>
         </div>
-        <div class="left-column__search-bar q-pa-xs q-ma-md">
-          <search>
-          </search>
-        </div>
-        <div class="left-column__player-rankings">
-          <player-rankings
-            :standings="standingsFiltered"
-          >
-          </player-rankings>
+        <div class="right-column">
+          <div class="right-column__image"></div>
         </div>
       </div>
-      <div class="right-column">
-        <div class="right-column__image"></div>
-      </div>
-    </div>
+    </transition>
   </q-page>
 </template>
 

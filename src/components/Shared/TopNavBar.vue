@@ -24,8 +24,8 @@
             :options="userNavs"
             @input="navigate"
           />
-          <template>
-          <!-- <template v-if="userInfo.isAdmin"> -->
+          <!-- <template> -->
+          <template v-if="userInfo.isAdmin">
             <q-btn-dropdown
               class="auto-close stretch flat label"
               style="font-size: 15px"

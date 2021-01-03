@@ -1,44 +1,50 @@
 <template>
-  <div>
-    <div class="grid-container">
-      <div class="left-image"></div>
-      <div class="headline text-h3 text-bold">
-        Donkey's Gone Wild News & Announcements
-      </div>
-      <div class="right-image"></div>
-      <div class="left-background-image">
+  <transition
+    appear
+    enter-active-class="animated fadeInLeft"
+    leave-active-class="animated fadeOutRight"
+  >
+    <div>
+      <div class="grid-container">
+        <div class="left-image"></div>
+        <div class="headline text-h3 text-bold">
+          Donkey's Gone Wild News & Announcements
+        </div>
+        <div class="right-image"></div>
+        <div class="left-background-image">
 
-      </div>
-      <div class="news-item">
-        <q-carousel
-          v-model="slide"
-          transition-prev="slide-right"
-          transition-next="slide-left"
-          swipeable
-          animated
-          control-color="white"
-          navigation
-          padding
-          arrows
-          prev-icon="arrow_left"
-          next-icon="arrow_right"
-          height="60rem"
-          class="bg-black shadow-1 rounded-borders"
-        >
-          <q-carousel-slide
-            v-for="(announcement, index) in announcements"
-            :key="announcement.id"
-            :name="index"
+        </div>
+        <div class="news-item">
+          <q-carousel
+            v-model="slide"
+            transition-prev="slide-right"
+            transition-next="slide-left"
+            swipeable
+            animated
+            control-color="white"
+            navigation
+            padding
+            arrows
+            prev-icon="arrow_left"
+            next-icon="arrow_right"
+            height="60rem"
+            class="bg-black shadow-1 rounded-borders"
           >
-            <news-item
-              :item="announcement"
+            <q-carousel-slide
+              v-for="(announcement, index) in announcements"
+              :key="announcement.id"
+              :name="index"
             >
-            </news-item>
-          </q-carousel-slide>
-        </q-carousel>
+              <news-item
+                :item="announcement"
+              >
+              </news-item>
+            </q-carousel-slide>
+          </q-carousel>
+        </div>
       </div>
     </div>
-  </div>
+    </transition>
 </template>
 
 <script>

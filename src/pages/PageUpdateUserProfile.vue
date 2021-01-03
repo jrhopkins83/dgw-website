@@ -1,63 +1,69 @@
 <template>
   <q-page style="min-height: inherit;">
-    <div
-      class="container"
-      v-if="leagueInfoLoaded"
+    <transition
+      appear
+      enter-active-class="animated zoomIn"
+      leave-active-class="animated zoomOut"
     >
-      <div class="outline">
-        <div class="row header">
-          <div class="col-12 header__title">
-            <div class="header__title text-center text-h3 text-bold q-mt-md">
-              Edit Profile
-            </div>
-          </div>
-        </div>
-        <div class="row profile-section q-pa-md">
-          <div class="col-2 profile-section__photo q-px-xs">
-            <div class="photo-area">
-
-              <div class="text-center q-mb-xl">
-                <q-avatar size="78px">
-                  <img :src="user_avatar.avatarUrl">
-                </q-avatar>
-                <q-btn
-                  color="grey-10"
-                  no-caps
-                  label="Change Avatar"
-                  class="q-mt-md"
-                  @click="changeAvatar"
-                >
-                  <q-tooltip content-class="bg-info">Your avatar will be displayed on all standings and results lisits</q-tooltip>
-                </q-btn>
-              </div>
-              <div class="text-center">
-                <q-avatar size="78px">
-                  <img :src="user_photo.photoUrl">
-                </q-avatar>
-                <q-btn
-                  color="grey-10"
-                  no-caps
-                  label="Change Photo"
-                  class="q-mt-md"
-                  @click="changePhoto"
-                >
-                  <q-tooltip content-class="bg-info">Your avatar will be displayed on the player list</q-tooltip>
-                </q-btn>
+      <div
+        class="container"
+        v-if="leagueInfoLoaded"
+      >
+        <div class="outline">
+          <div class="row header">
+            <div class="col-12 header__title">
+              <div class="header__title text-center text-h3 text-bold q-mt-md">
+                Edit Profile
               </div>
             </div>
           </div>
-          <div class="col-10 profile-section__user-info q-px-md">
-            <edit-player
-              :player="userInfo"
-              :heading="heading"
-              :mode="'profile'"
-              @submit="savePlayer"
-            />
+          <div class="row profile-section q-pa-md">
+            <div class="col-2 profile-section__photo q-px-xs">
+              <div class="photo-area">
 
+                <div class="text-center q-mb-xl">
+                  <q-avatar size="78px">
+                    <img :src="user_avatar.avatarUrl">
+                  </q-avatar>
+                  <q-btn
+                    color="grey-10"
+                    no-caps
+                    label="Change Avatar"
+                    class="q-mt-md"
+                    @click="changeAvatar"
+                  >
+                    <q-tooltip content-class="bg-info">Your avatar will be displayed on all standings and results lisits</q-tooltip>
+                  </q-btn>
+                </div>
+                <div class="text-center">
+                  <q-avatar size="78px">
+                    <img :src="user_photo.photoUrl">
+                  </q-avatar>
+                  <q-btn
+                    color="grey-10"
+                    no-caps
+                    label="Change Photo"
+                    class="q-mt-md"
+                    @click="changePhoto"
+                  >
+                    <q-tooltip content-class="bg-info">Your avatar will be displayed on the player list</q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+            <div class="col-10 profile-section__user-info q-px-md">
+              <edit-player
+                :player="userInfo"
+                :heading="heading"
+                :mode="'profile'"
+                @submit="savePlayer"
+              />
+
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </transition>
     <q-dialog v-model="showChangePhoto">
       <modal-change-photo
         :image="user_avatar.url"

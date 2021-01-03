@@ -14,10 +14,10 @@
           name="login"
           label="Login"
         />
-        <q-tab
+        <!-- <q-tab
           name="register"
           label="Register"
-        />
+        /> -->
       </q-tabs>
 
       <q-separator />

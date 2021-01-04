@@ -66,7 +66,6 @@ const routes = [{
       meta: {
         requiresAuth: true
       },
-      // component: () => import('components/Players/Modals/Cropper/RoundCropper.vue')
       component: () => import('pages/PageUpdateUserProfile.vue')
     }, {
       path: 'league-info',

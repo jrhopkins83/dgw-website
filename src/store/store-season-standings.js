@@ -1,3 +1,4 @@
+import { firebaseStore } from 'boot/firebase'
 import { firestoreAction, firestoreOptions } from 'vuexfire'
 
 // always wait for bindings to be resolved
@@ -62,6 +63,15 @@ const actions = {
   },
   setSeasonStandings ({ commit }, standings) {
     commit('SET_SEASON_STANDINGS', standings)
+  },
+  async fbSeasonStandings ({ commit, dispatch, state, rootState }) {
+    const season = rootState.leagueSettings.leagueInfo.currentSeason
+    const standingsRef = firebaseStore.collection('seasonStandings')
+      .where('season', '==', season)
+
+    await dispatch('bindStandingsRef', standingsRef)
+
+    dispatch('setStandingsLoaded', true)
   },
   bindStandingsRef: firestoreAction((context, ref) => {
     return context.bindFirestoreRef('seasonStandings', ref)

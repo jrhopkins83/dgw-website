@@ -2,8 +2,8 @@
   <div class="q-pa-xs q-gutter-sm">
     <q-editor
       :value="qeditor"
-      :editorMinHeight="editorMinHeight"
-      :editorMaxHeight="editorMaxHeight"
+      :min-height="editorMinHeight"
+      :max-height="editorMaxHeight"
       ref="editor"
       @input="$emit('update:qeditor', $event)"
       :toolbar="[

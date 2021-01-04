@@ -16,8 +16,11 @@ export default {
     ...mapActions('leagueSettings', ['getUserInfoLS']),
     ...mapActions('players', ['getPlayersLS']),
     ...mapActions('tourneyResults', ['getFinishedPlayersLS']),
-    ...mapActions('auth', ['handleAuthStateChange'])
+    ...mapActions('auth', ['getLoggedIn', 'handleAuthStateChange'])
 
+  },
+  created () {
+    this.getLoggedIn()
   },
   beforeMount () {
     this.getUserInfoLS()

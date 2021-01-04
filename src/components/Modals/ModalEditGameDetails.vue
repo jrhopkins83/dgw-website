@@ -338,8 +338,8 @@ export default {
   mounted () {
     if (this.game) {
       if (this.game.gameDate) {
-        const gameDate = date.formatDate(this.game.gameDate.toDate(), 'YYYY/MM/DD')
-        const gameTime = date.formatDate(this.game.gameDate.toDate(), 'H:mm a')
+        const gameDate = date.formatDate(this.game.gameDate.toDate(), 'MM/DD/YYYY')
+        const gameTime = date.formatDate(this.game.gameDate.toDate(), 'hh:mm a')
         this.formData = {
           structure: this.game.structure,
           type: this.game.type,

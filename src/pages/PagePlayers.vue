@@ -10,7 +10,7 @@
           <div class="col header">
             <div class="col-12 header__title text-center">
               <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
-                Donkey's Gone Wild Playeres
+                Donkey's Gone Wild Players
               </div>
             </div>
           </div>
@@ -109,6 +109,9 @@ export default {
   },
 
   async beforeMount () {
+    if (!this.userInfo.isAdmin && this.mode === 'edit') {
+      this.$router.go(-1)
+    }
     if (!this.playersLoaded) {
       this.loadPlayers()
     }

@@ -5,6 +5,7 @@ import { firebaseAuth, firebaseFunctions } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
 
 const state = {
+  appLoaded: false,
   loggedIn: false,
   newUser: false,
   LoginError: {
@@ -14,8 +15,13 @@ const state = {
 }
 
 const mutations = {
+  SET_APP_LOADED (state, value) {
+    state.loggedIn = value
+    console.log('state.loggedIn: ', state.loggedIn)
+  },
   SET_LOGGEDIN (state, value) {
     state.loggedIn = value
+    console.log('state.loggedIn: ', state.loggedIn)
   },
   SET_NEW_USER (state, value) {
     state.newUser = value
@@ -30,7 +36,9 @@ const mutations = {
 
 const actions = {
   loginUser ({ commit }, payload) {
-    Loading.show()
+    Loading.show({
+      message: '<b>Loading league information</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+    })
     //   firebaseAuth.signInAnonymously()
     // } else {
     firebaseAuth.signInWithEmailAndPassword(payload.email, payload.password)
@@ -79,23 +87,29 @@ const actions = {
   async handleAuthStateChange ({ commit, dispatch, state }) {
     firebaseAuth.onAuthStateChanged(async user => {
       Loading.show()
-
+      let success = false
       if (user) {
+        commit('SET_LOGGEDIN', true)
+        LocalStorage.set('loggedIn', true)
         if (!state.newUser) {
           // eslint-disable-next-line handle-callback-err
-          const success = await dispatch('leagueSettings/getSetupInfo', null, {
+          success = await dispatch('leagueSettings/getSetupInfo', null, {
             root: true
           })
           if (success) {
-            await dispatch('leagueSettings/fbLeagueInfo', null, {
+            success = await dispatch('leagueSettings/fbLeagueInfo', null, {
               root: true
             })
+            if (success) {
+              Loading.hide()
+              this.$router.push('/').catch(error => { })
+            } else {
+              return false
+            }
+          } else {
+            return false
           }
-          Loading.hide()
-          this.$router.push('/').catch(error => { })
         }
-        commit('SET_LOGGEDIN', true)
-        LocalStorage.set('loggedIn', true)
       } else {
         // TO-DO: clear out data
         commit('SET_LOGGEDIN', false)
@@ -116,6 +130,13 @@ const actions = {
     }).then(result => {
       showMessage('error', 'Make Admin result: ', result)
     })
+  },
+  getLoggedIn ({ commit }) {
+    const loggedIn = LocalStorage.getItem('loggedIn')
+    if (loggedIn) {
+      commit('SET_LOGGEDIN', loggedIn)
+    }
+    commit('SET_APP_LOADED', true)
   },
   sendReset ({ commit }, email) {
     // Have Firebase Auth send a reset e-mail

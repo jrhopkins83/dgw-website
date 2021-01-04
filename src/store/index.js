@@ -33,34 +33,33 @@ const initialState = {
   subscribers: players.subscribers
 }
 
-let store = null
-export default function (/* { ssrContext } */) {
-  const Store = new Vuex.Store({
-    modules: {
-      auth,
-      leagueSettings,
-      games,
-      announcements,
-      tourneyResults,
-      weeklyResults,
-      standings,
-      players
-    },
-    mutations: {
-      ...vuexfireMutations,
-      reset (state) {
-        Object.keys(state).forEach(key => {
-          Object.assign(state[key], initialState[key])
-        })
-      }
-    },
+const Store = new Vuex.Store({
+  modules: {
+    auth,
+    leagueSettings,
+    games,
+    announcements,
+    tourneyResults,
+    weeklyResults,
+    standings,
+    players
+  },
+  mutations: {
+    ...vuexfireMutations,
+    reset (state) {
+      Object.keys(state).forEach(key => {
+        Object.assign(state[key], initialState[key])
+      })
+    }
+  },
 
-    // enable strict mode (adds overhead!)
-    // for dev mode only
-    strict: process.env.DEV
-  })
-  store = Store
+  // enable strict mode (adds overhead!)
+  // for dev mode only
+  strict: process.env.DEV
+})
+
+export default function (/* { ssrContext } */) {
   return Store
 }
 
-export { store }
+export { Store }

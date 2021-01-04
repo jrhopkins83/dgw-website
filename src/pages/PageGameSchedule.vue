@@ -99,7 +99,9 @@ export default {
     }
   },
   async beforeMount () {
-
+    if (!this.userInfo.isAdmin && this.mode === 'edit') {
+      this.$router.go(-1)
+    }
   },
   destroyed () {
     this.setGameFilter('')

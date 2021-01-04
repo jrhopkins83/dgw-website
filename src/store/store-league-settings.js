@@ -77,12 +77,11 @@ const actions = {
     if (!state.leagueInfo.id) {
       // Get user info
       try {
+        let userInfo = {}
         const userRecord = firebaseAuth.currentUser
         const userId = userRecord.uid
         const idTokenResult = await firebaseAuth.currentUser.getIdTokenResult()
         const isAdmin = idTokenResult.claims.isAdmin
-
-        let userInfo = {}
 
         const userDoc = await firebaseStore.collection('users').doc(userId).get()
         if (userDoc.exists) {
@@ -90,8 +89,9 @@ const actions = {
           const playerRef = await firebaseStore.collection('players').doc(playerID).get()
           if (playerRef.exists) {
             userInfo = playerRef.data()
-            userInfo.uid = userId
             userInfo.playerID = playerID
+            userInfo.isAdmin = isAdmin
+            userInfo.uid = userId
 
             const userRef = await firebaseStore.collection('subscribers').doc(userInfo.playerID).get()
             if (userRef.exists) {
@@ -105,13 +105,12 @@ const actions = {
             dispatch('saveUserInfoLS')
             success = true
           } else {
-            const msg = `error, No user found with ID ${userId}`
+            const msg = `error, No player found with ID ${playerID}`
             showMessage(msg)
           }
         } else if (isAdmin) {
-          userInfo.uid = userId
+          userInfo.isAdmin = isAdmin
           userInfo.email = idTokenResult.claims.email
-          userInfo.isAdmin = true
           dispatch('setUserInfo', userInfo)
           dispatch('saveUserInfoLS')
           success = true
@@ -155,9 +154,18 @@ const actions = {
         root: true
       })
 
-      // await dispatch('bindLeagueDates', datesRef)
+      // Get season standings
+      await dispatch('standings/fbSeasonStandings', null, {
+        root: true
+      })
 
-      return commit('SET_LEAGUE_INFO_LOADED', true)
+      // Get announcements
+      await dispatch('announcements/fbGetAnnouncements', null, {
+        root: true
+      })
+
+      commit('SET_LEAGUE_INFO_LOADED', true)
+      return true
     } catch (error) {
       return showMessage('error', 'Error getting league Info:', error)
     }

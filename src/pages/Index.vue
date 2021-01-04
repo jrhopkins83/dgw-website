@@ -25,15 +25,15 @@
           </div>
           <div class="row">
             <div class="col">
-              <home-leader-board
-                :standings="standingsFiltered"
-              >
-              </home-leader-board>
+              <home-upcoming-games></home-upcoming-games>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <home-upcoming-games></home-upcoming-games>
+              <home-leader-board
+                :standings="standingsFiltered"
+              >
+              </home-leader-board>
             </div>
           </div>
           <div class="row">
@@ -48,9 +48,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { showMessage } from 'src/functions/functions-common'
-import { firebaseStore } from 'boot/firebase'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'PageIndex',
@@ -69,51 +67,7 @@ export default {
     ...mapGetters('players', ['players', 'playersLoaded'])
   },
   methods: {
-    ...mapActions('players', ['setPlayersLoaded', 'fbPlayers']),
-    ...mapActions('standings', ['setStandingsLoaded', 'bindStandingsRef']),
-    ...mapActions('announcements', ['fbGetAnnouncements', 'setAnnouncementsLoaded']),
-    async loadSeasonStandings () {
-      try {
-        if (this.players.length) {
-          this.setPlayersLoaded(true)
-        }
 
-        const season = '2020'
-        const standingsRef = firebaseStore.collection('seasonStandings')
-          .where('season', '==', season)
-
-        await this.bindStandingsRef(standingsRef)
-
-        this.setStandingsLoaded(true)
-      } catch (error) {
-        switch (error) {
-          case 'permission-denied':
-            showMessage('error', "You don't have access to standings data.")
-            break
-          case 'not-found':
-            showMessage('error', 'Record not found in database')
-            break
-          default:
-            showMessage('error', 'Error getting season standings: ' + error)
-        }
-        this.setStandingsLoaded(true)
-      }
-    }
-  },
-
-  async created () {
-    if (this.userInfo.uid) {
-      if (!this.standingsLoaded) {
-        this.loadSeasonStandings()
-      }
-      if (!this.announcementsLoaded) {
-        await this.fbGetAnnouncements()
-      }
-    } else {
-      this.$router.push({ path: '/auth' })
-    }
-  },
-  async mounted () {
   }
 
 }

@@ -20,14 +20,6 @@
                 {{ formattedPOY }}
               </q-item-section>
             </q-item>
-            <q-item class="q-py-xs">
-              <q-item-section class="text-primary text-bold">
-                DGW
-              </q-item-section>
-              <q-item-section class="text-weight-bold" side>
-                {{ formattedDGW }}
-              </q-item-section>
-            </q-item>
           </q-list>
         </q-card-section>
       </q-card>

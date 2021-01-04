@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapGetters('standings', ['seasonStandings', 'standingsSorted', 'standingsFiltered', 'standingsLoaded']),
-    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded', 'gameDates']),
+    ...mapGetters('leagueSettings', ['leagueInfo', 'userInfo', 'leagueInfoLoaded', 'gameDates']),
     ...mapGetters('announcements', ['announcementsLoaded', 'announcements']),
     ...mapGetters('games', ['gameDates', 'upcomingGames', 'completedGames']),
     ...mapGetters('players', ['players', 'playersLoaded'])
@@ -102,11 +102,15 @@ export default {
   },
 
   async created () {
-    if (!this.standingsLoaded) {
-      this.loadSeasonStandings()
-    }
-    if (!this.announcementsLoaded) {
-      await this.fbGetAnnouncements()
+    if (this.userInfo.uid) {
+      if (!this.standingsLoaded) {
+        this.loadSeasonStandings()
+      }
+      if (!this.announcementsLoaded) {
+        await this.fbGetAnnouncements()
+      }
+    } else {
+      this.$router.push({ path: '/auth' })
     }
   },
   async mounted () {

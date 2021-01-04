@@ -31,48 +31,46 @@ const mutations = {
 const actions = {
   loginUser ({ commit }, payload) {
     Loading.show()
-    if (window.location.hostname === 'localhost') {
-      //   firebaseAuth.signInAnonymously()
-      // } else {
-      firebaseAuth.signInWithEmailAndPassword(payload.email, payload.password)
-        .then(response => {
-          const LoginError = {
-            errorCode: null,
-            errorMessage: null
-          }
-          commit('SET_ERROR_MESSAGE', LoginError)
-        })
-        .catch(error => {
-          const errorCode = error.code
-          let returnError = {}
-          switch (errorCode) {
-            case 'auth/wrong-password':
-              returnError = {
-                errorCode: errorCode,
-                errorMessage: 'Wrong password.'
-              }
-              break
-            case 'auth/too-many-requests':
-              returnError = {
-                errorCode: errorCode,
-                errorMessage: 'Forgot password? Click Reset to receive a reset password e-mail'
-              }
-              break
-            case 'auth/user-not-found':
-              returnError = {
-                errorCode: errorCode,
-                errorMessage: 'e-mail not found.  Correct it or click on the Register tab to sign up.'
-              }
-              break
-            default:
-              returnError = {
-                errorCode: errorCode,
-                errorMessage: error.message
-              }
-          }
-          commit('SET_ERROR_MESSAGE', returnError)
-        })
-    }
+    //   firebaseAuth.signInAnonymously()
+    // } else {
+    firebaseAuth.signInWithEmailAndPassword(payload.email, payload.password)
+      .then(response => {
+        const LoginError = {
+          errorCode: null,
+          errorMessage: null
+        }
+        commit('SET_ERROR_MESSAGE', LoginError)
+      })
+      .catch(error => {
+        const errorCode = error.code
+        let returnError = {}
+        switch (errorCode) {
+          case 'auth/wrong-password':
+            returnError = {
+              errorCode: errorCode,
+              errorMessage: 'Wrong password.'
+            }
+            break
+          case 'auth/too-many-requests':
+            returnError = {
+              errorCode: errorCode,
+              errorMessage: 'Forgot password? Click Reset to receive a reset password e-mail'
+            }
+            break
+          case 'auth/user-not-found':
+            returnError = {
+              errorCode: errorCode,
+              errorMessage: 'e-mail not found.  Correct it or click on the Register tab to sign up.'
+            }
+            break
+          default:
+            returnError = {
+              errorCode: errorCode,
+              errorMessage: error.message
+            }
+        }
+        commit('SET_ERROR_MESSAGE', returnError)
+      })
     Loading.hide()
   },
   logoutUser ({ dispatch }) {
@@ -104,7 +102,7 @@ const actions = {
         LocalStorage.set('loggedIn', false)
         // eslint-disable-next-line handle-callback-err
         Loading.hide()
-        this.$router.replace('/auth').catch(error => { })
+        this.$router.push({ path: '/auth' })
       }
     })
   },

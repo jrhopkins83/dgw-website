@@ -15,7 +15,7 @@
   "main": "index.js",
   "dependencies": {
     "@sendgrid/mail": "^7.3.0",
-    "firebase-admin": "^8.10.0",
+    "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.6.1"
   },
   "devDependencies": {

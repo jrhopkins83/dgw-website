@@ -79,38 +79,45 @@ const actions = {
       try {
         const userRecord = firebaseAuth.currentUser
         const userId = userRecord.uid
+        const idTokenResult = await firebaseAuth.currentUser.getIdTokenResult()
+        const isAdmin = idTokenResult.claims.isAdmin
+
+        let userInfo = {}
+
         const userDoc = await firebaseStore.collection('users').doc(userId).get()
+        if (userDoc.exists) {
+          const playerID = userDoc.data().playerID
+          const playerRef = await firebaseStore.collection('players').doc(playerID).get()
+          if (playerRef.exists) {
+            userInfo = playerRef.data()
+            userInfo.uid = userId
+            userInfo.playerID = playerID
 
-        const playerID = userDoc.data().playerID
-        const playerRef = await firebaseStore.collection('players').doc(playerID).get()
-        if (playerRef.exists) {
-          const userInfo = playerRef.data()
-          userInfo.uid = userId
-          userInfo.playerID = playerID
+            const userRef = await firebaseStore.collection('subscribers').doc(userInfo.playerID).get()
+            if (userRef.exists) {
+              userInfo.email = userRef.data().email
+              userInfo.phoneNumber = userRef.data().phoneNumber
+              userInfo.emailOptin = userRef.data().emailOptin
+              userInfo.notificationOptin = userRef.data().notificationOptin
+            }
 
-          const idTokenResult = await firebaseAuth.currentUser.getIdTokenResult()
-
-          if (idTokenResult.claims.isAdmin) {
-            userInfo.isAdmin = true
+            dispatch('setUserInfo', userInfo)
+            dispatch('saveUserInfoLS')
+            success = true
           } else {
-            userInfo.isAdmin = false
+            const msg = `error, No user found with ID ${userId}`
+            showMessage(msg)
           }
-
-          const userRef = await firebaseStore.collection('subscribers').doc(userInfo.playerID).get()
-          if (userRef.exists) {
-            userInfo.email = userRef.data().email
-            userInfo.phoneNumber = userRef.data().phoneNumber
-            userInfo.emailOptin = userRef.data().emailOptin
-            userInfo.notificationOptin = userRef.data().notificationOptin
-          }
-
+        } else if (isAdmin) {
+          userInfo.uid = userId
+          userInfo.email = idTokenResult.claims.email
+          userInfo.isAdmin = true
           dispatch('setUserInfo', userInfo)
           dispatch('saveUserInfoLS')
           success = true
         } else {
           const msg = `error, No user found with ID ${userId}`
           showMessage(msg)
-          // }
         }
       } catch (error) {
         showMessage('error', 'Error getting setup info:', error)

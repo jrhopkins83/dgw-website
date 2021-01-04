@@ -77,7 +77,7 @@ export default {
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'
       this.gameDate = Timestamp.fromDate(new Date(txtGameDate))
-      this.loadWeeklyResults(this.gameDate)
+      this.fbWeeklyResults(this.gameDate)
     }
   },
 

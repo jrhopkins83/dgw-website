@@ -263,6 +263,7 @@ export default {
             player.finalTable = true
             position = player.finishedPosition
           } else {
+            player.finalTable = false
             position = this.formData.finalTablePlayers + 1
           }
           player.points = this.points[position - 1].points

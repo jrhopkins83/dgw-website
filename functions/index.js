@@ -63,92 +63,92 @@ exports.createUser = functions.https.onCall((data) => {
 })
 
 // function called when a new player is added
-// exports.newPlayer = functions.firestore.document('/players/{id}')
-// .onCreate((snap, context) => {
-//   try {
-//     // Create a new document to track season scores
-//     const newStanding = {
-//       season: '2020',
-//       position: 0,
-//       totalPoints: 0,
-//       games: 0,
-//       pts_game: 0,
-//       total1st: 0,
-//       total2nd: 0,
-//       total3rd: 0,
-//       total4th: 0,
-//       finalTables: 0
-//     }
-//     const seasonStandings = admin.firestore().collection('seasonStandings')
-//     return seasonStandings
-//       .doc(snap.id)
-//       .set(newStanding)
-//   } catch (error) {
-//     const updateCode = error.code
-//     const updatdeMessage = error.message
-//     const updateError = `Error updating new player to season standing :  ${updateCode} -  ${updatdeMessage}`
-//     console.log(updateError)
-//     throw new Error(error)
-//   }
-// })
+exports.newPlayer = functions.firestore.document('/players/{id}')
+  .onCreate((snap, context) => {
+    try {
+      // Create a new document to track season scores
+      const newStanding = {
+        season: '2020',
+        position: 0,
+        totalPoints: 0,
+        games: 0,
+        pts_game: 0,
+        total1st: 0,
+        total2nd: 0,
+        total3rd: 0,
+        total4th: 0,
+        finalTables: 0
+      }
+      const seasonStandings = admin.firestore().collection('seasonStandings')
+      return seasonStandings
+        .doc(snap.id)
+        .set(newStanding)
+    } catch (error) {
+      const updateCode = error.code
+      const updatdeMessage = error.message
+      const updateError = `Error updating new player to season standing :  ${updateCode} -  ${updatdeMessage}`
+      console.log(updateError)
+      throw new Error(error)
+    }
+  })
 
 // Update season scores when weekly result create completes
-// exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
-//   .onCreate(async (snap, context) => {
-//     try {
+exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
+  .onCreate(async (snap, context) => {
+    try {
 
-//       const event = context.event
-//       const player = snap.data()
-//       const places = [0, 0, 0, 0]
-//       const playerID = player.playerID
-//       if (player.finishedPosition <= 4) {
-//         places[player.finishedPosition - 1] = 1
-//       }
-//       let finalTables = 0
-//       if (player.finalTable) {
-//         finalTables = 1
-//       }
-//       const standingsDocRef = admin.firestore().collection('seasonStandings').doc(playerID)
-//       const doc = await standingsDocRef.get()
-//       if (doc.exists) {
-//         const standingsUpdate = {
-//           totalPoints: admin.firestore.FieldValue.increment(player.points),
-//           winnings: admin.firestore.FieldValue.increment(player.prizeMoney),
-//           games: admin.firestore.FieldValue.increment(1),
-//           total1st: admin.firestore.FieldValue.increment(places[0]),
-//           total2nd: admin.firestore.FieldValue.increment(places[1]),
-//           total3rd: admin.firestore.FieldValue.increment(places[2]),
-//           total4th: admin.firestore.FieldValue.increment(places[3]),
-//           finalTables: admin.firestore.FieldValue.increment(finalTables),
-//         }
-//         return await updateSeasonScore(event, playerID, standingsUpdate)
-//       } else {
-//         const places = []
-//         places[player.position] = 1
-//         const standingsUpdate = {
-//           season: '2020',
-//           totalPoints: player.points,
-//           games: player.games,
-//           winnings: 0,
-//           pts_game: player.pts_game,
-//           total1st: player.places[0],
-//           total2nd: player.places[1],
-//           total3rd: player.places[2],
-//           total4th: player.places[3],
-//           finalTables: finalTables
-//         }
-//         return await createSeasonScore(standingsUpdate)
-//       }
+      const event = context.event
+      const player = snap.data()
+      const places = [0, 0, 0, 0]
+      const playerID = player.playerID
+      if (player.finishedPosition <= 4) {
+        places[player.finishedPosition - 1] = 1
+      }
+      let finalTables = 0
+      if (player.finalTable) {
+        finalTables = 1
+      }
+      const standingsDocRef = admin.firestore().collection('seasonStandings').doc(playerID)
+      const doc = await standingsDocRef.get()
+      if (doc.exists) {
+        const standingsUpdate = {
+          totalPoints: admin.firestore.FieldValue.increment(player.points),
+          winnings: admin.firestore.FieldValue.increment(player.prizeMoney),
+          games: admin.firestore.FieldValue.increment(1),
+          total1st: admin.firestore.FieldValue.increment(places[0]),
+          total2nd: admin.firestore.FieldValue.increment(places[1]),
+          total3rd: admin.firestore.FieldValue.increment(places[2]),
+          total4th: admin.firestore.FieldValue.increment(places[3]),
+          finalTables: admin.firestore.FieldValue.increment(finalTables),
+        }
+        return await updateSeasonScore(event, playerID, standingsUpdate)
+      } else {
+        const places = []
+        places[player.position] = 1
+        const standingsUpdate = {
+          season: '2020',
+          totalPoints: player.points,
+          games: player.games,
+          winnings: 0,
+          pts_game: player.pts_game,
+          total1st: player.places[0],
+          total2nd: player.places[1],
+          total3rd: player.places[2],
+          total4th: player.places[3],
+          finalTables: finalTables
+        }
+        return await createSeasonScore(standingsUpdate)
+      }
 
-//     } catch (error) {
-//       if (error.code !== 'unavailable') {
-//         const updateCode = error.code
-//         const updatdeMessage = error.message
-//         const updateError = `Error updating season standings :  ${updateCode} -  ${updatdeMessage}`
-//         console.log(updateError)
-//       }
-//     }
-//   })
+    } catch (error) {
+      if (error.code !== 'unavailable') {
+        const updateCode = error.code
+        const updatdeMessage = error.message
+        const updateError = `Error updating season standings :  ${updateCode} -  ${updatdeMessage}`
+        console.log(updateError)
+      }
+    }
+  })
 
 function updateSeasonScore (event, playerID, totals) {
   // const eventAgeMs = Date.now() - Date.parse(event.timestamp)

@@ -170,81 +170,81 @@ export default {
       reader.onload = async e => {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
-          this.gameDates = await this.getLeagueDates()
-          if (this.gameDates.length) {
-            results.forEach(async (player) => {
-              try {
-                this.mode = 'add'
-                let nickName = null
-                let onlineName = null
-                if (player.nickName.length > 0) {
-                  nickName = player.nickName.trim()
-                }
-                if (player.onlineName.length > 0) {
-                  onlineName = player.onlineName.trim()
-                }
-                const newPlayer = {
-                  firstName: toTitleCase(player.firstName).trim(),
-                  lastName: toTitleCase(player.lastName).trim(),
-                  nickName: nickName,
-                  onlineName: onlineName,
-                  email: player.email,
-                  phoneNumber: player.phoneNumber,
-                  notificationOptin: true,
-                  emailOptin: true
-                }
-
-                const playerNames = {
-                  firstName: newPlayer.firstName,
-                  lastName: newPlayer.lastName,
-                  nickName: newPlayer.nickName,
-                  onlineName: newPlayer.onlineName,
-                  avatar: {
-                    avatarUrl: '',
-                    avatarName: ''
-                  },
-                  photo: {
-                    photoUrl: '',
-                    photoName: ''
-                  }
-                }
-
-                const playerContactInfo = {
-                  email: newPlayer.email,
-                  phoneNumber: newPlayer.phoneNumber,
-                  emailOptin: newPlayer.emailOptin,
-                  notificationOptin: newPlayer.notificationOptin
-                }
-
-                const playerID = await this.addNewPlayer(playerNames)
-                if (playerID) {
-                  playerContactInfo.playerID = playerID
-                  await this.createSubscriber(playerContactInfo)
-                  player.playerID = playerID
-                  await this.uploadWeeklyResults(player)
-                  if (playerContactInfo.email) {
-                    const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
-                    if (newUserID) {
-                      const userRef = {
-                        playerID: playerID,
-                        uid: newUserID
-                      }
-                      await this.createUserPlayerRef(userRef)
-                      return this.setUserClaim(newUserID, playerID)
-                    } else {
-                      return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
-                    }
-                  } else {
-                    return new Error('New player not created')
-                  }
-                }
-                if (playerID) {
-                }
-              } catch (error) {
-                console.error('Error adding document: ', error)
+          // this.gameDates = await this.getLeagueDates()
+          // if (this.gameDates.length) {
+          results.forEach(async (player) => {
+            try {
+              this.mode = 'add'
+              let nickName = null
+              let onlineName = null
+              if (player.nickName.length > 0) {
+                nickName = player.nickName.trim()
               }
-            })
-          }
+              if (player.onlineName.length > 0) {
+                onlineName = player.onlineName.trim()
+              }
+              const newPlayer = {
+                firstName: toTitleCase(player.firstName).trim(),
+                lastName: toTitleCase(player.lastName).trim(),
+                nickName: nickName,
+                onlineName: onlineName,
+                email: player.email,
+                phoneNumber: player.phoneNumber,
+                notificationOptin: true,
+                emailOptin: true
+              }
+
+              const playerNames = {
+                firstName: newPlayer.firstName,
+                lastName: newPlayer.lastName,
+                nickName: newPlayer.nickName,
+                onlineName: newPlayer.onlineName,
+                avatar: {
+                  avatarUrl: '',
+                  avatarName: ''
+                },
+                photo: {
+                  photoUrl: '',
+                  photoName: ''
+                }
+              }
+
+              const playerContactInfo = {
+                email: newPlayer.email,
+                phoneNumber: newPlayer.phoneNumber,
+                emailOptin: newPlayer.emailOptin,
+                notificationOptin: newPlayer.notificationOptin
+              }
+
+              const playerID = await this.addNewPlayer(playerNames)
+              if (playerID) {
+                playerContactInfo.playerID = playerID
+                await this.createSubscriber(playerContactInfo)
+                player.playerID = playerID
+                // await this.uploadWeeklyResults(player)
+                if (playerContactInfo.email) {
+                  const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
+                  if (newUserID) {
+                    const userRef = {
+                      playerID: playerID,
+                      uid: newUserID
+                    }
+                    await this.createUserPlayerRef(userRef)
+                    return this.setUserClaim(newUserID, playerID)
+                  } else {
+                    return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
+                  }
+                } else {
+                  return new Error('New player not created')
+                }
+              }
+              if (playerID) {
+              }
+            } catch (error) {
+              console.error('Error adding document: ', error)
+            }
+          })
+          // }
         }
       }
       this.players = false

@@ -65,7 +65,8 @@ const actions = {
     commit('SET_SEASON_STANDINGS', standings)
   },
   async fbSeasonStandings ({ commit, dispatch, state, rootState }) {
-    const season = rootState.leagueSettings.leagueInfo.currentSeason
+    // const season = rootState.leagueSettings.leagueInfo.currentSeason
+    const season = '2020'
     const standingsRef = firebaseStore.collection('seasonStandings')
       .where('season', '==', season)
 

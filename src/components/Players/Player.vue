@@ -4,7 +4,7 @@
       class="item item-container player-table__items q-mt-xs" :class="isAdmin">
       <div class="attribute-container avatar">
         <div class="attribute player-img q-px-sm q-py-xs">
-          <q-avatar>
+          <q-avatar size="64px">
             <img :src="player_avatar" color="primary">
           </q-avatar>
         </div>

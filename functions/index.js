@@ -67,8 +67,11 @@ exports.newPlayer = functions.firestore.document('/players/{id}')
   .onCreate((snap, context) => {
     try {
       // Create a new document to track season scores
+      const leagueDoc = await admin.firestore().collection('leagueInfo').doc('1').get()
+      const leagueInfo = leagueDoc.data()
+      const season = leagueInfo.currentSeason
       const newStanding = {
-        season: '2020',
+        season: season,
         position: 0,
         totalPoints: 0,
         games: 0,
@@ -80,9 +83,7 @@ exports.newPlayer = functions.firestore.document('/players/{id}')
         finalTables: 0
       }
       const seasonStandings = admin.firestore().collection('seasonStandings')
-      return seasonStandings
-        .doc(snap.id)
-        .set(newStanding)
+      return seasonStandings.doc(snap.id).set(newStanding)
     } catch (error) {
       const updateCode = error.code
       const updatdeMessage = error.message

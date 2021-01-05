@@ -80,10 +80,10 @@ export default {
   },
   async mounted () {
     await this.fbPlayerResults(this.playerID)
-  },
-  async beforeDestroy () {
-    await this.resetResults()
   }
+  // async beforeDestroy () {
+  //   await this.resetResults()
+  // }
 }
 </script>
 

@@ -72,7 +72,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('weeklyResults', ['fbWeeklyResults', 'setSearch']),
+    ...mapActions('weeklyResults', ['fbWeeklyResults', 'setResultsLoaded', 'setSearch']),
     updateGameDate (date) {
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'
@@ -85,7 +85,10 @@ export default {
     if (this.completedGames) {
       if (this.completedGamesArr[0].gameDate) {
         this.gameDate = this.completedGamesArr[0].gameDate
-        return await this.fbWeeklyResults(this.gameDate)
+        await this.fbWeeklyResults(this.gameDate)
+        if (this.resultsFiltered.length) {
+          this.setResultsLoaded(true)
+        }
       }
     }
   },

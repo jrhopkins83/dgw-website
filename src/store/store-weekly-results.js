@@ -63,7 +63,7 @@ const actions = {
     commit('SET_TXT_ROUND_DT', value)
   },
   setResultsLoaded ({ commit }, value) {
-    commit('SET_WEEKLY_RESULTS_LOADED', value)
+    return commit('SET_WEEKLY_RESULTS_LOADED', value)
   },
   setWeeklyResults ({ commit }, payload) {
     commit('SET_WEEKLY_RESULTS', payload)
@@ -74,23 +74,23 @@ const actions = {
       .orderBy('gameDate', 'desc')
 
     await dispatch('bindPlayerResultsRef', resultsRef)
-    return commit('SET_PLAYER_RESULTS_LOADED', true)
+    commit('SET_PLAYER_RESULTS_LOADED', true)
   },
   async fbWeeklyResults ({ commit, dispatch, state }, gameDate) {
     const resultsRef = firebaseStore.collection('weeklyResults')
       .where('gameDate', '==', gameDate)
 
-    dispatch('bindWeeklyResultsRef', resultsRef)
-    return commit('SET_WEEKLY_RESULTS_LOADED', true)
+    await dispatch('bindWeeklyResultsRef', resultsRef)
+    commit('SET_WEEKLY_RESULTS_LOADED', true)
   },
-  bindWeeklyResultsRef: firestoreAction((context, ref) => {
-    return context.bindFirestoreRef('weeklyResults', ref)
+  bindWeeklyResultsRef: firestoreAction(async (context, ref) => {
+    return await context.bindFirestoreRef('weeklyResults', ref)
   }),
   unbindResultsRef: firestoreAction((context) => {
     context.unbindFirestoreRef('weeklyResults')
   }),
-  bindPlayerResultsRef: firestoreAction((context, ref) => {
-    return context.bindFirestoreRef('playerResults', ref)
+  bindPlayerResultsRef: firestoreAction(async (context, ref) => {
+    return await context.bindFirestoreRef('playerResults', ref)
   }),
   unbindPlayerResultsRef: firestoreAction((context) => {
     context.unbindFirestoreRef('playerResults')

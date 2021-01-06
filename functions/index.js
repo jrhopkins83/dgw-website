@@ -64,7 +64,7 @@ exports.createUser = functions.https.onCall((data) => {
 
 // function called when a new player is added
 exports.newPlayer = functions.firestore.document('/players/{id}')
-  .onCreate((snap, context) => {
+  .onCreate(async (snap, context) => {
     try {
       // Create a new document to track season scores
       const leagueDoc = await admin.firestore().collection('leagueInfo').doc('1').get()

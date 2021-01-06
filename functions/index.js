@@ -38,11 +38,11 @@ exports.setAdminClaim = functions.https.onCall((data, context) => {
 
 exports.setPlayerClaim = functions.https.onCall((data, context) => {
   // get user and add admin custom claim
-  // if (context.auth.token.isAdmin !== true) {
-  //   return {
-  //     error: 'Only admins can add other admins'
-  //   }
-  // }
+  if (context.auth.token.isAdmin !== true) {
+    return {
+      error: 'Only admins can add other admins'
+    }
+  }
   // get user and add admin custom claim
   return admin.auth().setCustomUserClaims(data.uid, {
     playerID: data.playerID
@@ -55,7 +55,12 @@ exports.setPlayerClaim = functions.https.onCall((data, context) => {
   })
 })
 
-exports.createUser = functions.https.onCall((data) => {
+exports.createUser = functions.https.onCall((data, context) => {
+  if (context.auth.token.isAdmin !== true) {
+    return {
+      error: 'Only admins can add other admins'
+    }
+  }
   return admin.auth().createUser(data)
     .catch((error) => {
       throw new functions.https.HttpsError('internal', error.message)

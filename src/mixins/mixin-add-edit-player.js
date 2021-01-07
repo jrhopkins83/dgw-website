@@ -101,7 +101,10 @@ export const mixinAddEditPlayer = {
       }
 
       if (this.mode === 'edit') {
-        return await this.editPlayer(playerNames, playerContactInfo)
+        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+        await playerRef.update(playerNames)
+        const userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
+        return await userRef.update(playerContactInfo)
       } else {
         const playerID = await this.addNewPlayer(playerNames, playerContactInfo)
         if (playerID) {

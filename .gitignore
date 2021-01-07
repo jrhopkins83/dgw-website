@@ -26,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 firestore-debug.log
 /functions/firestore-debug.log
+firestore-debug.log
 
 # Editor directories and files
 .idea
@@ -37,7 +38,7 @@ firestore-debug.log
 # Upload spreadsheets & JSON files
 /src/JSONFiles
 /downloads
-/dir
+dir
 
 # Test files
 /spec

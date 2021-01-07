@@ -1,5 +1,23 @@
 {
   "projects": {
-    "default": "donkeys-gone-wild"
+    "default": "project-sandbox",
+    "prod": "donkeys-gone-wild",
+    "test": "project-sandbox"
+  },
+  "targets": {
+    "project-sandbox": {
+      "hosting": {
+        "test": [
+          "myfunc-test"
+        ]
+      }
+    },
+    "donkeys-gone-wild": {
+      "hosting": {
+        "prod": [
+          "donkeysgonewild.com"
+        ]
+      }
+    }
   }
 }

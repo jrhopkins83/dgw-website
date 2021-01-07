@@ -248,19 +248,6 @@ export default {
       },
       formHasError: false,
       template: '',
-      structureOptions: [
-        'Freezeout',
-        'Rebuy',
-        'Bounty',
-        'Progressive Bounty',
-        'Cash',
-        'Satellite'
-      ],
-      typeOptions: [
-        'MTT',
-        'SNG',
-        'Cash'
-      ],
       gameToSubmit: {},
       validation: false,
       editorMinHeight: '10rem',
@@ -290,6 +277,12 @@ export default {
         optionArray.push(option)
       })
       return optionArray
+    },
+    structureOptions: function () {
+      return this.leagueInfo.tournamentStructures
+    },
+    typeOptions: function () {
+      return this.leagueInfo.tournamentTypes
     },
     displayMode: function () {
       return toTitleCase(this.mode)

@@ -77,7 +77,7 @@
                 label="Confirm"
               />
               <q-btn
-                v-close-popup
+                @click="cancelDelete"
                 color="negative"
                 label="Cancel"
               />
@@ -155,6 +155,10 @@ export default {
       this.dialogMsg = `Are you sure you want to delete this announcement subject: ${this.announcement.subject}?`
       this.confirm = true
     },
+    cancelDelete (value) {
+      this.announcement = {}
+      this.confirm = false
+    },
     async deleteAnnouncement () {
       this.setAnnouncementsLoaded(false)
       this.$q.loading.show({
@@ -165,6 +169,7 @@ export default {
         const announcementsRef = firebaseStore.collection('announcements')
         await announcementsRef.doc(announcementID).delete()
         this.setAnnouncementsLoaded(true)
+        this.confirm = false
         this.announcement = {}
         this.showAddEdit = false
         this.$q.loading.hide()

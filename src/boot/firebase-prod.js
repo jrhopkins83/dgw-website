@@ -31,14 +31,14 @@ firebaseStore.settings({
 })
 
 // *** Uncomment for production
-// firebase.firestore().enablePersistence()
-//   .catch(function (error) {
-//     if (error.code === 'failed-precondition') {
-//       console.log('persistence failed-precondition')
-//     } else if (error.code === 'unimplemented') {
-//       console.log('persistence unimplemented')
-//     }
-//   })
+firebase.firestore().enablePersistence()
+  .catch(function (error) {
+    if (error.code === 'failed-precondition') {
+      console.log('persistence failed-precondition')
+    } else if (error.code === 'unimplemented') {
+      console.log('persistence unimplemented')
+    }
+  })
 
 export {
   firebaseAuth,

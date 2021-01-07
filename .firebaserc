@@ -1,23 +1,18 @@
 {
-  "projects": {
-    "default": "project-sandbox",
-    "prod": "donkeys-gone-wild",
-    "test": "project-sandbox"
-  },
   "targets": {
-    "project-sandbox": {
-      "hosting": {
-        "test": [
-          "myfunc-test"
-        ]
-      }
-    },
-    "donkeys-gone-wild": {
+    "staging": {
       "hosting": {
         "prod": [
           "donkeysgonewild.com"
+        ],
+        "staging": [
+          "donkeysgonewild.fun"
         ]
       }
     }
+  },
+  "projects": {
+    "prod": "donkeys-gone-wild",
+    "staging": "fir-authdemo-5cd82"
   }
 }

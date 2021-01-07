@@ -163,8 +163,16 @@ const getters = {
       playersFiltered = {}
     if (state.search) {
       Object.keys(playersMerged).forEach(function (key) {
-        const player = playersMerged[key],
-          playerNameLowerCase = player.lastName.toLowerCase() + ', ' + player.firstName.toLowerCase(),
+        const player = playersMerged[key]
+        let nickName = '', onlineName = ''
+        if (player.nickName) {
+          nickName = player.nickName.toLowerCase()
+        }
+        if (player.onlineName) {
+          onlineName = player.onlineName.toLowerCase()
+        }
+
+        const playerNameLowerCase = `${player.lastName.toLowerCase()}, ${player.firstName.toLowerCase()}, ${nickName}, ${onlineName}`,
           searchLowerCase = state.search.toLowerCase()
         if (playerNameLowerCase.includes(searchLowerCase)) {
           playersFiltered[key] = player

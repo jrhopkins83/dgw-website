@@ -108,9 +108,12 @@ export default {
   },
   computed: {
     winnings_formatted () {
-      return currencyFormat.format(this.playerTotals.winnings)
+      if (!isNaN(this.playerTotals.winnings)) {
+        return currencyFormat.format(this.playerTotals.winnings)
+      } else {
+        return '$0'
+      }
     }
-
   },
   methods: {
 
@@ -207,6 +210,15 @@ export default {
   .q-page {
     min-height: auto;
   }
+
+@media screen and (min-width: 1366px) {
+  .results-section {
+
+    &__players {
+      min-width: 70rem;
+    }
+  }
+}
 
 @media screen and (max-width: 600px) {
   .online-name-header {

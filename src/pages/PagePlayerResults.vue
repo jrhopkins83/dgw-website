@@ -138,4 +138,9 @@ html, body, .grid-container { height: 100%; margin: 0; }
   // }
 }
 
+@media screen and (min-width: 1366px) {
+  .player-results {
+    min-width: 70rem;
+  }
+}
 </style>

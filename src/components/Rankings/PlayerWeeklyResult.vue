@@ -30,7 +30,11 @@ export default {
   },
   computed: {
     winnings_formatted () {
-      return currencyFormat.format(this.player.prizeMoney)
+      if (!isNaN(this.player.prizeMoney)) {
+        return currencyFormat.format(this.player.prizeMoney)
+      } else {
+        return '$0'
+      }
     },
     screenWidth () {
       return this.$q.screen.width
@@ -52,6 +56,7 @@ export default {
 
 <style lang='scss' scoped>
   .results-section {
+    min-width: 70rem;
 
     li {
       list-style: none;
@@ -104,7 +109,7 @@ export default {
       .player-table {
 
         &__items {
-          height: 2.5rem;
+          min-height: 2.5rem;
           border-bottom-style: solid;
           border-bottom-width: 1px;
           border-bottom-color: $grey-2;

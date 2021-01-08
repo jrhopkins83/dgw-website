@@ -232,7 +232,7 @@ export default {
     &__players {
       height: 66vh;
       width: 100%;
-      overflow: scroll;
+      overflow: auto;
       border-radius: 2.5rem;
       opacity: 0.8;
 
@@ -343,7 +343,7 @@ export default {
     &__players {
       height: 66vh;
       width: 100%;
-      overflow: scroll;
+      overflow: auto;
       border-radius: 2.5rem;
       opacity: 0.8;
 

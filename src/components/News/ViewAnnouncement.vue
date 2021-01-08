@@ -85,7 +85,7 @@ export default {
   max-height: 40rem;
   line-height: 2.5rem;
   font-weight: 400;
-  overflow: scroll;
+  overflow: auto;
 }
 
 @media screen and (max-width: 600px) {

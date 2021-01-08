@@ -84,7 +84,7 @@ export default {
       background-color:$off-white;
       height: 74vh;
       max-width: 120rem;
-      overflow: scroll;
+      overflow: auto;
       border-radius: 2.5rem;
       opacity: 1;
 

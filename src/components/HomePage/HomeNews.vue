@@ -66,7 +66,7 @@ export default {
     color: $off-white;
     background-image: url(poker_club2.png);
     background-size: cover;
-    overflow: scroll;
+    overflow: auto;
 
     &__content {
       position: relative;

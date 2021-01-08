@@ -129,7 +129,7 @@ export default {
       // background-color: white;
       height: 70rem;
       max-width: 93rem;
-      overflow: scroll;
+      overflow: auto;
       border-radius: 2.5rem;
       opacity: .9;
 

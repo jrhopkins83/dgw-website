@@ -301,7 +301,7 @@ export default {
     &__games {
       height: 73vh;
       width: 100%;
-      overflow: scroll;
+      overflow: auto;
       border-radius: 2.5rem;
       opacity: 0.8;
 

@@ -182,7 +182,7 @@ export default {
         position: relative;
         max-width: 64rem;
         max-height: 40rem;
-        overflow: scroll;
+        overflow: auto;
 
         &__heading-row {
           position: sticky;

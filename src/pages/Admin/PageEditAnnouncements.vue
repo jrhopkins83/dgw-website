@@ -301,7 +301,7 @@ export default {
       .item-list {
         height: 85vh;
         width: 100%;
-        overflow: scroll;
+        overflow: auto;
       }
 
     }

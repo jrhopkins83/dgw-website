@@ -124,7 +124,7 @@ export default {
   }
 
 .hero-section__headline--message {
-  overflow: scroll;
+  overflow: auto;
   justify-self: center;
   max-height: 23rem;
 

@@ -259,7 +259,7 @@ export default {
       position: relative;
       height: 70vh;
       max-width: 80rem;
-      overflow: scroll;
+      overflow: auto;
       border-radius: 2.5rem;
       opacity: .9;
 

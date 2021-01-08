@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
-    ...mapGetters('games', ['lastCompletedDate']),
+    ...mapGetters('games', ['gameDates', 'lastCompletedDate']),
     ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {

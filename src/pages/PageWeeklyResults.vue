@@ -82,7 +82,7 @@ export default {
   },
 
   async beforeMount () {
-    if (this.completedGames) {
+    if (Object.keys(this.completedGames).length) {
       if (this.completedGamesArr[0].gameDate) {
         this.gameDate = this.completedGamesArr[0].gameDate
         await this.fbWeeklyResults(this.gameDate)

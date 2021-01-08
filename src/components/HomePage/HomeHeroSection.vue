@@ -92,7 +92,7 @@ export default {
 
       &__headline {
         position: relative;
-        align-self: flex-start;
+        align-self: center;
         justify-self: flex-start;
         max-height: 28rem;
         min-width: 280px;

@@ -30,7 +30,7 @@
           </q-item-section>
         </q-item>
         <div>
-          <div class="hero-section__headline--message q-pa-none" v-html="lastHeroHeadline">
+          <div class="hero-section__headline--message q-pa-none scroll" v-html="lastHeroHeadline">
           </div>
         </div>
       </div>

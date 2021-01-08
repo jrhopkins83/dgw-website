@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class='rankings-section'>
-      <div class='rankings-section__players q-mb-sm'>
+      <div class='rankings-section__players scroll q-mb-sm'>
         <ol class='collection collection-container player-table q-mb-sm'>
           <!-- The first list item is the header of the table -->
           <li class='item item-container player-table__heading-row q-pb-sm'>

@@ -258,6 +258,11 @@ export default {
         {
           label: 'Announcements',
           value: 'Announcements'
+        },
+        {
+          label: '',
+          icon: 'help',
+          value: 'Help'
         }
       ]
     }

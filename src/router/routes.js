@@ -60,6 +60,14 @@ const routes = [{
       },
       component: () => import('pages/PageAnnouncements.vue')
     }, {
+      path: 'help',
+      name: 'Help',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('pages/PageHelp.vue')
+    }, {
       path: 'user-profile',
       name: 'UserProfile',
       props: true,

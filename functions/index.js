@@ -131,8 +131,11 @@ exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
       } else {
         const places = []
         places[player.position] = 1
+        const leagueDoc = await admin.firestore().collection('leagueInfo').doc('1').get()
+        const leagueInfo = leagueDoc.data()
+        const season = leagueInfo.currentSeason
         const standingsUpdate = {
-          season: '2020',
+          season: season,
           totalPoints: player.points,
           games: player.games,
           winnings: 0,

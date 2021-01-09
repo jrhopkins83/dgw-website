@@ -90,7 +90,7 @@
                 :rules="[required, email]"
               />
             </div>
-            <div class="row q-mb-md q-pa-xs">
+            <div class="row q-mb-md q-pa-xs" v-if="!firstTimeLogin">
               <q-input
                 ref="password"
                 v-model="formData.password"
@@ -117,19 +117,31 @@
             </div>
             <div class="row">
               <q-card-actions
-                class="q-mb-sm justify-evenly"
-                align="center"
+                class="q-mb-sm"
+                align="around"
               >
                 <q-btn
-                  v-if="LoginError.errorCode=='auth/too-many-requests'"
-                  color="negative"
+                  v-if="LoginError.errorCode=='auth/too-many-requests' || firstTimeLogin"
+                  class="action-button"
+                  color="primary"
                   label="Reset Password"
                   @click="resetPassword"
-                />
+                >
+                <q-tooltip>
+                  Click to send password reset email
+                </q-tooltip>
+                </q-btn>
                 <q-btn
-                  color="primary"
+                  v-else
+                  class="action-button"
+                  color="blue-9"
                   :label="tab"
                   type="submit"
+                >
+                </q-btn>
+                <q-checkbox v-if="!firstTimeLogin"
+                  v-model="firstTimeLogin"
+                  label="First time logging in?"
                 />
               </q-card-actions>
             </div>
@@ -239,15 +251,13 @@ export default {
         firstName: null,
         lastName: null,
         email: '',
-        password: '',
-        fullHandicap: null,
-        hasGHIN: false
+        password: ''
       },
-      leagueID: '1', // TO-DO figure out how to get league (select?)
       existPrompt: false,
       existPlayer: false,
       dialogMsg: '',
       message: '',
+      firstTimeLogin: false,
       newUser: {},
       validation: false,
       hideForm: false,
@@ -327,6 +337,8 @@ export default {
     },
     resetPassword () {
       this.sendReset(this.formData.email)
+      this.firstTimeLogin = false
+      this.formData.email = ''
     }
 
   },
@@ -344,5 +356,8 @@ export default {
 <style lang="scss" scoped>
   .q-banner__content.text-body2 {
     font-size: 1.6rem;
+  }
+  .action-button {
+    margin-right: 15rem;
   }
 </style>

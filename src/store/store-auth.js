@@ -21,7 +21,9 @@ const mutations = {
   },
   SET_LOGGEDIN (state, value) {
     state.loggedIn = value
-    console.log('state.loggedIn: ', state.loggedIn)
+  },
+  SET_NEVER_LOGGEDIN (state, value) {
+    state.neverLoggedIn = value
   },
   SET_NEW_USER (state, value) {
     state.newUser = value
@@ -131,6 +133,14 @@ const actions = {
       showMessage('error', 'Make Admin result: ', result)
     })
   },
+  sendNewUserReset ({ }, adminEmail) {
+    const sendNewUserReset = firebaseFunctions.httpsCallable('sendNewUserReset')
+    sendNewUserReset({
+      email: adminEmail
+    }).then(link => {
+      showMessage('error', 'Make Admin link: ', link)
+    })
+  },
   getLoggedIn ({ commit }) {
     const loggedIn = LocalStorage.getItem('loggedIn')
     if (loggedIn) {
@@ -147,10 +157,9 @@ const actions = {
           errorMessage: null
         }
         commit('SET_ERROR_MESSAGE', LoginError)
-        showMessage('error', 'Look in your email inbox for a link to reset your password.')
-      }).catch(function (error) {
-        // An error happened.
-        alert('Error requesting reset')
+        showMessage('Success', 'Look in your email inbox for a link to reset your password.')
+      }).catch(error => {
+        showMessage('error', `Error  requesting reset: ${error.message}`)
       })
   }
 }

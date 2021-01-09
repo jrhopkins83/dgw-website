@@ -282,7 +282,7 @@ export default {
       return this.leagueInfo.tournamentStructures
     },
     typeOptions: function () {
-      return this.leagueInfo.tournamentTypes
+      return this.leagueInfo.gameTypes
     },
     displayMode: function () {
       return toTitleCase(this.mode)

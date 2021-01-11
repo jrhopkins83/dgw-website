@@ -15,7 +15,7 @@
         </div>
       </q-toolbar-title>
       <template v-if="loggedIn">
-        <div class="tabs">
+        <div class="desktop-menu tabs">
           <q-btn-toggle
             value="tab"
             flat stretch

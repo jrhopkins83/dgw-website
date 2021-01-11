@@ -175,6 +175,7 @@ const actions = {
       if (Object.keys(state.finishedPlayers).length) {
         // commit('RESORT_FINISHED_PLAYERS', value)
         dispatch('resortFinishedPlayers', value)
+        dispatch('setSearch', '')
       }
     } catch (error) {
       showMessage(error)
@@ -243,7 +244,7 @@ const actions = {
     }
     commit('SET_FINISHED_LOADED', true)
   },
-  async fbWeeklyResults ({ commit, dispatch, state }, id) {
+  async fbTourneyResults ({ commit, dispatch, state }, id) {
     try {
       if (id) {
         const resultsRef = firebaseStore.collection('tournamentResults')
@@ -253,16 +254,6 @@ const actions = {
           .orderBy('lastName')
           .orderBy('firstName')
         await dispatch('bindResultsRef', resultsRef)
-        // const snapShot = await resultsRef.get()
-        // if (!snapShot.empty) {
-        //   dispatch('getFinishedPlayersLS')
-        //   const tournamentDocs = []
-        //   snapShot.forEach(doc => {
-        //     const tournamentDoc = doc.data()
-        //     tournamentDoc.id = doc.id
-        //     tournamentDocs.push(tournamentDoc)
-        //   })
-        // commit('SET_TOURNAMENT_RESULTS', tournamentDocs)
         return commit('SET_RESULTS_LOADED', true)
         // }
       }

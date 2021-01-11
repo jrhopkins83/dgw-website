@@ -187,7 +187,7 @@ export default {
 
   },
   methods: {
-    ...mapActions('tourneyResults', ['fbWeeklyResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
+    ...mapActions('tourneyResults', ['fbTourneyResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
     ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setSort', 'setReorderFlag', 'setFinishedLoaded']),
     enterPayouts () {
       if (this.remaining > 0) {
@@ -202,7 +202,7 @@ export default {
     if (this.tournamentID) {
       await this.fbTournamentInfo(this.tournamentID)
       // Get tournament results if loaded.  If not loaded, call function to create
-      await this.fbWeeklyResults(this.tournamentID)
+      await this.fbTourneyResults(this.tournamentID)
       if (this.tournamentInfo.type && !this.tournamentResults.length) {
         try {
           // TO-DO: convert to FB function
@@ -219,7 +219,7 @@ export default {
             // })
             createTournamentResults(this.tournamentInfo, this.tournamentID).then(async () => {
               // Reload results
-              await this.fbWeeklyResults(this.tournamentID)
+              await this.fbTourneyResults(this.tournamentID)
             })
           }
         } catch (error) {

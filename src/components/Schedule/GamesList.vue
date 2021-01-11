@@ -188,13 +188,12 @@ export default {
     },
     confirmDelete (value) {
       this.game = value[0]
+      this.id = value[1]
       this.dialogHeader = 'Confirm Delete?'
       this.dialogMsg = 'Are you sure you want to delete this game?'
       this.confirm = true
     },
     async deleteGame (value) {
-      this.game = value[0]
-      this.id = value[1]
       this.setGamesLoaded(false)
       this.$q.loading.show({
         message: '<b>Adding New Games</b> is in progress.<br/><span class="text-info">Hang on...</span>'
@@ -204,7 +203,8 @@ export default {
         await gamesRef.doc(this.id).delete()
         this.setGamesLoaded(true)
         this.game = {}
-        this.showViewGame = false
+        this.id = ''
+        this.confirm = false
         this.$q.loading.hide()
       } catch (error) {
         switch (error) {
@@ -217,6 +217,11 @@ export default {
           default:
             showMessage('error', 'Error deleting game: ' + error)
         }
+        this.setGamesLoaded(true)
+        this.game = {}
+        this.id = ''
+        this.confirm = false
+        this.$q.loading.hide()
       }
     },
     sendInvite () {
@@ -244,6 +249,7 @@ export default {
           buyIn: buyIn,
           rebuy: rebuy,
           addOn: addOn,
+          seasonTourney: game.seasonTourney,
           location: game.location,
           notes: game.notes
         }

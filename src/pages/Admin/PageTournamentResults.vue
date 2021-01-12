@@ -147,10 +147,7 @@ export default {
   },
   mixins: [mixinAddEditPlayer],
   props: {
-    id: {
-      type: String,
-      default: ''
-    }
+
   },
   data () {
     return {
@@ -212,11 +209,6 @@ export default {
             .limit(1)
           const snapShot = await resultsRef.get()
           if (snapShot.empty) {
-            // const createResults = firebaseFunctions.httpsCallable('createTournamentResults')
-            // createResults({ event: this.tournamentInfo }).then(result => {
-            //   const msg = 'Results created'
-            //   showMessage(msg)
-            // })
             createTournamentResults(this.tournamentInfo, this.tournamentID).then(async () => {
               // Reload results
               await this.fbTourneyResults(this.tournamentID)

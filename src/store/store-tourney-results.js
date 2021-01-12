@@ -158,7 +158,7 @@ const actions = {
     }
     commit('SET_EVENT_INFO', tournamentInfo)
   },
-  async updateCheckedInPlayer ({ state, commit, dispatch }, payload) {
+  async changePlayerCheckin ({ state, commit, dispatch }, payload) {
     try {
       const docID = payload.docID
       const playerRef = firebaseStore.collection('tournamentResults').doc(docID)

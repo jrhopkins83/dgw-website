@@ -101,10 +101,9 @@ exports.newPlayer = functions.firestore.document('/players/{id}')
 // Update season scores when weekly result create completes
 exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
   .onCreate(async (snap, context) => {
+    const event = context.event
+    const player = snap.data()
     try {
-
-      const event = context.event
-      const player = snap.data()
       const places = [0, 0, 0, 0]
       const playerID = player.playerID
       if (player.finishedPosition <= 4) {
@@ -153,7 +152,7 @@ exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
       if (error.code !== 'unavailable') {
         const updateCode = error.code
         const updatdeMessage = error.message
-        const updateError = `Error updating season standings :  ${updateCode} -  ${updatdeMessage}`
+        const updateError = `Error updating season standings for player ${JSON.stringify(player)}:  ${updateCode} -  ${updatdeMessage}`
         console.log(updateError)
       }
     }

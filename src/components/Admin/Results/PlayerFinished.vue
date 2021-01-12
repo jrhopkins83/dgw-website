@@ -47,7 +47,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['updateCheckedInPlayer'])
+    ...mapActions('tourneyResults', ['changePlayerCheckin'])
   },
   mounted () {
 

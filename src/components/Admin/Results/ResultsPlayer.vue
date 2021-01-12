@@ -68,7 +68,7 @@ export default {
           docID: this.player.id,
           checkedIn: value
         }
-        this.updateCheckedInPlayer(newResult)
+        this.changePlayerCheckin(newResult)
       }
     },
     player_avatar: function () {
@@ -83,7 +83,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['updateCheckedInPlayer']),
+    ...mapActions('tourneyResults', ['changePlayerCheckin']),
     koPlayer () {
       if (this.player.checkedIn) {
         const playerToChange = {

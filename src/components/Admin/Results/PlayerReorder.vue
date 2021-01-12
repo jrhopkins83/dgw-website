@@ -54,13 +54,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions('tourneyResults', ['updateCheckedInPlayer']),
+    ...mapActions('tourneyResults', ['changePlayerCheckin']),
     updateCheckedIn () {
       const newResult = {
         docID: this.player.id,
         checkedIn: this.checkedIn
       }
-      this.updateCheckedInPlayer(newResult)
+      this.changePlayerCheckin(newResult)
     },
     selectPlayer () {
       if (this.player.checkedIn) {

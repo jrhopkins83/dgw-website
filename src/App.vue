@@ -15,7 +15,6 @@ export default {
   methods: {
     ...mapActions('leagueSettings', ['getUserInfoLS']),
     ...mapActions('players', ['getPlayersLS']),
-    ...mapActions('tourneyResults', ['getFinishedPlayersLS']),
     ...mapActions('auth', ['getLoggedIn', 'handleAuthStateChange'])
 
   },

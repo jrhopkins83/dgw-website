@@ -29,14 +29,27 @@
               <div class="attribute cursor-pointer"
                 clickable
                 @click="setSortColumn('name')"
-              >
-                Player
-              </div>
+              ></div>
               <!-- Enclose semantically similar attributes as a div hierarchy -->
               <div class="attribute-container player-information">
-                <div class="attribute last-name"></div>
-                <div class="attribute nick-name">Nickname</div>
-                <div class="attribute online-name">Online Name</div>
+                <div class="attribute cursor-pointer last-name"
+                  clickable
+                  @click="setSortColumn('name')"
+                >
+                  Name
+                </div>
+                <div class="attribute cursor-pointer nick-name"
+                  clickable
+                  @click="setSortColumn('nickName')"
+                >
+                  NickName
+                </div>
+                <div class="attribute cursor-pointer online-name"
+                  clickable
+                  @click="setSortColumn('onlineName')"
+                >
+                  Online Name
+                </div>
               </div>
               <div class="attribute position text-center" v-if="type==='checked-in'">KO</div>
             </li>

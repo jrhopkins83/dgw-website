@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="column container">
+    <div class="column container" v-if="gamesLoaded">
       <div class="col header">
         <div class="col-12 header__title text-center">
           <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
@@ -42,7 +42,7 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
-    ...mapGetters('games', ['lastCompletedDate']),
+    ...mapGetters('games', ['gamesLoaded', 'lastCompletedDate']),
     updating () {
       const stillLoading = !this.standingsLoaded // TO-DO: add other loading events
       return stillLoading

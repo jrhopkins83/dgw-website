@@ -54,8 +54,11 @@
                     {{ player.finishedPosition}}
                   </div>
                   <div class="player-img q-px-xs q-py-none" v-if="player.avatar">
-                    <q-avatar size="40px">
+                    <q-avatar size="40px" v-if="player.avatar.length > 0">
                       <img :src="player.avatar.avatarUrl" color="primary">
+                    </q-avatar>
+                    <q-avatar size="40px" v-else>
+                      <img :src="default_avatar" color="primary">
                     </q-avatar>
                   </div>
                   <div class="player-img q-px-xs q-py-none" v-else>
@@ -65,7 +68,7 @@
                   </div>
                   <div class="attribute-container player-information">
                     <div class="attribute-container player-names">
-                      <div class="attribute name">{{ player.firstName }}</div>
+                      <div class="attribute name">{{ player.lastName.length ? `${player.firstName} ${player.lastName.substr(0, 1)}.` : player.firstName }}</div>
                       <div class="attribute nick-name">{{ player.nickName}}</div>
                       <div class="attribute online-name">{{ player.onlineName }}</div>
                     </div>

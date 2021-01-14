@@ -7,7 +7,7 @@
     <q-page style="min-height: inherit;">
       <div
         class="container"
-        v-if="weeklyResultsLoaded && finishedLoaded && leagueInfoLoaded"
+        v-if="tournamentResultsLoaded && leagueInfoLoaded"
       >
         <div class="row header">
           <div class="col-12">
@@ -166,22 +166,14 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded']),
-    ...mapGetters('tourneyResults', ['tournamentID', 'tournamentResults', 'weeklyResultsLoaded', 'finishedLoaded', 'finishedPlayers']),
-    ...mapGetters('tourneyResults', ['reorderFlag', 'resultsSorted', 'resultsFiltered', 'remainingPlayers', 'numCheckedIn', 'tournamentInfo']),
+    ...mapGetters('tourneyResults', ['tournamentID', 'tournamentResults', 'tournamentResultsLoaded', 'finishedLoaded', 'finishedPlayers']),
+    ...mapGetters('tourneyResults', ['reorderFlag', 'resultsSorted', 'resultsFiltered', 'remainingPlayers', 'numCheckedIn', 'numFinished', 'tournamentInfo']),
     txtTournamentDate: function () {
       return date.formatDate(this.tournamentInfo.gameDate.toDate(), 'dddd MMMM D')
     },
     remaining: function () {
       return this.numCheckedIn - this.numFinished
-    },
-    numFinished: function () {
-      if (this.tournamentResults) {
-        return Object.keys(this.finishedPlayers).length
-      } else {
-        return null
-      }
     }
-
   },
   methods: {
     ...mapActions('tourneyResults', ['fbTourneyResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
@@ -220,7 +212,6 @@ export default {
         }
       }
     }
-    this.getFinishedPlayersLS()
     this.getNumCheckedIn()
     this.setSort('onlineName')
   }

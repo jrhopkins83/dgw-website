@@ -1,6 +1,7 @@
 <template>
   <div class="flex-center column">
     <div class="row hero-section">
+      <div class="hero-section__title text-h2 text-center">Donkey's Gone Wild</div>
       <q-card class="hero-section__pool" flat >
         <q-card-section>
           <q-list>
@@ -23,16 +24,7 @@
           </q-list>
         </q-card-section>
       </q-card>
-      <div class="hero-section__headline transparent text-white">
-        <q-item>
-          <q-item-section>
-            <q-item-label class="hero-section__headline--title text-h2 text-center">Donkey's Gone Wild</q-item-label>
-          </q-item-section>
-        </q-item>
-        <div>
-          <div class="hero-section__headline--message q-pa-none scroll" v-html="lastHeroHeadline">
-          </div>
-        </div>
+      <div class="hero-section__message q-pa-none scroll" v-html="lastHeroHeadline">
       </div>
     </div>
   </div>
@@ -86,30 +78,43 @@ export default {
     background-size: cover;
     /* grid styles */
     display: grid;
-    grid-template-columns: 2fr 3fr;
-    align-items: center;
-    grid-gap: 3rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 5rem 1fr;
+    grid-template-areas:
+      "title title"
+      "pool message";
+    column-gap: 4rem;
+    row-gap: 2rem;
 
-      &__headline {
-        position: relative;
-        align-self: center;
-        justify-self: flex-start;
-        max-height: 28rem;
-        min-width: 280px;
-        max-width: 650px;
-        margin-left: 4rem;
-      }
+    &__title {
+      grid-area: title;
+      color: $white;
+      position: relative;
+      align-self: flex-start;
+      justify-self: center;
+      max-height: 36rem;
+      margin-top: 1rem;
+    }
 
-      &__pool {
-        overflow: auto;
-        align-self: center;
-        justify-self: flex-end;
-        min-width: 220px;
-        max-width: 250px;
-        background-color: $off-white;
-        // margin-top: 60px;
+    &__pool {
+      grid-area: pool;
+      max-width: 250px;
+      align-self: flex-start;
+      justify-self: flex-end;
+      background-color: $off-white;
+      margin-right: 2rem;
+    }
 
-      }
+    &__message {
+      position: relative;
+      grid-area: message;
+      color: $white;
+      overflow: auto;
+      align-self: flex-start;
+      justify-self: flex-start;
+      max-height: 34rem;
+      max-width: 40rem;
+    }
 
     &::before {
       content: "";
@@ -118,51 +123,74 @@ export default {
       right: 0px;
       bottom: 0px;
       left: 0px;
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0,0,0,0.5);
       // background-color: rgba(152, 66, 211, 0.63);
     }
   }
-
-.hero-section__headline--message {
-  overflow: auto;
-  justify-self: center;
-  max-height: 23rem;
-
-}
 
   .q-page {
     min-height: auto;
   }
 
-  @media screen and (max-width: 799px) {
+  @media screen and (max-width: 62rem) {
     .hero-section {
+      overflow: hidden;
+      /* grid styles */
+      display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: 2fr 1fr;
-      grid-gap: 1rem;
+      grid-template-rows: 5rem 14rem 1fr;
+      grid-template-areas:
+        "title"
+        "message"
+        "pool";
+      grid-gap: 2rem;
 
-      &__headline {
-        grid-row-start: 1;
+      &__title {
+        grid-area: title;
+        color: $white;
+        position: relative;
         align-self: flex-start;
         justify-self: center;
         max-height: 36rem;
-        margin: 4px 1rem 4px 1rem;
-        padding: 4px auto 4px auto;
-
-        &--message {
-          max-height: 34rem;
-        }
+        margin-top: 1rem;
       }
 
       &__pool {
-        grid-row-start: 2;
+        grid-area: pool;
+        max-width: 250px;
+        align-self: flex-start;
+        justify-self: center;
+        background-color: $off-white;
+        margin-right: 2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      &__message {
+        position: relative;
+        grid-area: message;
+        color: $white;
         overflow: auto;
         align-self: flex-start;
-        justify-self: flex-end;
-        margin: 4px auto 4px auto;
-        padding: 4px auto 4px auto;
+        justify-self: flex-start;
+        max-height: 34rem;
+        max-width: 40rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
 
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        background-color: rgba(0,0,0,0.5);
+        // background-color: rgba(152, 66, 211, 0.63);
       }
     }
-  }
 
+  }
 </style>

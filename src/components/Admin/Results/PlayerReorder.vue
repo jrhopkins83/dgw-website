@@ -14,14 +14,14 @@
       <div class="position">
         {{ player.finishedPosition}}
       </div>
-      <div class="player-img q-px-xs q-py-none">
-        <q-avatar size="40px">
-          <img :src="player_avatar" color="primary">
-        </q-avatar>
-      </div>
+        <div class="player-img q-px-xs q-py-none">
+          <q-avatar size="40px">
+            <img :src="player_avatar" color="primary">
+          </q-avatar>
+        </div>
       <div class="attribute-container player-information">
         <div class="attribute-container player-names">
-          <div class="attribute name">{{ player.firstName }}</div>
+          <div class="attribute name">{{ name }}</div>
           <div class="attribute nick-name">{{ player.nickName}}</div>
           <div class="attribute online-name">{{ player.onlineName }}</div>
         </div>
@@ -51,6 +51,9 @@ export default {
       } else {
         return 'default.jpg'
       }
+    },
+    name: function () {
+      return this.player.lastName.length ? `${this.player.firstName} ${this.player.lastName.substr(0, 1)}.` : this.player.firstName
     }
   },
   methods: {

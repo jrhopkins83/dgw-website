@@ -14,7 +14,7 @@
             <div class="left-column__header--title text-h3">
               Weekly Results for the week of
             </div>
-            <div class="div left-column__header--date date">
+            <div class="left-column__header--date date">
               <modal-pick-date
                 :pickDate="txtPickDate"
                 :gameDates="gameDates"
@@ -64,6 +64,7 @@ export default {
     ...mapGetters('games', ['completedGames', 'gamesLoaded', 'gameDates']),
     ...mapGetters('weeklyResults', ['search', 'weeklyResultsLoaded', 'resultsFiltered']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
+    ...mapGetters('tournamentResults', ['tournamentInfo']),
     completedGamesArr: function () {
       return Object.values(this.completedGames)
     },
@@ -73,6 +74,7 @@ export default {
   },
   methods: {
     ...mapActions('weeklyResults', ['fbWeeklyResults', 'setResultsLoaded', 'setSearch']),
+    ...mapActions('tournamentResults', ['fbTournamentInfo']),
     updateGameDate (date) {
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'

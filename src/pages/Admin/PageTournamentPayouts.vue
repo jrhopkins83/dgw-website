@@ -72,7 +72,7 @@ export default {
   },
   data () {
     return {
-      showForm: 'pool',
+      showForm: '',
       confirm: false,
       formData: {
         prizePool: 0,
@@ -129,7 +129,14 @@ export default {
   },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded', 'points']),
-    ...mapGetters('tourneyResults', ['finishedLoaded', 'tournamentInfo', 'finishedPlayers']),
+    ...mapGetters('tourneyResults', ['tournamentInfo', 'finishedPlayers']),
+    finishedLoaded: function () {
+      if (Object.keys(this.finishedPlayers).length) {
+        return true
+      } else {
+        return false
+      }
+    },
     txtNextDate: function () {
       return date.formatDate(this.tournamentInfo.gameDate.toDate(), 'dddd MMMM D')
     },
@@ -235,15 +242,19 @@ export default {
     },
     async updateBank () {
       // Make sure to use the computed property that strips the $ signg
-      const bank = {
-        playerOfTheYear: this.leagueInfo.bank.playerOfTheYear + this.playerOfTheYear,
-        finalTable: this.leagueInfo.bank.finalTable + this.finalTable,
-        DGW: this.leagueInfo.bank.DGW + this.DGW
+      if (this.tournamentInfo.seasonTournament) {
+        const bank = {
+          playerOfTheYear: this.leagueInfo.bank.playerOfTheYear + this.playerOfTheYear,
+          finalTable: this.leagueInfo.bank.finalTable + this.finalTable,
+          DGW: this.leagueInfo.bank.DGW + this.DGW
+        }
+        const leagueRef = firebaseStore.collection('leagueInfo').doc('1')
+        return await leagueRef.update({
+          bank: bank
+        })
+      } else {
+        return true
       }
-      const leagueRef = firebaseStore.collection('leagueInfo').doc('1')
-      return await leagueRef.update({
-        bank: bank
-      })
     },
 
     async markGameComplete () {
@@ -257,6 +268,7 @@ export default {
       if (Object.keys(this.finishedPlayers).length) {
         const resultsRef = firebaseStore.collection('weeklyResults')
         const promises = []
+        const seasonTournament = this.tournamentInfo.seasonTournament
         Object.values(this.finishedPlayers).forEach(player => {
           let position = 0
           if (player.finishedPosition <= this.formData.finalTablePlayers) {
@@ -280,6 +292,7 @@ export default {
             playerID: player.playerID,
             gameID: this.tournamentInfo.id,
             gameDate: this.tournamentInfo.gameDate,
+            seasonTournament: seasonTournament,
             finishedPosition: player.finishedPosition,
             finalTable: player.finalTable,
             points: player.points,
@@ -289,6 +302,13 @@ export default {
         })
         return Promise.all(promises)
       }
+    }
+  },
+  beforeMount () {
+    if (!this.tournamentInfo.seasonTournament) {
+      this.showForm = 'payout'
+    } else {
+      this.showForm = 'pool'
     }
   }
 }

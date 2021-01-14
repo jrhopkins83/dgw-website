@@ -1,5 +1,3 @@
-import Vue from 'vue'
-import { LocalStorage } from 'quasar'
 import { firestoreAction, firestoreOptions } from 'vuexfire'
 import { firebaseStore } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
@@ -9,7 +7,7 @@ firestoreOptions.wait = true
 
 const initialState = () => {
   return {
-    weeklyResultsLoaded: false,
+    tournamentResultsLoaded: false,
     finishedLoaded: false,
     reorderFlag: false,
     playersReordered: false,
@@ -24,11 +22,11 @@ const initialState = () => {
     },
     tournamentID: '',
     tournamentResults: [],
-    finishedPlayers: {},
     numRSVPd: 0,
     numCheckedIn: 0,
+    numFinished: 0,
     search: '',
-    sortBy: [{ property: 'onlineName' }]
+    sortBy: []
   }
 }
 const state = initialState()
@@ -54,10 +52,7 @@ const mutations = {
     state.tournamentID = value
   },
   SET_RESULTS_LOADED (state, value) {
-    state.weeklyResultsLoaded = value
-  },
-  SET_FINISHED_LOADED (state, value) {
-    state.finishedLoaded = value
+    state.tournamentResultsLoaded = value
   },
   SET_REORDER_FLAG (state, value) {
     state.reorderFlag = value
@@ -65,55 +60,18 @@ const mutations = {
   SET_PLAYERS_REORDERED (state, value) {
     state.playersReordered = value
   },
-  SET_RESULTS (state, value) {
-    Object.assign(state.seasonStandings, value)
-  },
   SET_EVENT_INFO (state, value) {
     Object.assign(state.tournamentInfo, value)
   },
-  UPDATE_CHECKED_IN (state, payload) {
-    Vue.set(state.tournamentResults[payload.id], 'checkedIn', payload.checkedIn)
-  },
-  KNOCKOUT_PLAYER (state, payload) {
-    Vue.set(state.finishedPlayers, payload.id, payload.player)
-    Vue.set(state.finishedPlayers[payload.id], 'finishedPosition', payload.finishedPosition)
-  },
-  RESTORE_PLAYER (state, payload) {
-    Vue.delete(state.finishedPlayers, payload.id)
-    Vue.set(state.finishedPlayers[payload.id], 'finishedPosition', null)
-  },
-  SET_FINISHED_PLAYERS (state, players) {
-    Object.assign(state.finishedPlayers, players)
-  },
-  UPDATE_FINISHED_PLAYERS (state, payload) {
-    Vue.set(state.finishedPlayers[payload.id], 'finishedPosition', payload.finishedPosition)
-  },
-  SET_TOURNAMENT_RESULTS (state, results) {
-    Object.assign(state.tournamentResults, results)
-  },
   SET_NUM_FINISHED (state, value) {
-    state.numFinished = state.numFinished + value
+    state.numFinished = value
   },
   SET_NUM_RSVP (state, value) {
     state.numRSVPd = value
   },
   SET_NUM_CHECKEDIN (state, value) {
     state.numCheckedIn = value
-  },
-  REORDER_FINISHED_PLAYERS (state, players) {
-    let newPosition = state.numCheckedIn - players.length + 1
-    for (let i = 0; i < players.length; i++) {
-      const key = players[i].id
-      Vue.set(state.finishedPlayers[key], 'finishedPosition', newPosition)
-      newPosition++
-    }
-  },
-  RESORT_FINISHED_PLAYERS (state, value) {
-    Object.keys(state.finishedPlayers).forEach(key => {
-      state.finishedPlayers[key].finishedPosition = state.finishedPlayers[key].finishedPosition + value
-    })
   }
-
 }
 
 const actions = {
@@ -122,6 +80,47 @@ const actions = {
   },
   resetResultsObject ({ commit }, object) {
     commit('RESET_RESULTS_OBJECT', object)
+  },
+  async fbTournamentInfo ({ commit }, id) {
+    let tournamentInfo = {}
+    const tournamentDoc = await firebaseStore.collection('gameDates').doc(id).get()
+    if (tournamentDoc.exists) {
+      tournamentInfo = tournamentDoc.data()
+      tournamentInfo.id = id
+    }
+    commit('SET_EVENT_INFO', tournamentInfo)
+  },
+  async fbTourneyResults ({ commit, dispatch, state }, id) {
+    try {
+      if (id) {
+        const resultsRef = firebaseStore.collection('tournamentResults')
+          .where('gameID', '==', id)
+          .orderBy('onlineName')
+        await dispatch('bindResultsRef', resultsRef)
+        return commit('SET_RESULTS_LOADED', true)
+      }
+    } catch (error) {
+      switch (error) {
+        case 'permission-denied':
+          showMessage('error', "You don't have access to this data.")
+          break
+        case 'not-found':
+          showMessage('error', 'Record not found in database')
+          break
+        default:
+          showMessage('error', 'Error getting tournament results: ' + error)
+      }
+      return error
+    }
+  },
+  bindResultsRef: firestoreAction(async (context, ref) => {
+    return await context.bindFirestoreRef('tournamentResults', ref)
+  }),
+  unbindResultsRef: firestoreAction(async (context) => {
+    return await context.unbindFirestoreRef('tournamentResults')
+  }),
+  setResultsLoaded ({ commit }, value) {
+    commit('SET_RESULTS_LOADED', value)
   },
   setSearch ({ commit }, value) {
     commit('SET_SEARCH', value)
@@ -138,25 +137,21 @@ const actions = {
         { property: 'firstName', direction: 1 },
         { property: 'lastName', direction: 1 }
       ]
-        : [
-          { property: 'onlineName', direction: 1 }
+        : property === 'onlineName' ? [
+          { property: 'onlineName', direction: 1 },
+          { property: 'firstName', direction: 1 },
+          { property: 'lastName', direction: 1 }
         ]
+          : property === 'nickName' ? [
+            { property: 'nickName', direction: 1 },
+            { property: 'firstName', direction: 1 },
+            { property: 'lastName', direction: 1 }
+          ]
+            : [
+              { property: 'checkedIn', direction: -1 },
+              { property: 'onlineName', direction: 1 }
+            ]
     commit('SET_SORT', sortBy)
-  },
-  setResultsLoaded ({ commit }, value) {
-    commit('SET_RESULTS_LOADED', value)
-  },
-  setFinishedLoaded ({ commit }, value) {
-    commit('SET_FINISHED_LOADED', value)
-  },
-  async fbTournamentInfo ({ commit }, id) {
-    let tournamentInfo = {}
-    const tournamentDoc = await firebaseStore.collection('gameDates').doc(id).get()
-    if (tournamentDoc.exists) {
-      tournamentInfo = tournamentDoc.data()
-      tournamentInfo.id = id
-    }
-    commit('SET_EVENT_INFO', tournamentInfo)
   },
   async changePlayerCheckin ({ state, commit, dispatch }, payload) {
     try {
@@ -172,8 +167,7 @@ const actions = {
         value = -1
       }
 
-      if (Object.keys(state.finishedPlayers).length) {
-        // commit('RESORT_FINISHED_PLAYERS', value)
+      if (Object.keys(getters.finishedPlayers).length) {
         dispatch('resortFinishedPlayers', value)
         dispatch('setSearch', '')
       }
@@ -181,102 +175,58 @@ const actions = {
       showMessage(error)
     }
   },
-  knockoutPlayer ({ commit, dispatch, state, getters }, payload) {
+  async knockoutPlayer ({ commit, dispatch, state, getters }, payload) {
     const numFinished = getters.numFinished
-    const finishedPosition = state.numCheckedIn - numFinished
-    payload.finishedPosition = finishedPosition
-    commit('KNOCKOUT_PLAYER', payload)
+    payload.finishedPosition = state.numCheckedIn - numFinished
     dispatch('setSearch', '')
-    dispatch('saveFinishedPlayersLS')
+    await dispatch('updateFinishedPosition', payload)
+  },
+  async updateFinishedPosition ({ state }, payload) {
+    try {
+      const docID = payload.docID
+      const playerRef = firebaseStore.collection('tournamentResults').doc(docID)
+      return await playerRef.update({
+        finishedPosition: payload.finishedPosition
+      })
+    } catch (error) {
+      return new Error(error)
+    }
   },
   restorePlayer ({ commit, dispatch, state }, payload) {
     commit('RESTORE_PLAYER', payload)
-    dispatch('saveFinishedPlayersLS')
   },
   setNumFinished ({ commit }, value) {
     commit('SET_NUM_FINISHED', value)
   },
-  setFinishedPlayers ({ commit }, players) {
-    commit('SET_FINISHED_PLAYERS', players)
-  },
-  reorderFinishedPlayers ({ dispatch, getters, commit }, players) {
+  async reorderFinishedPlayers ({ dispatch, getters, commit }, players) {
     if (players) {
-      commit('SET_FINISHED_LOADED', false)
-      // commit('REORDER_FINISHED_PLAYERS', players)
+      commit('SET_RESULTS_LOADED', false)
       let numCheckedIn = getters.numCheckedIn
       for (let i = players.length - 1; i >= 0; i--) {
         const finishedPosition = numCheckedIn
         const payload = {
-          id: players[i].id,
+          docID: players[i].id,
           finishedPosition: finishedPosition
         }
-        commit('UPDATE_FINISHED_PLAYERS', payload)
+        await dispatch('updateFinishedPosition', payload)
         --numCheckedIn
       }
-      dispatch('saveFinishedPlayersLS')
-      commit('SET_FINISHED_LOADED', true)
+      return commit('SET_RESULTS_LOADED', true)
     }
   },
   resortFinishedPlayers ({ dispatch, getters, commit }, value) {
-    commit('SET_FINISHED_LOADED', false)
-    Object.keys(state.finishedPlayers).forEach(key => {
-      const oldPosition = state.finishedPlayers[key].finishedPosition
+    commit('SET_RESULTS_LOADED', false)
+    Object.keys(getters.finishedPlayers).forEach(async key => {
+      const oldPosition = getters.finishedPlayers[key].finishedPosition
       const newPosition = oldPosition + value
       const payload = {
         id: key,
         finishedPosition: newPosition
       }
-      commit('UPDATE_FINISHED_PLAYERS', payload)
+      return await dispatch('updateFinishedPosition', payload)
     })
-    dispatch('saveFinishedPlayersLS')
-    commit('SET_FINISHED_LOADED', true)
+    return commit('SET_RESULTS_LOADED', true)
   },
-  saveFinishedPlayersLS ({ state }) {
-    LocalStorage.set('finishedPlayers', state.finishedPlayers)
-  },
-  getFinishedPlayersLS ({ commit }) {
-    const players = LocalStorage.getItem('finishedPlayers')
-    if (players) {
-      const keys = Object.keys(players)
-      const numFinished = keys.length
-      commit('SET_FINISHED_PLAYERS', players)
-      commit('SET_NUM_FINISHED', numFinished)
-    }
-    commit('SET_FINISHED_LOADED', true)
-  },
-  async fbTourneyResults ({ commit, dispatch, state }, id) {
-    try {
-      if (id) {
-        const resultsRef = firebaseStore.collection('tournamentResults')
-          .where('gameID', '==', id)
-          .orderBy('checkedIn', 'desc')
-          .orderBy('onlineName')
-          .orderBy('lastName')
-          .orderBy('firstName')
-        await dispatch('bindResultsRef', resultsRef)
-        return commit('SET_RESULTS_LOADED', true)
-        // }
-      }
-    } catch (error) {
-      switch (error) {
-        case 'permission-denied':
-          showMessage('error', "You don't have access to this data.")
-          break
-        case 'not-found':
-          showMessage('error', 'Record not found in database')
-          break
-        default:
-          showMessage('error', 'Error getting tournament results: ' + error)
-      }
-      return error
-    }
-  },
-  bindResultsRef: firestoreAction((context, ref) => {
-    context.bindFirestoreRef('tournamentResults', ref)
-  }),
-  unbindResultsRef: firestoreAction((context) => {
-    context.unbindFirestoreRef('tournamentResults')
-  }),
   setNumRSVPD ({ commit }, value) {
     commit('SET_NUM_RSVP', value)
   },
@@ -289,32 +239,29 @@ const actions = {
   setTournamentID ({ commit }, value) {
     commit('SET_TOURNAMENT_ID', value)
   },
-  saveNumCheckedInLS ({ state }) {
-    LocalStorage.set('numCheckedIn', state.numCheckedIn)
-  },
   getNumCheckedIn ({ dispatch, commit, state }) {
-    let numCheckedIn = 0
+    let numCheckedIn = 0, numFinished = 0
     const players = Object.values(state.tournamentResults)
     players.forEach((player) => {
       if (player.checkedIn) {
         numCheckedIn++
       }
+      if (player.finishedPosition) {
+        numFinished++
+      }
     })
     commit('SET_NUM_CHECKEDIN', numCheckedIn)
-    dispatch('saveNumCheckedInLS')
+    commit('SET_NUM_FINISHED', numFinished)
   },
   clearResultsInfo ({ commit, dispatch }) {
     dispatch('unbindResultsRef')
     commit('RESET_RESULTS')
-
-    LocalStorage.remove('numCheckedIn')
-    LocalStorage.remove('finishedPlayers')
   }
 }
 
 const getters = {
-  weeklyResultsLoaded: state => {
-    return state.weeklyResultsLoaded
+  tournamentResultsLoaded: state => {
+    return state.tournamentResultsLoaded
   },
   finishedLoaded: state => {
     return state.finishedLoaded
@@ -328,9 +275,6 @@ const getters = {
   tournamentID: state => {
     return state.tournamentID
   },
-  finishedPlayers: state => {
-    return state.finishedPlayers
-  },
   tournamentInfo: state => {
     return state.tournamentInfo
   },
@@ -341,7 +285,7 @@ const getters = {
     return state.reorderFlag
   },
   numFinished: state => {
-    return Object.keys(state.finishedPlayers).length
+    return state.numFinished
   },
   numCheckedIn: state => {
     return state.numCheckedIn
@@ -354,30 +298,39 @@ const getters = {
       let i = 0, result = 0
       while (i < state.sortBy.length && result === 0) {
         const sortByProp = state.sortBy[i].property
-        let propA = state.tournamentResults[a][sortByProp]
-        if (propA) {
-          propA = propA.toString().toLowerCase()
+        const direction = state.sortBy[i].direction
+        const propA = state.tournamentResults[a][sortByProp]
+        const propB = state.tournamentResults[b][sortByProp]
+
+        if (propA === b) { result = 0 }
+        if (propA === null) {
+          result = 1
+        } else if (propB === null) {
+          result = -1
+        } else if (typeof propA === 'string') {
+          result = propA.localeCompare(propB)
+        } else if (typeof propA === 'number' || typeof propA === 'boolean') {
+          if (propA < propB) result = -1
+          if (propA > propB) result = 1
         }
-        let propB = state.tournamentResults[a][sortByProp]
-        if (propB) {
-          propB = propB.toString().toLowerCase()
+        if (direction < 0 && result !== 0) {
+          result = result * direction
         }
-        result = state.sortBy[i].direction * (propA < propB ? -1 : (propA > propB ? 1 : 0))
         i++
       }
       return result
     })
 
     keysOrdered.forEach((key) => {
-      const id = state.tournamentResults[key].id
+      const id = state.tournamentResults[key].playerID
       resultsSorted[id] = state.tournamentResults[key]
-      resultsSorted[id].fullName = resultsSorted[id].lastName + ', ' + resultsSorted[id].firstName
     })
 
     return resultsSorted
   },
+
   resultsFiltered: (state, getters, commit) => {
-    const tournamentResults = Object.values(getters.resultsSorted),
+    const tournamentResults = getters.resultsSorted,
       resultsFiltered = []
 
     if (state.search) {
@@ -400,26 +353,31 @@ const getters = {
     const resultsFiltered = getters.resultsFiltered
     const remainingPlayers = {}
     Object.keys(resultsFiltered).forEach((key) => {
-      const finishedPlayers = Object.keys(state.finishedPlayers)
-      if (finishedPlayers) {
-        const player = resultsFiltered[key]
-        const isFinished = finishedPlayers.some((el) => {
-          return el === player.id
-        })
-        if (!isFinished) {
-          remainingPlayers[key] = player
-        }
+      const player = resultsFiltered[key]
+      if (!player.finishedPosition) {
+        remainingPlayers[key] = player
       }
     })
     return remainingPlayers
   },
+  finishedPlayers: (state, getters) => {
+    const resultsFiltered = getters.resultsFiltered
+    const finishedPlayers = {}
+    Object.keys(resultsFiltered).forEach((key) => {
+      const player = resultsFiltered[key]
+      if (player.finishedPosition) {
+        finishedPlayers[key] = player
+      }
+    })
+    return finishedPlayers
+  },
   finishedPlayersSorted: (state, getters) => {
     const finishedSorted = [],
-      keysOrdered = Object.keys(state.finishedPlayers)
+      keysOrdered = Object.keys(getters.finishedPlayers)
 
     keysOrdered.sort((a, b) => {
-      const playerAProp = state.finishedPlayers[a].finishedPosition
-      const playerBProp = state.finishedPlayers[b].finishedPosition
+      const playerAProp = getters.finishedPlayers[a].finishedPosition
+      const playerBProp = getters.finishedPlayers[b].finishedPosition
 
       if (playerAProp > playerBProp) return 1
       else if (playerAProp < playerBProp) return -1
@@ -428,7 +386,7 @@ const getters = {
 
     let player = null
     keysOrdered.forEach((key) => {
-      player = state.finishedPlayers[key]
+      player = getters.finishedPlayers[key]
       // player.id = key
       finishedSorted.push(player)
     })

@@ -103,57 +103,59 @@ exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
   .onCreate(async (snap, context) => {
     const event = context.event
     const player = snap.data()
-    try {
-      const places = [0, 0, 0, 0]
-      const playerID = player.playerID
-      if (player.finishedPosition <= 4) {
-        places[player.finishedPosition - 1] = 1
-      }
-      let finalTables = 0
-      if (player.finalTable) {
-        finalTables = 1
-      }
-      const standingsDocRef = admin.firestore().collection('seasonStandings').doc(playerID)
-      const doc = await standingsDocRef.get()
-      if (doc.exists) {
-        const standingsUpdate = {
-          totalPoints: admin.firestore.FieldValue.increment(player.points),
-          winnings: admin.firestore.FieldValue.increment(player.prizeMoney),
-          games: admin.firestore.FieldValue.increment(1),
-          total1st: admin.firestore.FieldValue.increment(places[0]),
-          total2nd: admin.firestore.FieldValue.increment(places[1]),
-          total3rd: admin.firestore.FieldValue.increment(places[2]),
-          total4th: admin.firestore.FieldValue.increment(places[3]),
-          finalTables: admin.firestore.FieldValue.increment(finalTables),
+    if (player.seasonTournament) {
+      try {
+        const places = [0, 0, 0, 0]
+        const playerID = player.playerID
+        if (player.finishedPosition <= 4) {
+          places[player.finishedPosition - 1] = 1
         }
-        return await updateSeasonScore(event, playerID, standingsUpdate)
-      } else {
-        const places = []
-        places[player.position] = 1
-        const leagueDoc = await admin.firestore().collection('leagueInfo').doc('1').get()
-        const leagueInfo = leagueDoc.data()
-        const season = leagueInfo.currentSeason
-        const standingsUpdate = {
-          season: season,
-          totalPoints: player.points,
-          games: player.games,
-          winnings: 0,
-          pts_game: player.pts_game,
-          total1st: player.places[0],
-          total2nd: player.places[1],
-          total3rd: player.places[2],
-          total4th: player.places[3],
-          finalTables: finalTables
+        let finalTables = 0
+        if (player.finalTable) {
+          finalTables = 1
         }
-        return await createSeasonScore(standingsUpdate)
-      }
+        const standingsDocRef = admin.firestore().collection('seasonStandings').doc(playerID)
+        const doc = await standingsDocRef.get()
+        if (doc.exists) {
+          const standingsUpdate = {
+            totalPoints: admin.firestore.FieldValue.increment(player.points),
+            winnings: admin.firestore.FieldValue.increment(player.prizeMoney),
+            games: admin.firestore.FieldValue.increment(1),
+            total1st: admin.firestore.FieldValue.increment(places[0]),
+            total2nd: admin.firestore.FieldValue.increment(places[1]),
+            total3rd: admin.firestore.FieldValue.increment(places[2]),
+            total4th: admin.firestore.FieldValue.increment(places[3]),
+            finalTables: admin.firestore.FieldValue.increment(finalTables),
+          }
+          return await updateSeasonScore(event, playerID, standingsUpdate)
+        } else {
+          const places = []
+          places[player.position] = 1
+          const leagueDoc = await admin.firestore().collection('leagueInfo').doc('1').get()
+          const leagueInfo = leagueDoc.data()
+          const season = leagueInfo.currentSeason
+          const standingsUpdate = {
+            season: season,
+            totalPoints: player.points,
+            games: player.games,
+            winnings: 0,
+            pts_game: player.pts_game,
+            total1st: player.places[0],
+            total2nd: player.places[1],
+            total3rd: player.places[2],
+            total4th: player.places[3],
+            finalTables: finalTables
+          }
+          return await createSeasonScore(standingsUpdate)
+        }
 
-    } catch (error) {
-      if (error.code !== 'unavailable') {
-        const updateCode = error.code
-        const updatdeMessage = error.message
-        const updateError = `Error updating season standings for player ${JSON.stringify(player)}:  ${updateCode} -  ${updatdeMessage}`
-        console.log(updateError)
+      } catch (error) {
+        if (error.code !== 'unavailable') {
+          const updateCode = error.code
+          const updatdeMessage = error.message
+          const updateError = `Error updating season standings for player ${JSON.stringify(player)}:  ${updateCode} -  ${updatdeMessage}`
+          console.log(updateError)
+        }
       }
     }
   })

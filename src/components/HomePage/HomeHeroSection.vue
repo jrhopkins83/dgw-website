@@ -84,7 +84,7 @@ export default {
       "title title"
       "pool message";
     column-gap: 4rem;
-    row-gap: 2rem;
+    row-gap: 3rem;
 
     &__title {
       grid-area: title;

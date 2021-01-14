@@ -245,6 +245,7 @@ export default {
         const saveGame = {
           type: game.type,
           gameDate: gameTimeStamp,
+          complete: false,
           structure: game.structure,
           buyIn: buyIn,
           rebuy: rebuy,

@@ -2,11 +2,15 @@
   "targets": {
     "staging": {
       "hosting": {
-        "prod": [
-          "donkeysgonewild.com"
-        ],
         "staging": [
           "donkeysgonewild.fun"
+        ]
+      }
+    },
+    "prod": {
+      "hosting": {
+        "prod": [
+          "donkeysgonewild.com"
         ]
       }
     }

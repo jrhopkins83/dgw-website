@@ -1,6 +1,6 @@
 // import Vue from 'vue'
 // import { LocalStorage } from 'quasar'
-import { firebaseStore } from 'boot/firebase'
+import { firebaseStore, Timestamp } from 'boot/firebase'
 // import { showMessage } from 'src/functions/functions-common'
 import { firestoreAction, firestoreOptions } from 'vuexfire'
 
@@ -139,8 +139,9 @@ const getters = {
     Object.keys(gameDatesFiltered).forEach((key) => {
       if (gameDatesKeys) {
         const date = gameDatesFiltered[key]
+        const today = Timestamp.fromDate(new Date())
 
-        if (!date.complete) {
+        if ((!date.complete && date.type === 'MTT') || (date.type !== 'MTT' && date.gameDate >= today)) {
           gameDates[key] = date
         }
       }
@@ -155,7 +156,7 @@ const getters = {
       if (gameDatesKeys) {
         const date = gameDatesFiltered[key]
 
-        if (date.complete) {
+        if (date.complete && date.type === 'MTT' && date.structure !== 'Satellite') {
           gameDates[key] = date
         }
       }

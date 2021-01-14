@@ -75,8 +75,8 @@
                 style="width: 20rem"
               />
             </div>
-            <div class="attribute-container">
-              <q-checkbox left-label v-model="formData.seasonTourney" label="Include in Season Totals" />
+            <div class="attribute-container" v-if="formData.type === 'MTT'">
+              <q-checkbox left-label v-model="formData.seasonTournament" label="Include in Season Totals" />
             </div>
             <div class="attribute-container buy-in">
               <q-field
@@ -242,7 +242,7 @@ export default {
         gameDate: '',
         gameTime: '',
         structure: '',
-        seasonTourney: false,
+        seasonTournament: false,
         buyIn: 0,
         rebuy: 0,
         addOn: 0,
@@ -322,6 +322,7 @@ export default {
         buyIn: template.defaults.buyIn,
         rebuy: template.defaults.rebuy,
         addOn: template.defaults.addOn,
+        seasonTournament: template.seasonTournament,
         location: template.defaults.location,
         notes: template.defaults.notes,
         gameTime: '7:00 PM'
@@ -345,7 +346,7 @@ export default {
           buyIn: this.game.buyIn,
           rebuy: this.game.rebuy,
           addOn: this.game.addOn,
-          seasonTourney: this.game.seasonTourney,
+          seasonTournament: this.game.seasonTournament,
           location: this.game.location,
           notes: this.game.notes,
           id: this.id

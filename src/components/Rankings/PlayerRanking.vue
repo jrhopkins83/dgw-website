@@ -28,7 +28,7 @@
         <div class='attribute points'>{{ player.totalPoints}}</div>
         <div class='attribute games gt-xs'>{{ player.games }}</div>
         <div class='attribute average gt-xs'>{{ player.pts_game }}</div>
-        <div class='attribute winnings'>{{ player.winnings }}</div>
+        <div class='attribute winnings'>{{ winnings_formatted }}</div>
       </div>
     </li>
   </div>
@@ -36,15 +36,7 @@
 </template>
 
 <script>
-
-const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  // These options are needed to round to whole numbers if that's what you want.
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-  currency: 'USD'
-
-})
+import { currencyFormat } from 'src/functions/functions-common'
 
 export default {
   name: 'PlayerRank',
@@ -58,8 +50,7 @@ export default {
   },
   computed: {
     winnings_formatted () {
-      console.log('player: ', this.player)
-      return formatter.format(this.player.winnings)
+      return currencyFormat.format(this.player.winnings)
     },
     screenWidth () {
       return this.$q.screen.width

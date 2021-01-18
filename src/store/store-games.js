@@ -119,7 +119,7 @@ const getters = {
   gameDatesFiltered: (state, getters) => {
     const gameDatesSorted = getters.gameDatesSorted,
       gameDatesFiltered = {}
-    if (state.gameFilter && state.gameFilter !== 'all') {
+    if (state.gameFilter.length > 0 && state.gameFilter !== 'all') {
       Object.keys(gameDatesSorted).forEach(function (key) {
         const gameDate = gameDatesSorted[key],
           gameDateTypeLowerCase = gameDate.type.toLowerCase(),

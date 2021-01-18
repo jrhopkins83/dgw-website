@@ -330,12 +330,14 @@ const getters = {
   },
 
   resultsFiltered: (state, getters, commit) => {
-    const tournamentResults = getters.resultsSorted,
+    const resultsSorted = getters.resultsSorted,
+      keysOrdered = Object.keys(getters.resultsSorted),
       resultsFiltered = []
 
     if (state.search) {
-      tournamentResults.forEach((player) => {
-        const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName}`
+      keysOrdered.forEach((key) => {
+        const player = resultsSorted[key]
+        const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName} `
         player.fullName = fullName
 
         const playerNameLowerCase = fullName.toLowerCase()
@@ -347,7 +349,7 @@ const getters = {
       })
       return resultsFiltered
     }
-    return tournamentResults
+    return resultsSorted
   },
   remainingPlayers: (state, getters) => {
     const resultsFiltered = getters.resultsFiltered

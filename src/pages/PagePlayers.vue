@@ -88,7 +88,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('players', ['setPlayersLoaded', 'fbPlayers']),
+    ...mapActions('players', ['setPlayersLoaded', 'fbPlayers', 'setSearch']),
     async loadPlayers () {
       try {
         await this.fbPlayers()
@@ -115,7 +115,11 @@ export default {
     if (!this.playersLoaded) {
       this.loadPlayers()
     }
+  },
+  beforeDestroy () {
+    this.setSearch('')
   }
+
 }
 </script>
 

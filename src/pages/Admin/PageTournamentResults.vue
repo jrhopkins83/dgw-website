@@ -177,7 +177,7 @@ export default {
   },
   methods: {
     ...mapActions('tourneyResults', ['fbTourneyResults', 'fbEventInfo', 'fbTournamentInfo', 'setResultsLoaded', 'getFinishedPlayersLS']),
-    ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setSort', 'setReorderFlag', 'setFinishedLoaded']),
+    ...mapActions('tourneyResults', ['resortFinishedPlayers', 'getNumCheckedIn', 'setSort', 'setSearch', 'setReorderFlag', 'setFinishedLoaded']),
     enterPayouts () {
       if (this.remaining > 0) {
         this.proceed_msg = `There are still ${this.remaining} remaining players.  If you continue their results won't count.  Do you still want to proceed?`
@@ -214,6 +214,9 @@ export default {
     }
     this.getNumCheckedIn()
     this.setSort('onlineName')
+  },
+  beforeDestroy () {
+    this.setSearch('')
   }
 }
 async function createTournamentResults (tournamentInfo, id) {

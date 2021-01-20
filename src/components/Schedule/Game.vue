@@ -1,24 +1,23 @@
 <template>
-  <div>
-    <li class="item item-container games-section__games--items q-mt-xs" :class="isAdmin">
+  <div class="collection collection-container schedule-section__games--items q-mb-sm">
+    <li class="item item-container item-row q-mt-xs" :class="isAdmin">
       <!-- Enclose semantically similar attributes as a div hierarchy -->
-      <div class="attribute-container game-information">
+      <div class="attribute-container game-date">
         <div class="attribute date">{{ date_short }}</div>
-        <div class="attribute buy-in">{{game.buyIn }}</div>
-        <div class="attribute type">{{ game.type }}</div>
       </div>
       <div class="attribute-container game-structure">
+        <div class="attribute buy-in">{{ buyIn_formatted }}</div>
+        <div class="attribute type">{{ game.type }}</div>
         <div class="attribute structure">{{ game.structure}}</div>
-        <q-btn
-          flat
-          label="Details"
-          text-color="blue-9"
-          no-caps
-          size="16px"
+      </div>
+      <div class="attribute-container game-details" :class="isAdmin">
+        <div
+          clickable
           @click="$emit('viewGameDetails', [game, id])"
-          class="attribute details"
+          class="attribute details text-center cursor-pointer text-blue-9"
         >
-        </q-btn>
+          Details
+        </div>
       </div>
       <div class="attribute-container game-buttons" v-if="adminButtons && !game.complete" >
         <div class="attribute edit">
@@ -37,14 +36,14 @@
             @click="$emit('deleteGame', [game, id])"
           />
         </div>
-        <div class="attribute invite" v-if="showButton">
+        <!-- <div class="attribute invite" v-if="showButton">
           <q-btn
             icon="forward_to_inbox"
             flat
             size="md"
             @click="$emit('sendInvite', $event)"
           />
-        </div>
+        </div> -->
         <div class="attribute complete" v-if="showButton">
           <q-btn
             icon="flag"
@@ -61,8 +60,7 @@
 
 <script>
 import { date } from 'quasar'
-
-import { mapActions, mapGetters } from 'vuex'
+import { currencyFormat } from 'src/functions/functions-common'
 
 export default {
   name: 'Games',
@@ -78,12 +76,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('leagueSettings', ['userInfo']),
     date_short: function () {
-      // replace after getting data form FS
+      let shortDate = ''
       const startDateTm = this.game.gameDate.toDate()
-      const shortDate = date.formatDate(startDateTm, 'MM/DD/YY')
+      if (this.$q.screen.width > 800) {
+        shortDate = date.formatDate(startDateTm, 'ddd, MMM Do')
+      } else {
+        shortDate = date.formatDate(startDateTm, 'MM/DD/YY')
+      }
       return shortDate
+    },
+    buyIn_formatted () {
+      return currencyFormat.format(this.game.buyIn)
     },
     showButton: function () {
       if (this.game.type === 'MTT' && !this.game.complete) {
@@ -92,10 +96,8 @@ export default {
         return false
       }
     }
-
   },
   methods: {
-    ...mapActions('tourneyResults', ['updateCheckedInGames']),
     viewGameDetails () {
 
     }
@@ -107,61 +109,75 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .games-section {
+  .schedule-section__games--table {
 
     li {
       list-style: none;
     }
 
-    &__games {
+    .item-row {
+      min-height: 3rem;
+      border-top: solid $light-grey;
+      margin-bottom: 8px;
+      align-items:flex-start;
+      justify-content: center;
+      text-overflow: initial;
+      white-space: normal;
+      display: grid;
+      grid-template-columns: 12rem 4fr 1fr;
+      grid-column-gap: 1.6rem;
 
-      .item-container {
+      .attribute-container {
         display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
 
-        .attribute-container.game-information {
-          display: grid;
-          grid-template-columns: 8rem 6rem 6rem;
-          grid-gap: 8px;
+      }
+      .attribute-container.game-structure {
+        --column-width-min: 5.2em;
+
+        .buy-in {
+          justify-self: center;
         }
 
-        .attribute-container.game-structure {
-          display: grid;
-          grid-template-columns: 20rem 5rem;
-        }
-
-        .attribute-container.game-buttons {
-          display: grid;
-          grid-template-columns: repeat(4, 4rem);
-          grid-gap: 4px;
-          // grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-        }
       }
-      .item-container.isAdmin {
-        grid-template-columns: 1fr 1.5fr 1fr;
-      }
-      .item-container.isNotAdmin {
-        grid-template-columns: 1fr 1.5fr;
-      }
-
-      &--items {
-          border-bottom: solid $light-grey;
-          margin-bottom: 8px;
+      .attribute-container.game-buttons {
+        --column-width-min: 2em;
+        justify-self: center;
       }
     }
+    .item-container.isAdmin {
+      grid-template-columns: 12rem 3.5fr .5fr 2fr;
+    }
+
+    .item-container.isNotAdmin {
+      grid-template-columns: 12rem 4fr 1fr;
+    }
+
   }
 
   .q-page {
     min-height: auto;
   }
 
-@media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
+@media screen and (max-width: 800px) {
+  .item-row.isAdmin {
+    grid-template-columns:  7.8rem 3.5fr 1fr 2fr !important;
+  }
+
+  .item-row.isNotAdmin {
+    grid-template-columns:  7.8rem 4fr 1fr !important;
   }
 }
 
-/* Tabular Layout */
-@media screen and (min-width: 360px) {
+@media screen and (max-width: 534px) {
+  .attribute.buy-in {
+    justify-self: flex-start !important;
+  }
+}
 
+@media screen and (max-width: 401px) {
+  .heading-row {
+    height: 7.5rem !important;
+  }
 }
 </style>

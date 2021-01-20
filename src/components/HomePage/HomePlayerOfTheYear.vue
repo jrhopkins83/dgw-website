@@ -1,5 +1,5 @@
 <template>
-  <div class="row POYBar q-pa-xs items-center" v-if="playersLoaded && standingsLoaded && showLeaders">
+  <div class="row POYBar q-pa-xs items-center" v-if="playersLoaded && standingsLoaded">
     <div class="col-2 POYBar__row-title text-h4 text-bold text-center q-mr-sm">
         Player of the Year
     </div>
@@ -64,21 +64,12 @@ export default {
       const finalTableList = []
 
       if (this.standings) {
-        this.standings.forEach(player => {
-          if (player.position <= this.limit) {
-            finalTableList.push(player)
-          }
-        })
+        for (let i = 0; i <= this.limit - 1; i++) {
+          finalTableList.push(this.standings[i])
+        }
       }
 
       return finalTableList
-    },
-    showLeaders: function () {
-      if (this.top4Players.length > this.limit) {
-        return false
-      } else {
-        return true
-      }
     }
   },
   methods: {

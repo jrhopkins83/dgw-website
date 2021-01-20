@@ -10,13 +10,8 @@
         v-if="standingsLoaded && playersLoaded"
       >
         <div class="left-column">
-          <div class="left-column__header text-white">
-            <div class="left-column__header--title text-h3">
-              Season Standings
-            </div>
-            <div class="left-column__header--date text-h3">
-              through {{ txtLastDate }}
-            </div>
+          <div class="left-column__header text-white text-h3 q-ml-md">
+            {{ pageTitle }}
           </div>
           <div class="left-column__search-bar q-pa-xs q-ma-md">
             <search>
@@ -25,6 +20,7 @@
           <div class="left-column__player-rankings">
             <player-rankings
               :standings="standingsFiltered"
+              :pageHeight="pageHeight"
             >
             </player-rankings>
           </div>
@@ -47,6 +43,11 @@ export default {
     playerRankings: require('components/Rankings/SeasonStandings.vue').default,
     search: require('components/Rankings/SearchStandings.vue').default
   },
+  data () {
+    return {
+      pageHeight: '85rem'
+    }
+  },
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo']),
     ...mapGetters('games', ['gameDates', 'lastCompletedDate']),
@@ -54,6 +55,9 @@ export default {
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {
       return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
+    },
+    pageTitle: function () {
+      return `Season Standings through ${this.txtLastDate}`
     }
   },
   methods: {
@@ -104,18 +108,9 @@ export default {
       &__header {
         position: relative;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        align-items: center;
+        text-align: center;
         gap: 2rem;
         margin-top: 1rem;
-
-        &--title {
-          justify-self: end;
-        }
-
-        &--date {
-          align-self: end;
-        }
       }
 
       &__search-bar {
@@ -128,10 +123,9 @@ export default {
 
       &__player-rankings {
         position: relative;
-        width: 98%;
+        justify-self: center;
         border-radius: 2.5rem;
         opacity: .9;
-        margin: 16px
       }
     }
 
@@ -151,52 +145,49 @@ export default {
     }
   }
 
-  @media screen and (max-width: 859px) {
+  @media screen and (max-width: 887px) {
     .container {
-
+      width: 100%;
       .left-column {
-
         &__header {
-
-          &--title {
-            justify-self: center;
-          }
-
-          &--date {
-            justify-self: center;
-          }
-        }
-
-        &__search-bar {
-          width: 70%;
-        }
-
-        &__player-rankings {
-          width: 98%;
+          width: 80%;
+          margin-left: 8rem;
         }
       }
-
     }
+  }
 
+  @media screen and (max-width: 800px) {
+    .container {
+      width: 100%;
+      grid-template-columns: 1fr;
+      .left-column {
+        &__header {
+          width: 80%;
+          margin: 8px;
+        }
+        &__player-rankings {
+          margin: 0%;
+        }
+      }
+      .right-column {
+        display: none;
+      }
+    }
   }
 
   @media screen and (max-width: 385px) {
     .container {
       width: 100%;
-
       .left-column {
-        width: 93%;
-
+        &__header {
+          width: 100%;
+          font-size: 18px;
+        }
         &__search-bar {
           width: 70%;
         }
-
-        &__player-rankings {
-          width: 98%;
-        }
       }
-
     }
-
   }
 </style>

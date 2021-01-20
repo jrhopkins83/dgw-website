@@ -1,25 +1,23 @@
 <template>
   <div>
     <li
-      class="item item-container player-table__items q-mt-xs" :class="isAdmin">
+      class="item item-container item-row q-mt-xs" :class="isAdmin">
       <div class="attribute-container avatar">
         <div class="attribute player-img q-px-sm q-py-xs">
-          <q-avatar size="64px">
+          <q-avatar>
             <img :src="player_avatar" color="primary">
           </q-avatar>
         </div>
       </div>
       <!-- Enclose semantically similar attributes as a div hierarchy -->
-      <div class="attribute-container player-information">
-        <div class="attribute-container player-names">
-          <div class="attribute name q-ml-sm">{{ player.firstName }}</div>
-          <div class="attribute name">{{ player.lastName }}</div>
-          <div class="attribute nick-name">{{ player.nickName}}</div>
-          <div class="attribute online-name">{{ player.onlineName }}</div>
-        </div>
+      <div class="attribute-container player-names q-pl-xs">
+        <div class="attribute name">{{ player.firstName }}</div>
+        <div class="attribute name">{{ player.lastName }}</div>
+        <div class="attribute nick-name">{{ player.nickName}}</div>
+        <div class="attribute online-name">{{ player.onlineName }}</div>
       </div>
-      <div class='attribute-container contact-info' v-if="adminButtons">
-        <div class='attribute email q-ml-sm'>{{ player.email}}</div>
+      <div class='attribute-container contact-info q-pl-xs' v-if="adminButtons">
+        <div class='attribute email'>{{ player.email}}</div>
         <div class='attribute games gt-xs'>{{ player.phoneNumber }}</div>
       </div>
       <div class="attribute-container admin-buttons" v-if="adminButtons" >
@@ -86,71 +84,74 @@ export default {
 <style lang='scss' scoped>
   .players-section {
 
-    li {
-      list-style: none;
+    * {
+      box-sizing: border-box;
     }
 
-      .item-container.isAdmin {
+    &__players {
+      // background-color: white;
+      position: relative;
+      height: 85%;
+      max-width: 80rem;
+      overflow: auto;
+      border-radius: 2.5rem;
+      opacity: .9;
+
+      &--table {
+
+        .item-container.isAdmin {
           display: grid;
           grid-template-columns: 5em 2.5fr 2fr 9rem;
           grid-gap: 4px;
+        }
 
-      }
-
-      .item-container.isNotAdmin {
+        .item-container.isNotAdmin {
           display: grid;
           grid-template-columns: 5em 1fr;
+          grid-gap: 4px;
+        }
 
-      }
+        .item-row {
 
-      .attribute-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-        border: solid;
-        border-width: 1px;
-        border-color: white;
+          .attribute-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+            border: solid;
+            border-width: 1px;
+            border-color: white;
 
-          .attribute {
-            display: flex;
-            align-self: center;
-            color: white;
-            font-weight: 700;
+            .attribute {
+              display: flex;
+              align-self: end;
+              align-self: center;
+              font-weight: 700;
+
+              .q-avatar {
+                font-size: 64px;
+              }
+            }
           }
 
-      }
+          /* Definition of wrapping column width for attribute groups. */
+          .attribute-container.player-names {
+            --column-width-min: 6.2em;
+          }
 
-      .attribute-container.contact-info {
-        grid-template-columns: 3.5fr 2fr;
-      }
+          .attribute-container.contact-info {
+            --column-width-min: 5.2em;
+          }
 
-      .attribute-container.avatar {
-        align-self: center;
-        justify-self: center;
-      }
-
-      /* Definition of wrapping column width for attribute groups. */
-      .player-information {
-          --column-width-min: 6.2em;
-      }
-
-      .contact-info {
-          --column-width-min: 5.2em;
-      }
-
-      .admin-buttons {
-          --column-width-min: 2em;
-      }
-
-    &__players {
-
-      .player-table {
-
-        &__items {
-          border-radius: 9px;
-          margin-bottom: 8px;
+          .attribute-container.admin-buttons {
+            --column-width-min: 2em;
+            justify-self: center;
+          }
 
         }
       }
+    }
+
+    &__players.isAdmin {
+      max-width: 110rem;
     }
   }
 
@@ -158,9 +159,9 @@ export default {
     min-height: auto;
   }
 
-@media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
+@media screen and (max-width: 450px) {
+  .q-avatar {
+    font-size: 54px !important;
   }
 }
 

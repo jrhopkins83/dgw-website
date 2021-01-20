@@ -33,7 +33,7 @@
             </player-rankings>
           </div>
         </div>
-        <div class="right-column gt-xs">
+        <div class="right-column gt-sm">
           <div class="right-column__image"></div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default {
         &--date.date {
           align-self: center;
           justify-self: start;
-          width: 14rem;
+          width: 11rem;
           color: black;
         }
       }
@@ -177,6 +177,7 @@ export default {
       &__player-rankings {
         position: relative;
         width: 98%;
+        height: 70vh;
         background-color: $off-white;
         opacity: 1;
         border-radius: 2.5rem;
@@ -187,7 +188,7 @@ export default {
     .right-column {
       &__image {
         position: relative;
-        min-height: 23rem;
+        min-height: 27rem;
         width: 100%;
         top: 0px;
         right: 0px;
@@ -218,7 +219,7 @@ export default {
         }
 
         &__search-bar {
-          width: 70%;
+          width: 40%;
         }
 
         &__player-rankings {
@@ -230,15 +231,48 @@ export default {
 
   }
 
-  @media screen and (max-width: 385px) {
+  @media screen and (max-width: 800px) {
     .container {
       width: 100%;
-
+      grid-template-columns: 1fr;
       .left-column {
-        width: 93%;
+        &__header {
+          width: 80%;
+          margin: 1.6rem;
+        }
+        &__player-rankings {
+          margin: 8px;
+        }
+      }
+      .right-column {
+        display: none;
+      }
+    }
+  }
+
+  @media screen and (max-width: 415px) {
+    .container {
+      width: 100%;
+      grid-template-columns: 1fr;
+      .left-column {
+        width: 94%;
+        margin-left: 8px;
+
+        &__header {
+          margin: 0;
+          &--title {
+            font-size: 1.8rem;
+            margin-bottom: 0;
+          }
+          &--date {
+            margin-left: 1.6rem;
+            margin-bottom: 0;
+          }
+        }
 
         &__search-bar {
           width: 70%;
+          margin-top: 0;
         }
 
         &__player-rankings {

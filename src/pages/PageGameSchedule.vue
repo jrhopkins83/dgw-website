@@ -6,18 +6,15 @@
       leave-active-class="animated fadeOutRight"
     >
       <div
-        class="container"
+        class="container schedule-section"
         v-if="gamesLoaded && leagueInfoLoaded"
       >
-        <div class="row header">
-          <div class="col-12 header__title">
-            <div class="header__title text-center text-h3 text-bold q-mt-md">
-              Game Schedule
-            </div>
-          </div>
-
-          <div :class="isAdmin" class="col-12">
-            <div>
+        <div class="schedule-section__title text-h3 text-bold">
+          Game Schedule
+        </div>
+        <div class="schedule-section__games">
+          <div class="schedule-section__games--heading">
+            <div :class="isAdmin" class="actions large-screen q-py-none">
               <q-tabs
                 v-model="tab"
                 dense
@@ -32,16 +29,65 @@
                 <q-tab name="cash" label="Cash"  content-class="header__filter-tabs"/>
               </q-tabs>
             </div>
+            <div class="actions mobile q-py-none">
+              <q-btn-dropdown
+                class="mobile-menu"
+                icon="filter_alt"
+                auto-close
+                dense
+                flat
+                round
+              >
+                <q-list style="min-width: 27rem">
+                  <q-item
+                    clickable
+                    ripple
+                    @click="setGameFilter('all')"
+                  >
+                    <q-item-section>
+                      ALL
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    ripple
+                    @click="setGameFilter('mtt')"
+                  >
+                    <q-item-section>
+                      MTT
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    ripple
+                    @click="setGameFilter('sng')"
+                  >
+                    <q-item-section>
+                      SNG
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    clickable
+                    ripple
+                    @click="setGameFilter('cash')"
+                  >
+                    <q-item-section>
+                      CASH
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </div>
           </div>
-        </div>
-        <div class="games-section" :class="isAdmin">
-          <games-list
-            :upcomingGames="upcomingGames"
-            :completedGames="completedGames"
-            :isAdmin="isAdmin"
-            :adminButtons="adminButtons"
-          >
-          </games-list>
+          <div class="schedule-section__games--list" :class="isAdmin">
+            <games-list
+              :upcomingGames="upcomingGames"
+              :completedGames="completedGames"
+              :isAdmin="isAdmin"
+              :adminButtons="adminButtons"
+            >
+            </games-list>
+          </div>
         </div>
       </div>
     </transition>
@@ -50,10 +96,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-// import { firebaseStore } from 'boot/firebase'
-// import { showMessage } from 'src/functions/functions-common'
-// import { date } from 'quasar'
-// import { firebaseStore } from 'src/boot/firebase'
 
 export default {
   name: 'GameSchedule',
@@ -115,70 +157,98 @@ export default {
   .q-page {
     min-height: auto;
   }
-  .container {
+  .schedule-section {
+    position: relative;
     height: 100vh;
+    padding: 2rem;
     background-color: $lightest-grey;
     background-image: url(card-symbols-stretched.jpg);
     background-repeat: no-repeat;
     background-size: 100% 60%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 4rem 1fr;
 
-    .q-tab__label {
+    &__title {
+      grid-row-start: 1;
+    }
+
+    .header__filter-tabs {
         font-size: 20px;
         line-height: 1.715em;
         font-weight: 500;
     }
 
-    .header {
+    &__games {
       position: relative;
-      width: 100%;
-
-      &__title {
-        height: 43px;
-      }
-
-      .isAdmin {
-        margin-left: 5rem;
-      }
-
-      .isNotAdmin {
-        margin-left: 7rem;
-      }
-
-    }
-
-    .games-section {
-      position: relative;
-      max-width: 60rem;
-      background-color: $off-white;
+      grid-row-start: 2;
+      max-width: 70rem;
+      height: 92%;
+      background: $off-white 0% 0% no-repeat padding-box;
+      border: 1px solid $light-grey;
       border-radius: 1.7rem;
-      opacity: .8;
-      margin: 3.2rem 7rem;
-      height: 75vh;
+      opacity: .85;
       overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 3.5rem 1fr;
 
-    }
-    .games-section.isAdmin {
-      max-width: 75rem;
-    }
-  }
+      &--heading {
+        position: relative;
+        grid-row-start: 1;
+        // height: 1.6rem;
+        border-radius: 19px;
+        opacity: 1;
+        display: grid;
+        grid-template-columns: 1fr;
 
-  @media screen and (max-width: 385px) {
-    .container {
-      width: 100%;
-
-      .left-column {
-        width: 93%;
-
-        &__search-bar {
-          width: 70%;
+        .actions.large-screen {
+          margin-left: 1.6rem;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
         }
 
-        &__player-rankings {
-          width: 98%;
+        .actions.mobile {
+          display: none;
         }
+
       }
 
+      &--list {
+        position: relative;
+        max-width: 70rem;
+        background-color: $off-white;
+        border-radius: 1.7rem;
+        opacity: .9;
+        height: 92%;
+        overflow: auto;
+      }
+
+      &--list.isAdmin {
+        max-width: 75rem;
+      }
     }
 
   }
+
+@media screen and (max-width: 600px) {
+  .schedule-section__games--heading {
+    grid-template-columns: 1fr .25fr;
+  }
+}
+
+@media screen and (max-width: 567px) {
+  .schedule-section {
+    padding: .5rem;
+  }
+  .schedule-section__games {
+    height: 90%;
+  }
+  .actions.mobile {
+    display: block;
+  }
+}
+
 </style>

@@ -24,11 +24,9 @@
           <div class="attribute online-name">{{ player.onlineName }}</div>
         </div>
       </div>
-      <div class="attribute-container points">
-        <div class="attribute">{{ player.points}}</div>
-      </div>
-      <div class="attribute-container gt-xs winnings">
-        <div class="attribute">{{ winnings_formatted }}</div>
+      <div class="attribute-container stats">
+        <div class="attribute points">{{ player.points}}</div>
+        <div class="attribute winnings">{{ winnings_formatted }}</div>
       </div>
     </li>
   </div>
@@ -81,6 +79,47 @@ export default {
       list-style: none;
     }
 
+    .item-container {
+        display: grid;
+        grid-template-columns: 4em 5em 8fr 6fr;
+    }
+
+    .attribute-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+    }
+
+    /* Definition of wrapping column width for attribute groups. */
+    .player-information {
+        --column-width-min: 7.2em;
+    }
+
+    .stats {
+        --column-width-min: 4.2em;
+    }
+
+    .rank, .points , .winnings {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .player-names {
+      .name, .nick-name, .online-name {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .rank {
+      font-weight: bold;
+    }
+
+    .points {
+      font-weight: bold;
+      color: $primary
+    }
+
     &__players {
 
       .player-table {
@@ -98,31 +137,7 @@ export default {
             font-weight: bold;
             color: $primary
           }
-
         }
-
-        /* The maximum column width, that can wrap */
-          .item-container {
-              display: grid;
-              grid-template-columns: 4em 5em 8fr 2fr 2fr;
-          }
-
-          .attribute-container {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-          }
-
-          /* Definition of wrapping column width for attribute groups. */
-          .player-information {
-              --column-width-min: 8.2em;
-          }
-
-          .rank, .points , .games, .average, .winnings {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            }
-
       }
     }
   }
@@ -137,24 +152,4 @@ export default {
   }
 }
 
-/* Tabular Layout */
-@media screen and (min-width: 360px) {
-  .rankings-section {
-
-    .rank, .points , .games, .average, .winnings {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      }
-
-    .player-names {
-
-      .name, .nick-name, .online-name {
-        display: flex;
-        align-items: center;
-      }
-    }
-  }
-
-}
 </style>

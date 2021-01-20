@@ -24,7 +24,7 @@
           <div class="attribute online-name">{{ player.onlineName }}</div>
         </div>
       </div>
-      <div class='attribute-container stats'>
+      <div class='attribute-container stats q-mr-sm'>
         <div class='attribute points'>{{ player.totalPoints}}</div>
         <div class='attribute games gt-xs'>{{ player.games }}</div>
         <div class='attribute average gt-xs'>{{ player.pts_game }}</div>
@@ -50,7 +50,11 @@ export default {
   },
   computed: {
     winnings_formatted () {
-      return currencyFormat.format(this.player.winnings)
+      if (this.player.winnings) {
+        return currencyFormat.format(this.player.winnings)
+      } else {
+        return '$0'
+      }
     },
     screenWidth () {
       return this.$q.screen.width
@@ -93,7 +97,7 @@ export default {
 
     /* Definition of wrapping column width for attribute groups. */
     .player-information {
-        --column-width-min: 8.2em;
+        --column-width-min: 7.2em;
     }
 
     .stats {

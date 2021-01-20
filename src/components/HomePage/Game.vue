@@ -1,24 +1,23 @@
 <template>
-  <div class="games-section">
-    <li class="item item-container games-section__games--items q-mt-xs">
+  <div class="collection collection-container schedule-section__games--items q-mb-sm">
+    <li class="item item-container item-row q-mt-xs" >
       <!-- Enclose semantically similar attributes as a div hierarchy -->
-      <div class="attribute-container game-information">
+      <div class="attribute-container game-date">
         <div class="attribute date">{{ date_short }}</div>
-        <div class="attribute buy-in">{{game.buyIn }}</div>
-        <div class="attribute type">{{ game.type }}</div>
       </div>
       <div class="attribute-container game-structure">
+        <div class="attribute buy-in">{{ buyIn_formatted }}</div>
+        <div class="attribute type">{{ game.type }}</div>
         <div class="attribute structure">{{ game.structure}}</div>
-          <q-btn
-            flat
-            label="Details"
-            text-color="blue-9"
-            no-caps
-            size="16px"
-            @click="$emit('viewGameDetails', [game, id])"
-            class="attribute details"
-          >
-          </q-btn>
+      </div>
+      <div class="attribute-container game-details">
+        <div
+          clickable
+          @click="$emit('viewGameDetails', [game, id])"
+          class="attribute details text-center cursor-pointer text-blue-9"
+        >
+          Details
+        </div>
       </div>
     </li>
   </div>
@@ -27,6 +26,7 @@
 
 <script>
 import { date } from 'quasar'
+import { currencyFormat } from 'src/functions/functions-common'
 
 export default {
   name: 'Games',
@@ -42,6 +42,9 @@ export default {
       const startDateTm = this.game.gameDate.toDate()
       const shortDate = date.formatDate(startDateTm, 'MM/DD/YY')
       return shortDate
+    },
+    buyIn_formatted () {
+      return currencyFormat.format(this.game.buyIn)
     }
 
   },
@@ -57,47 +60,32 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .games-section {
+  .schedule-section__games--table {
 
     li {
       list-style: none;
-      border-bottom: solid $light-grey;
-      margin-bottom: 8px;
     }
 
-    .item-container {
+    .item-row {
+      min-height: 3rem;
+      align-items:flex-start;
+      justify-content: center;
+      text-overflow: initial;
+      white-space: normal;
       display: grid;
-      grid-template-columns: 1fr 4fr;
-      grid-gap: 1rem;
+      grid-template-columns: 7.8rem 4fr 1fr;
+      grid-column-gap: 1.6rem;
 
-      .attribute-container.game-information {
+      .attribute-container {
         display: grid;
-        grid-template-columns: 8rem 6rem 6rem;
-        grid-gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
 
-          .attribute.buy-in {
-            display: flex;
-            justify-content: center;
-          }
+        /* Definition of wrapping column width for attribute groups. */
       }
-
       .attribute-container.game-structure {
-        display: grid;
-        grid-template-columns: 26rem 5rem;
+          --column-width-min: 5.2em;
       }
-
-      .attribute-container.game-buttons {
-        display: grid;
-        grid-template-columns: repeat(4, 4rem);
-        grid-gap: 4px;
-        // grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-      }
-
     }
-        .items {
-            border-bottom: solid $light-grey;
-            margin-bottom: 8px;
-        }
   }
 
   .q-page {
@@ -110,8 +98,9 @@ export default {
   }
 }
 
-/* Tabular Layout */
-@media screen and (min-width: 360px) {
-
+@media screen and (max-width: 450px) {
+  .item-row {
+    height: 4.5rem;
+  }
 }
 </style>

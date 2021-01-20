@@ -1,8 +1,8 @@
 <template>
   <div>
     <section class="schedule-section">
-      <div class="schedule-section__games q-mb-sm">
-        <div class="row games-card">
+      <div class="schedule-section__games">
+        <div class="schedule-section__games--heading">
           <div class="title q-mx-lg q-mt-sm text-h4 text-bold">
             Upcoming Games
           </div>
@@ -20,64 +20,81 @@
             </q-tabs>
           </div>
           <div class="actions mobile xs q-py-none">
-            <q-btn
+            <q-btn-dropdown
               class="mobile-menu"
               icon="filter_alt"
-              v-model="tab"
+              auto-close
               dense
               flat
               round
-              @input="filterGames"
             >
-              <q-menu
-                transition-show="jump-down"
-                transition-hide="jump-up"
-              >
-              <q-list style="min-width: 120rem">
-                <q-item clickable>
-                  <q-item-section>ALL</q-item-section>
+              <q-list style="min-width: 27rem">
+                <q-item
+                  clickable
+                  ripple
+                  @click="setGameFilter('all')"
+                >
+                  <q-item-section>
+                    ALL
+                  </q-item-section>
                 </q-item>
-                <q-item clickable>
-                  <q-item-section>MTT</q-item-section>
+                <q-item
+                  clickable
+                  ripple
+                  @click="setGameFilter('mtt')"
+                >
+                  <q-item-section>
+                    MTT
+                  </q-item-section>
                 </q-item>
-                <q-item clickable>
-                  <q-item-section>SNG</q-item-section>
+                <q-item
+                  clickable
+                  ripple
+                  @click="setGameFilter('sng')"
+                >
+                  <q-item-section>
+                    SNG
+                  </q-item-section>
                 </q-item>
-                <q-item clickable>
-                  <q-item-section>Cash</q-item-section>
+                <q-item
+                  clickable
+                  ripple
+                  @click="setGameFilter('cash')"
+                >
+                  <q-item-section>
+                    CASH
+                  </q-item-section>
                 </q-item>
               </q-list>
-              </q-menu>
-            </q-btn>
-
+            </q-btn-dropdown>
           </div>
         </div>
-        <div class="div games-section">
-          <ol class="collection collection-container games-section__games--table q-mb-sm">
-            <!-- The first list item is the header of the table -->
-            <li class="item item-container heading-row q-mt-xs" >
-              <!-- Enclose semantically similar attributes as a div hierarchy -->
-              <div class="attribute-container game-information">
-                <div class="attribute date">Date</div>
-                <div class="attribute buy-in">Buy-In</div>
-                <div class="attribute type">Type</div>
-              </div>
-              <div class="attribute-container game-structure">
-                <div class="attribute structure">Structure</div>
-                <div class="attribute details"></div>
-              </div>
-            </li>
+        <ol class="collection collection-container schedule-section__games--table q-mb-sm">
+          <!-- The first list item is the header of the table -->
+          <li class="item item-container heading-row q-mt-xs" >
+            <!-- Enclose semantically similar attributes as a div hierarchy -->
+            <div class="attribute-container game-date">
+              <div class="attribute date">Date</div>
+            </div>
+            <div class="attribute-container game-structure">
+              <div class="attribute buy-in">Buy In</div>
+              <div class="attribute type">Type</div>
+              <div class="attribute structure">Structure</div>
+            </div>
+            <div class="attribute-container game-details">
+              <div class="attribute details"></div>
+            </div>
+          </li>
 
-            <game
-              v-for='(game, index) in next4Games'
-              :key='index'
-              :id='game.id'
-              :game='game'
-              @viewGameDetails="viewGame"
-            >
-            </game>
-          </ol>
-        </div>
+          <game
+            v-for='(game, index) in next4Games'
+            :key='index'
+            :id='game.id'
+            :game='game'
+            @viewGameDetails="viewGame"
+          >
+          </game>
+        </ol>
       </div>
     </section>
     <q-dialog
@@ -149,12 +166,12 @@ export default {
     color: black;
     min-height: 32rem;
     width: 100%;
-    display: flex;
     align-items: center;
     justify-content: center;
     background-image: url(cards1.jpg);
     background: cover;
     background-size: cover;
+    display: flex;
 
     &::before {
       content: "";
@@ -166,113 +183,80 @@ export default {
       background: transparent linear-gradient(180deg, #5AD5D5 0%, #00382B 100%) 0% 0% no-repeat padding-box;
     }
 
-    .actions.large-screen {
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
-
-    }
     &__games {
       position: relative;
-      max-width:60rem;
+      max-width: 70rem;
+      height: 33vh;
       min-height: 26rem;
       background: $white 0% 0% no-repeat padding-box;
       border: 1px solid $light-grey;
       border-radius: 1.7rem;
       opacity: .8;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 2.5rem 1fr;
 
-      .games-card {
+      &--heading {
         position: relative;
-        width:100%;
-        height: 95%;
-        // background-color: $royal-blue;
-        min-height: 90%;
+        grid-row-start: 1;
+        height: 1.6rem;
         border-radius: 19px;
         opacity: 1;
         margin-bottom: 1.6rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
 
-        &__title {
-          color: $white;
+        .actions.large-screen {
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-end;
         }
 
-        &__actions {
-          color: $white;
-        }
       }
-    }
-  .games-section {
-    font-size: 18px;
 
-    ol.collection {
-      margin: 0 1.6rem 1.6rem 1.6rem;
-      padding: 0px;
-      max-width: 120rem;
-    }
-
-    li {
-      list-style: none;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    &__games {
-      height: 66vh;
-      width: 100%;
-      overflow: auto;
-      border-radius: 2.5rem;
-      opacity: 0.8;
-
-      .no-games {
-        max-width: 90vw;
-        font-size: 2.4rem;
-
-      }
       &--table {
-        margin: 0 .6rem .6rem .6rem;
+        margin: 0 1.6rem 1.6rem 1.6rem;
         position: relative;
-        max-width: 120rem;
+        grid-row-start: 2;
+        max-width: 70rem;
+        padding: 0px;
+        overflow: hidden;
+
+        li {
+          list-style: none;
+        }
 
         .heading-row {
           position: sticky;
           top: 0;
-          color:  black;
+          z-index: 1;
+          height: 5rem;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
           white-space: normal;
           font-weight: bold;
-          text-decoration-line: underline;
           margin-top: 1rem;
           margin-bottom: .8rem;
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
           display: grid;
-          grid-template-columns: 1fr 4fr;
-          grid-gap: 1rem;
+          grid-template-columns:  7.8rem 4fr 1fr;
+          grid-column-gap: 1.6rem;
 
-          .attribute-container.game-information {
+          .attribute-container {
             display: grid;
-            grid-template-columns: 8rem 6rem 6rem;
-            grid-gap: 1rem;
-          }
+            grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
 
+            /* Definition of wrapping column width for attribute groups. */
+          }
           .attribute-container.game-structure {
-            display: grid;
-            grid-template-columns: 26rem 5rem;
-
-            .attribute.structure {
-              display: flex;
-              align-items: flex-start;
-              justify-content: flex-start;
-            }
+              --column-width-min: 5.2em;
           }
-
         }
       }
     }
-
   }
 
   .q-page {
@@ -280,14 +264,23 @@ export default {
   }
 
 @media screen and (max-width: 600px) {
+  .schedule-section__games--heading {
+   grid-template-columns: 1fr .25fr;
+  }
   .online-name-header {
     display: none;
   }
 }
 
-  .date {
-    margin-right: 16px;
-    }
+@media screen and (max-width: 450px) {
+  .schedule-section__games {
+    height: 38vh;
   }
+}
 
+@media screen and (max-width: 375px) {
+  .schedule-section__games {
+    height: 48vh;
+  }
+}
 </style>

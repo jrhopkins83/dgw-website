@@ -11,14 +11,14 @@
             <div class='attribute-container player-information'>
               <div class='attribute-container player-names'>
                 <div class='attribute name'>Name</div>
-                <div class='attribute nick-name gt-xs'>Nickname</div>
+                <div class='attribute nick-name'>Nickname</div>
                 <div class='attribute online-name'>Online Name</div>
               </div>
             </div>
-            <div class='attribute-container stats'>
+            <div class='attribute-container stats q-mr-sm'>
               <div class='attribute points'>Points</div>
               <div class='attribute games gt-xs'>Games</div>
-              <div class='attribute average gt-xs'>Pts / Game</div>
+              <div class='attribute average gt-xs'>Avg</div>
               <div class='attribute winnings'>Winnings</div>
             </div>
           </li>
@@ -41,13 +41,18 @@ export default {
   components: {
     playerRank: require('components/Rankings/PlayerRanking.vue').default
   },
-  props: ['standings'],
+  props: ['standings', 'pageHeight'],
   data () {
     return {
 
     }
   },
   computed: {
+    cssVars () {
+      return {
+        '--pageHeight': this.pageHeight
+      }
+    }
 
   },
   methods: {
@@ -89,14 +94,17 @@ export default {
             align-self: end;
           }
       }
+      .attribute-container.stats {
+        justify-items: center;
+      }
 
       /* Definition of wrapping column width for attribute groups. */
       .player-information {
-          --column-width-min: 8.2em;
+          --column-width-min: 7.2em;
       }
 
       .stats {
-          --column-width-min: 4.2em;
+        --column-width-min: 4.2em;
       }
 
       // .rank, .player, .points, .games, .average, .winnings {
@@ -163,9 +171,29 @@ export default {
     min-height: auto;
   }
 
+@media screen and (max-width:1000px) {
+  .rankings-section {
+    &__players {
+
+      .player-table {
+
+        &__heading-row {
+          height: 7.2rem;
+        }
+
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
+  .rankings-section {
+    ol.collection {
+      margin: 8px;
+    }
+    .online-name-header {
+      display: none;
+    }
   }
 }
 

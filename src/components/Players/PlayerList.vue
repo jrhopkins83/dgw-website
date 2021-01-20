@@ -2,23 +2,21 @@
   <div>
     <section class='players-section'>
       <div class='players-section__players q-mb-sm' :class="isAdmin">
-        <ol class='collection collection-container player-table q-mb-sm' :class="isAdmin">
+        <ol class='collection collection-container players-section__players--table q-mb-sm' :class="isAdmin">
           <!-- The first list item is the header of the table -->
-          <li class='item item-container player-table__heading-row q-pb-sm' :class="isAdmin">
+          <li class='item item-container heading-row q-pb-sm' :class="isAdmin">
             <div class='attribute-container avatar'>
               <div class='attribute player-img'></div>
             </div>
             <!-- Enclose semantically similar attributes as a div hierarchy -->
-            <div class='attribute-container player-information'>
-              <div class='attribute-container player-names'>
-                <div class='attribute firstName q-ml-sm'>First Name</div>
+              <div class='attribute-container player-names q-pl-xs'>
+                <div class='attribute firstName'>First Name</div>
                 <div class='attribute lastName'>Last Name</div>
-                <div class='attribute nick-name gt-xs'>Nickname</div>
+                <div class='attribute nick-name'>Nickname</div>
                 <div class='attribute online-name'>Online Name</div>
               </div>
-            </div>
-            <div class='attribute-container contact-info' v-if="adminButtons">
-              <div class='attribute email q-ml-sm'>eMail</div>
+            <div class='attribute-container contact-info q-pl-xs' v-if="adminButtons">
+              <div class='attribute email'>eMail</div>
               <div class='attribute phone gt-xs'>Phone</div>
             </div>
               <div class="attribute-container admin-buttons text-center" v-if="adminButtons" >
@@ -181,74 +179,8 @@ export default {
 <style lang="scss" scoped>
   .players-section {
     position: relative;
-    height: 70vh;
+    height: 85%;
     overflow: hidden;
-
-    ol.collection {
-      margin: 0 1.6rem 1.6rem 1.6rem;
-      padding: 0px;
-
-      li {
-        list-style: none;
-      }
-
-      .item-container.isAdmin {
-          display: grid;
-          grid-template-columns: 5em 2.5fr 2fr 9rem;
-          grid-gap: 4px;
-
-      }
-
-      .item-container.isNotAdmin {
-          display: grid;
-          grid-template-columns: 5em 1fr;
-
-      }
-
-      .attribute-container {
-        display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-
-          .attribute {
-            display: flex;
-            align-self: end;
-          }
-      }
-
-      /* Definition of wrapping column width for attribute groups. */
-      .player-information {
-          --column-width-min: 6.2em;
-      }
-
-      .contact-info {
-          --column-width-min: 5.2em;
-      }
-
-      .admin-buttons {
-          --column-width-min: 2em;
-      }
-
-      // .rank, .player, .points, .games, .average, .winnings {
-      //   display: flex;
-      //   align-self: end;
-      // }
-
-      /* Center header labels */
-      .collection-container > .item-container:first-child .attribute {
-        display: flex;
-        align-items:flex-end;
-        justify-content: center;
-        text-overflow: initial;
-        overflow: auto;
-        white-space: normal;
-        font-weight: bold;
-      }
-
-      .collection-container > .item-container:first-child .player-names .attribute {
-        justify-content: flex-start;
-      }
-
-    }
 
     * {
       box-sizing: border-box;
@@ -257,25 +189,34 @@ export default {
     &__players {
       // background-color: white;
       position: relative;
-      height: 70vh;
+      height: 85%;
       max-width: 80rem;
       overflow: auto;
       border-radius: 2.5rem;
       opacity: .9;
 
-      .player-table {
-        position: relative;
+      &--table {
         margin: 0 1.6rem 1.6rem 1.6rem;
-        position: relative;
+        padding: 0px;
 
-        &__heading-row {
+        /* Definition of wrapping column width for attribute groups. */
+        .item-container.isAdmin {
+          display: grid;
+          grid-template-columns: 5em 2.5fr 2fr 9rem;
+          grid-gap: 4px;
+        }
+
+        .item-container.isNotAdmin {
+          display: grid;
+          grid-template-columns: 5em 1fr;
+          grid-gap: 4px;
+        }
+
+        .heading-row {
           position: sticky;
           top: 0;
           z-index: 1;
           height: 5rem;
-          align-items:flex-end;
-          justify-content: center;
-          align-self: center;
           text-overflow: initial;
           white-space: normal;
           color: black;
@@ -285,8 +226,35 @@ export default {
           margin-bottom: .8rem;
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
-        }
+          align-items:flex-end;
+          justify-content: center;
+          text-overflow: initial;
+          overflow: auto;
 
+          .attribute-container {
+            display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+
+              .attribute {
+                display: flex;
+                align-self: end;
+              }
+          }
+
+          .attribute-container.player-names {
+            --column-width-min: 6.2em;
+          }
+
+          .attribute-container.contact-info {
+            --column-width-min: 5.2em;
+          }
+
+          .attribute-container.admin-buttons {
+            --column-width-min: 2em;
+            justify-self: center;
+          }
+
+        }
       }
     }
 
@@ -299,9 +267,16 @@ export default {
     min-height: auto;
   }
 
-@media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
+@media screen and (max-width: 450px) {
+  .players-section {
+    &__players--table {
+      .heading-row {
+        height: 7.5rem;
+      }
+    }
+  }
+  .q-avatar {
+    font-size: 54px;
   }
 }
 

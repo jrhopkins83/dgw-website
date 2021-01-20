@@ -5,21 +5,19 @@
         <ol class='collection collection-container player-table q-mb-sm'>
           <!-- The first list item is the header of the table -->
           <li class='item item-container player-table__heading-row'>
-            <div class='attribute'>Position</div>
+            <div class='attribute'>Place</div>
             <div class='attribute'>Player</div>
             <!-- Enclose semantically similar attributes as a div hierarchy -->
             <div class='attribute-container player-information'>
               <div class='attribute-container player-names'>
-                <div class='attribute gt-xs'>Name</div>
-                <div class='attribute gt-xs'>Nickname</div>
-                <div class='attribute gt-xs'>Online Name</div>
+                <div class='attribute'>Name</div>
+                <div class='attribute'>Nickname</div>
+                <div class='attribute'>Online Name</div>
               </div>
             </div>
-            <div class='attribute-container points'>
-              <div class='attribute'>Pts</div>
-            </div>
-            <div class='attribute-container gt-xs winnings'>
-              <div class='attribute'>Winnings</div>
+            <div class='attribute-container stats'>
+              <div class='attribute points'>Points</div>
+              <div class='attribute wingings'>$ Won</div>
             </div>
           </li>
           <!-- The rest of the items in the list are the actual data -->
@@ -63,17 +61,66 @@ export default {
 
 <style lang='scss' scoped>
   .rankings-section {
-    height: 74vh;
+    height: 70vh;
     overflow: hidden;
 
     ol.collection {
       margin: 0 1.6rem 1.6rem 1.6rem;
       padding: 0px;
-      max-width: 120rem;
-    }
+      max-width: 93rem;
 
-    li {
-      list-style: none;
+      li {
+        list-style: none;
+      }
+
+      .item-container {
+          display: grid;
+          grid-template-columns: 4em 5em 8fr 6fr;
+
+      }
+
+      .attribute-container {
+        display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+
+          .attribute {
+            display: flex;
+            align-self: end;
+          }
+      }
+      .attribute-container.stats {
+        justify-items: center;
+      }
+
+      /* Definition of wrapping column width for attribute groups. */
+      .player-information {
+          --column-width-min: 7.2em;
+      }
+
+      .stats {
+        --column-width-min: 4.2em;
+      }
+
+      // .rank, .player, .points, .games, .average, .winnings {
+      //   display: flex;
+      //   align-self: end;
+      // }
+
+      /* Center header labels */
+      .collection-container > .item-container:first-child .attribute {
+        display: flex;
+        align-items:flex-end;
+        justify-content: center;
+        text-overflow: initial;
+        overflow: auto;
+        white-space: normal;
+        font-weight: bold;
+      }
+
+      .collection-container > .item-container:first-child .player-names .attribute {
+        justify-content: flex-start;
+      }
+
     }
 
     * {
@@ -81,24 +128,24 @@ export default {
     }
 
     &__players {
-      background-color:$off-white;
-      height: 74vh;
-      max-width: 120rem;
+      // background-color: white;
+      height: 70rem;
+      max-width: 93rem;
       overflow: auto;
       border-radius: 2.5rem;
-      opacity: 1;
+      opacity: .9;
 
       .player-table {
         margin: 0 1.6rem 1.6rem 1.6rem;
         position: relative;
-        max-width: 120rem;
+        max-width: 93rem;
 
         &__heading-row {
           position: sticky;
-          z-index: 1;
           top: 0;
+          z-index: 1;
+          height: 5rem;
           background-color: $off-white;
-          opacity: 1;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
@@ -108,24 +155,7 @@ export default {
           margin-bottom: .8rem;
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
-          text-decoration: underline;
         }
-
-        /* The maximum column width, that can wrap */
-          .item-container {
-              display: grid;
-              grid-template-columns: 4em 5em 8fr 2fr 2fr;
-          }
-
-          .attribute-container {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
-          }
-
-          /* Definition of wrapping column width for attribute groups. */
-          .player-information {
-              --column-width-min: 8.2em;
-          }
 
       }
     }
@@ -135,37 +165,25 @@ export default {
     min-height: auto;
   }
 
+@media screen and (max-width:1000px) {
+  .rankings-section {
+    &__players {
+
+      .player-table {
+
+        &__heading-row {
+          height: 7.2rem;
+        }
+
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 600px) {
   .online-name-header {
     display: none;
   }
 }
 
-/* Tabular Layout */
-@media screen and (min-width: 360px) {
-  .rankings-section {
-
-  /* Center header labels */
-  .collection-container > .item-container:first-child .attribute {
-    display: flex;
-    align-items:flex-end;
-    justify-content: center;
-    text-overflow: initial;
-    overflow: auto;
-    white-space: normal;
-    font-weight: bold;
-  }
-
-  .collection-container > .item-container:first-child .player-names .attribute {
-    justify-content: flex-start;
-  }
-
-  .rank, .points , .games, .average, .winnings {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-  }
-
-}
 </style>

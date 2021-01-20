@@ -5,31 +5,26 @@
       enter-active-class="animated fadeInLeft"
       leave-active-class="animated fadeOutRight"
     >
-      <template v-if="playersLoaded">
-        <div class="column container">
-          <div class="col header">
-            <div class="col-12 header__title text-center">
-              <div class="col-12 text-h4 text-weight-bold q-mt-sm q-pt-none q-pb-xs">
-                Donkey's Gone Wild Players
-              </div>
-            </div>
-          </div>
-          <div class="column player-section">
-            <div class="column player-section__search-bar q-pa-xs q-ma-md">
-              <search>
-              </search>
-            </div>
-            <div class="player-list" :class="isAdmin">
-              <player-list
-                :playerList="playerList"
-                :isAdmin="isAdmin"
-                :adminButtons="adminButtons"
-              >
-              </player-list>
-            </div>
-          </div>
+      <div
+        class="container player-section"
+        v-if="playersLoaded"
+      >
+        <div class="player-section__title text-h3 text-bold">
+          Donkey's Gone Wild Players
         </div>
-      </template>
+          <div class="player-section__search-bar" :class="isAdmin">
+            <search>
+            </search>
+          </div>
+          <div class="player-section__list" :class="isAdmin">
+            <player-list
+              :playerList="playerList"
+              :isAdmin="isAdmin"
+              :adminButtons="adminButtons"
+            >
+            </player-list>
+          </div>
+          </div>
     </transition>
   </q-page>
 </template>
@@ -128,22 +123,18 @@ export default {
     min-height: auto;
   }
 
-  .container {
+  .player-section {
     position: relative;
     color: black;
-    height: 92vh;
+    height: 100vh;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 5rem 1fr;
-    align-items: flex-start;
     background-color: black;
     background-image: url(poker_table3_stretched.jpg);
     background-size: 100% 70%;
     background-repeat: no-repeat;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 5rem 5rem 1fr;
 
     // overflow: hidden;
 
@@ -157,86 +148,82 @@ export default {
       background-color:rgba(0,0,0, .55)
     }
 
-    .header {
+    &__title {
       position: relative;
-      align-items: center;
+      grid-row-start: 1;
+      align-self: center;
+      justify-self: center;
       color: white;
-      background-color: black;
-
-      &--title {
-        justify-self: end;
-      }
-
     }
 
-    .player-section {
+    &__search-bar {
+      grid-row-start: 2;
       position: relative;
+      align-self: flex-start;
+      width: 30%;
+      background-color: $off-white;
+      margin-left: 10rem;
+      border-radius: 5px;
+      opacity: .9f;
+    }
+
+    &__search-bar.isAdmin {
+      margin-left: 7rem;
+    }
+
+    &__list {
+      position: relative;
+      grid-row-start: 3;
+      max-width: 80rem;
+      border: inset $lightest-grey;
+      border-radius: 1.6rem;
+      opacity: .8;
+      color: white;
+      margin-left: 10rem;
+      height: 88%;
+      overflow: hidden;
+
+    }
+    .player-section__list.isAdmin {
+      margin-left: 7rem;
+      max-width: 110rem;
+    }
+
+  }
+
+  @media screen and (max-width: 1000px) {
+    .player-section {
       &__search-bar {
-        position: relative;
-        width: 30%;
-        background-color: $off-white;
-        margin-left: 10rem;
-        border-radius: 5px;
-        opacity: .9f;
+        margin-left: 1rem;
       }
 
       &__search-bar.isAdmin {
-        margin-left: 7rem;
+        margin-left: 1rem;
       }
 
-      .player-list {
-        position: relative;
-        border: inset $lightest-grey;
-        border-radius: 1.6rem;
-        opacity: .8;
-        margin-left: 10rem;
-        height: 74vh;
-        justify-self: center;
-        overflow: hidden;
-
-      }
-      .player-list.isAdmin {
-        margin-left: 7rem;
-        max-width: 110rem;
+      .player-section__list.isAdmin {
+        margin-left: 1rem;
       }
 
-      .player-list.isNotAdmin {
-        max-width: 80rem;
+      .player-section__list.isNotAdmin {
+        margin-left: 1rem;
       }
 
     }
-
   }
 
-  @media screen and (max-width: 859px) {
-    .container {
-      .ranking-section {
-        &__header {
-          &--title {
-            justify-self: center;
-          }
-        }
-      }
+  @media screen and (max-width: 795px) {
+    .player-section {
+      background-size: 80% 50%;
+      background-position-x: 100px;
     }
   }
 
-  @media screen and (max-width: 385px) {
-    .container {
-      width: 100%;
-      .ranking-section {
-        width: 93%;
-        &__player-rankings {
-          width: 98%;
-        }
-      }
+  @media screen and (max-width: 414px) {
+    .player-section {
+      background-size: 100% 40%;
+      background-position-x: 0px;
     }
   }
-
-@media screen and (max-width: 600px) {
-
-  .online-name-header {
-    display: none;
-  }
-}
 
 </style>

@@ -18,6 +18,7 @@
         <div class="ranking-section__player-rankings">
           <player-rankings
             :standings="finalTableList"
+            :pageHeight="pageHeight"
           >
           </player-rankings>
         </div>
@@ -38,6 +39,7 @@ export default {
   props: ['standings'],
   data () {
     return {
+      pageHeight: '85rem'
     }
   },
   computed: {
@@ -79,7 +81,7 @@ export default {
   .container {
     position: relative;
     color: black;
-    height: 83rem;
+    height: 78rem;
     width: 100%;
     display: flex;
     align-items: center;
@@ -157,7 +159,20 @@ export default {
 
   }
 
-  @media screen and (max-width: 385px) {
+ @media screen and (max-width: 600px) {
+  .rankings-section {
+    background-image: url(Wsop-Bracelet-Tall.jpg);
+
+  }
+  .ranking-section__player-rankings {
+    margin: 8px !important;
+  }
+  .online-name-header {
+    display: none;
+  }
+}
+
+ @media screen and (max-width: 385px) {
     .container {
       width: 100%;
 
@@ -166,19 +181,11 @@ export default {
 
         &__player-rankings {
           width: 98%;
+          margin: 8px;
         }
       }
 
     }
 
   }
-@media screen and (max-width: 600px) {
-  .rankings-section {
-    background-image: url(Wsop-Bracelet-Tall.jpg);
-  }
-  .online-name-header {
-    display: none;
-  }
-}
-
 </style>

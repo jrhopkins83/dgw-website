@@ -1,7 +1,7 @@
 <template>
   <div>
-    <section class="games-section">
-      <div class="games-section__games q-mb-sm">
+    <section class="schedule-section">
+      <div class="schedule-section__games">
         <template v-if="!Object.keys(upcomingGames).length && !Object.keys(completedGames).length">
           <div>
             <no-games
@@ -11,67 +11,78 @@
           </div>
         </template>
         <template v-else>
-          <ol class="collection collection-container games-section__games--table q-mb-sm">
+          <ol class="collection collection-container schedule-section__games--table q-mb-sm">
             <!-- The first list item is the header of the table -->
-            <li class="item item-container heading-row q-mt-xs" :class="isAdmin">
+            <li class="item item-container heading-row" :class="isAdmin">
               <!-- Enclose semantically similar attributes as a div hierarchy -->
-              <div class="attribute-container game-information">
+              <div class="attribute-container game-date">
                 <div class="attribute date">Date</div>
-                <div class="attribute buy-in">Buy-In</div>
-                <div class="attribute type">Type</div>
               </div>
               <div class="attribute-container game-structure">
+                <div class="attribute buy-in">Buy In</div>
+                <div class="attribute type">Type</div>
                 <div class="attribute structure">Structure</div>
-                <div class="attribute details"></div>
+              </div>
+              <div class="attribute-container game-details">
+                <div class="attribute details" :class="isAdmin"></div>
               </div>
               <div class="attribute-container game-buttons text-center" v-if="adminButtons" >Actions
                 <div class="attribute edit"></div>
                 <div class="attribute delete"></div>
-                <div class="attribute invite"></div>
+                <!-- <div class="attribute invite"></div> -->
                 <div class="attribute complete"></div>
               </div>
             </li>
-            <game-row
-              v-for='(game, index) in upcomingGames'
-              :key='index'
-              :id='game.id'
-              :game='game'
-              :isAdmin="isAdmin"
-              :adminButtons="adminButtons"
-              @viewGameDetails="viewGame"
-              @editGame="editGame"
-              @deleteGame="confirmDelete"
-              @sendInvite="sendInvite"
-              @enterResults="enterResults"
-            >
-            </game-row>
-            <game-row
-              v-for='(game, index) in completedGames'
-              :key='index'
-              :id='game.id'
-              :game='game'
-              :isAdmin="isAdmin"
-              :adminButtons="adminButtons"
-              @viewGameDetails="viewGame"
-              @edit="editGame"
-              @delete="deleteGame"
-            >
-            </game-row>
-        </ol>
+
+              <game-row
+                v-for='(game, index) in upcomingGames'
+                :key='index'
+                :id='game.id'
+                :game='game'
+                :isAdmin="isAdmin"
+                :adminButtons="adminButtons"
+                @viewGameDetails="viewGame"
+                @editGame="editGame"
+                @deleteGame="confirmDelete"
+                @sendInvite="sendInvite"
+                @enterResults="enterResults"
+              >
+              </game-row>
+              <game-row
+                v-for='(game, index) in completedGames'
+                :key='index'
+                :id='game.id'
+                :game='game'
+                :isAdmin="isAdmin"
+                :adminButtons="adminButtons"
+                @viewGameDetails="viewGame"
+                @edit="editGame"
+                @delete="deleteGame"
+              >
+              </game-row>
+          </ol>
         </template>
       </div>
-
-      <div class="absolute-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
-        <q-btn
-          @click="addGame"
-          round
-          class="all-pointer-events"
-          color="grey-7"
-          size="20px"
-          icon="add"
-        />
-      </div>
     </section>
+    <div class="absolute-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
+      <q-btn
+        @click="addGame"
+        round
+        class="all-pointer-events"
+        color="grey-7"
+        size="20px"
+        icon="add"
+      />
+    </div>
+    <q-dialog
+      v-model="showViewGame"
+    >
+      <view-game-details
+        :game="game"
+        :id="id"
+        @close="showViewGame=false"
+      />
+    </q-dialog>
     <q-dialog
       v-model="showEditGame"
     >
@@ -155,7 +166,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('leagueSettings', ['userInfo']),
+    ...mapGetters('games', ['upcomingGames']),
     noGamesMsg: function () {
       return 'No games with that criteria'
     }
@@ -288,107 +299,125 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .games-section {
+  .schedule-section {
+    position: relative;
     font-size: 18px;
-
-    ol.collection {
-      margin: 0 1.6rem 1.6rem 1.6rem;
-      padding: 0px;
-      max-width: 120rem;
-    }
-
-    li {
-      list-style: none;
-    }
 
     * {
       box-sizing: border-box;
     }
 
     &__games {
-      height: 73vh;
+      position: relative;
       width: 100%;
-      overflow: auto;
-      border-radius: 2.5rem;
-      opacity: 0.8;
+      height: 92%;
+      background: $off-white 0% 0% no-repeat padding-box;
+      opacity: .85;
+      display: grid;
+      grid-template-columns: 1fr;
 
-      .no-games {
-        max-width: 90vw;
-        font-size: 2.4rem;
-
-      }
       &--table {
-        margin: 0 .6rem .6rem .6rem;
+        margin: 0 1.6rem 1.6rem 1.6rem;
         position: relative;
         max-width: 120rem;
+        padding: 0px;
+
+        .no-games {
+          max-width: 90vw;
+          font-size: 2.4rem;
+
+        }
+
+        li {
+          list-style: none;
+        }
 
         .heading-row {
           position: sticky;
           top: 0;
           z-index: 1;
-          background-color: $off-white;
-          color:  black;
+          background-color: $white;
+          opacity: 1;
+          height: 5rem;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
           white-space: normal;
           font-weight: bold;
-          text-decoration-line: underline;
-          margin-top: 1rem;
           margin-bottom: .8rem;
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
           display: grid;
+          grid-column-gap: 1.6rem;
 
-          .attribute-container.game-information {
+          .attribute-container {
             display: grid;
-            grid-template-columns: 8rem 6rem 6rem;
-            grid-gap: 8px;
-          }
+            grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
 
-          .attribute-container.game-structure {
-            display: grid;
-            grid-template-columns: 20rem 5rem;
-
+            .attribute.buy-in {
+              justify-self: center;
+            }
             .attribute.structure {
               display: flex;
               align-items: flex-start;
               justify-content: flex-start;
             }
           }
-
-          .attribute-container.game-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 4rem);;
+          .attribute-container.game-structure {
+              --column-width-min: 5.5em;
           }
-
+          .attribute-container.game-buttons {
+            --column-width-min: 2em;
+            justify-self: center;
+          }
         }
         .heading-row.isAdmin {
-          grid-template-columns: 1fr 1.5fr 1fr;
+          grid-template-columns:  12rem 3.5fr 1fr 2fr;
         }
+
         .heading-row.isNotAdmin {
-          grid-template-columns: 1fr 1.5fr;
+          grid-template-columns:  12rem 4fr 1fr;
         }
+
       }
     }
   }
 
-.q-page {
-  min-height: auto;
-}
+  .q-page {
+    min-height: auto;
+  }
 
-.dialog-game {
-  background-color: #707070;
-  display: flex;
-  height: 90%;
-  width: 90%;
-}
-@media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
+@media screen and (max-width: 800px) {
+  .heading-row.isAdmin {
+    grid-template-columns:  7.8rem 3.5fr 1fr 2fr !important;
+  }
+
+  .heading-row.isNotAdmin {
+    grid-template-columns:  7.8rem 4fr 1fr !important;
   }
 }
 
-/* Tabular Layout */
+@media screen and (max-width: 534px) {
+  .attribute-container {
+    .attribute.buy-in {
+      justify-self: flex-start !important;
+    }
+  }
+}
 
+@media screen and (max-width: 474px) {
+  .schedule-section__games {
+    height: 90%;
+  }
+}
+
+@media screen and (max-width: 535px) {
+  .heading-row {
+    height: 7.5rem !important;
+  }
+
+  .attribute-container.game-structure {
+      --column-width-min: 5.5em!important;
+  }
+}
 </style>

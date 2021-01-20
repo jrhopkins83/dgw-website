@@ -132,9 +132,10 @@ export default {
     min-height: auto;
   }
 
-  @media screen and (max-width: 99rem) {
+  @media screen and (max-width: 620px) {
     .hero-section {
       overflow: hidden;
+      max-height: 45rem;
       /* grid styles */
       display: grid;
       grid-template-columns: 1fr;
@@ -145,33 +146,36 @@ export default {
         "pool";
       grid-gap: 2rem;
 
-      &__message {
-        justify-self: center;
-        text-align: justify;
-        max-height: 34rem;
-        max-width: 45rem;
-      }
-
       &::before {
-        content: "";
-        position: absolute;
-
-        background-color: rgba(0,0,0,0.6);
-        // background-color: rgba(152, 66, 211, 0.63);
+        background-color: rgba(0,0,0,0.7);
       }
-    }
-  }
 
-  @media screen and (max-width: 99rem) {
-    .hero-section {
-      &__pool {
+      &__title {
+        grid-area: title;
+        color: $white;
+        position: relative;
         align-self: flex-start;
         justify-self: center;
+        max-height: 36rem;
+        margin-top: 1rem;
+      }
+
+      &__pool {
+        justify-self: center;
+        margin-right: 2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
       }
 
       &__message {
-        margin: 1rem;
+        justify-self: center;
+        max-height: 34rem;
+        max-width: 40rem;
+        margin: 1rem 1.5rem;
       }
+
     }
+
   }
+
 </style>

@@ -178,7 +178,11 @@ const getters = {
         const playerNameLowerCase = fullName.toLowerCase()
         const searchLowerCase = state.search.toLowerCase()
 
-        player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
+        if (player.games > 0) {
+          player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
+        } else {
+          return 0
+        }
 
         if (playerNameLowerCase.includes(searchLowerCase)) {
           standingsFiltered.push(player)

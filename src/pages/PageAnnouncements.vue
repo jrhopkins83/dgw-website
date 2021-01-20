@@ -91,12 +91,13 @@ html, body, .grid-container { height: 100%; margin: 0; }
 }
 
 .grid-container {
-  min-height: 93vh;
+  // min-height: 93vh;
   width: 100%;
   color: white;
   display: grid;
+  background: #060607 0% 0% no-repeat padding-box;
   grid-template-columns: 1fr 1fr 1fr 2fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: repeat(6, 1fr);
   gap: 0px 0px;
   grid-template-areas:
     "left-image headline headline headline right-image"
@@ -109,10 +110,10 @@ html, body, .grid-container { height: 100%; margin: 0; }
   &::before {
     content: "";
     position: absolute;
-    top: 65px;
+    top: 0px;
     left: 0px;
     width: 100vw;
-    height: 93vh;
+    height: 0px;
     /* UI Properties */
     background: #060607 0% 0% no-repeat padding-box;
     opacity: 1;
@@ -164,4 +165,51 @@ html, body, .grid-container { height: 100%; margin: 0; }
   grid-area: news-item;
 }
 
+@media screen and (max-width: 1230px) {
+  .grid-container {
+    grid-template-columns: 1fr 1fr 1fr 2fr;
+    grid-template-areas:
+      "left-image headline headline headline "
+      "left-background-image news-item news-item news-item"
+      "left-background-image news-item news-item news-item"
+      "left-background-image news-item news-item news-item"
+      ". . news-item news-item"
+      ". . news-item news-item" !important;
+    .right-image {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-width: 788px) {
+  .grid-container {
+    grid-template-columns: 1fr 2fr;
+    grid-template-areas:
+      "left-image headline headline headline "
+      "news-item news-item news-item"
+      "news-item news-item news-item"
+      "news-item news-item news-item"
+      ". news-item news-item"
+      ". news-item news-item" !important;
+    background-image: url(throwing-cards.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: 0px;
+      background-color:rgba(0,0,0,0.65)
+    }
+    .headline {
+      text-align: center;
+    }
+    .left-image {
+      display: none;
+    }
+  }
+}
 </style>

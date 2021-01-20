@@ -2,7 +2,7 @@
   <div class="col game-form">
 
     <q-card class="add-game absolute-center" style="width: 700px; max-width: 80vw;">
-      <q-card-section style="height: 57rem">
+      <q-card-section style="height: 95%; padding: 8px">
         <modal-header>Game Details</modal-header>
         <div class="form-container">
           <div class="attribute-container date">
@@ -10,13 +10,13 @@
           </div>
           <div class="attribute-container structure">
             <div class="attribute type">
-              <div class="label text-bold">
+              <div class="label">
                 Type
               </div>
               <div class="field">{{ game.type }}</div>
             </div>
             <div class="attribute structure">
-              <div class="label text-bold">
+              <div class="label">
                 Structure
               </div>
               <div class="field">{{ game.structure }}</div>
@@ -24,36 +24,36 @@
           </div>
           <div class="attribute-container buy-in">
             <div class="attribute buy-in">
-              <div class="label text-bold">
+              <div class="label">
                 Buy-In
               </div>
               <div class="field">{{ formatted_buyIn }}</div>
             </div>
             <div class="attribute rebuy">
-              <div class="label text-bold">
+              <div class="label">
                 Re-Buy
               </div>
               <div class="field">{{ formatted_rebuy }}</div>
             </div>
             <div class="attribute addon">
-              <div class="label text-bold">
+              <div class="label">
                 Add-On
               </div>
               <div class="field">{{ formatted_addOn }}</div>
             </div>
           </div>
           <div class="attribute-container location">
-            <div class="label text-bold">
+            <div class="label">
               Location
             </div>
             <div class="attribute location field">{{ game.location }}</div>
           </div>
           <div class="attribute-container notes">
-            <div class="label text-bold">
+            <div class="label">
               Notes
             </div>
             <div>
-              <div v-html="game.notes" min-height="17rem" />
+              <div class="attribute notes" v-html="game.notes"/>
             </div>
           </div>
         </div>
@@ -99,9 +99,13 @@ export default {
   computed: {
     ...mapGetters('leagueSettings', ['leagueInfo', 'gameTemplates']),
     game_date: function () {
-      // replace after getting data form FS
+      let shortDate = ''
       const startDateTm = this.game.gameDate.toDate()
-      const shortDate = date.formatDate(startDateTm, 'dddd MMMM Do, YYYY')
+      if (this.$q.screen.width > 800) {
+        shortDate = date.formatDate(startDateTm, 'dddd MMMM Do, YYYY')
+      } else {
+        shortDate = date.formatDate(startDateTm, 'ddd, MMM Do')
+      }
       return shortDate
     },
     game_time: function () {
@@ -169,7 +173,7 @@ export default {
         .attribute-container.structure {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          grid-gap: 1rem;
+          grid-column-gap: 1rem;
         }
 
         .attribute-container.date {
@@ -181,10 +185,14 @@ export default {
           min-height: 5rem;
         }
 
+        .attribute.notes {
+          min-height: 17rem;
+        }
+
         .attribute-container.buy-in {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          grid-gap: 1rem;
+          grid-column-gap: 1rem;
         }
 
         .q-field__input {
@@ -195,6 +203,7 @@ export default {
 
       .label {
         font-size: 20px;
+        font-weight: bold;
         margin: 12px 0px 8px 0px;
       }
       .q-input {
@@ -202,4 +211,28 @@ export default {
       }
     }
   }
+
+@media screen and (max-width: 414px) {
+  .q-dialog__inner--minimized {
+    padding: 8px !important;
+  }
+  .form-container {
+    padding: 8px !important;
+  }
+}
+
+@media screen and (max-width: 395px) {
+  .attribute.notes {
+    min-height: 12rem !important;
+  }
+
+}
+@media screen and (max-width: 375px) {
+  .attribute.date {
+    font-size: 18px !important;
+  }
+  .label {
+    font-size: 16px !important;
+  }
+}
 </style>

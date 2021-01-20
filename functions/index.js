@@ -78,8 +78,9 @@ exports.newPlayer = functions.firestore.document('/players/{id}')
       const newStanding = {
         season: season,
         position: 0,
-        totalPoints: 0,
         games: 0,
+        totalPoints: 0,
+        winnings: 0,
         pts_game: 0,
         total1st: 0,
         total2nd: 0,

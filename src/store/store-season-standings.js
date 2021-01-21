@@ -173,18 +173,17 @@ const getters = {
     if (state.search) {
       standingsSorted.forEach((player) => {
         const fullName = `${player.lastName}, ${player.firstName} ${player.nickName} ${player.onlineName} `
-        player.fullName = fullName
 
         const playerNameLowerCase = fullName.toLowerCase()
         const searchLowerCase = state.search.toLowerCase()
 
-        if (player.games > 0) {
-          player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
-        } else {
-          return 0
-        }
-
         if (playerNameLowerCase.includes(searchLowerCase)) {
+          player.fullName = fullName
+          if (player.games > 0) {
+            player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
+          } else {
+            return 0
+          }
           standingsFiltered.push(player)
         }
       })

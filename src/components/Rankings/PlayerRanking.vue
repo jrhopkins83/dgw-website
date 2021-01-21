@@ -19,7 +19,7 @@
         @click="selectPlayer"
       >
         <div class="attribute-container player-names">
-          <div class="attribute name">{{ player.firstName }}</div>
+          <div class="attribute name">{{ player.firstName }} {{ player.lastName }}</div>
           <div class="attribute nick-name">{{ player.nickName}}</div>
           <div class="attribute online-name">{{ player.onlineName }}</div>
         </div>

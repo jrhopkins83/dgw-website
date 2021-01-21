@@ -3,7 +3,7 @@
     <section class="schedule-section">
       <div class="schedule-section__games">
         <template v-if="!Object.keys(upcomingGames).length && !Object.keys(completedGames).length">
-          <div>
+          <div class="q-ma-lg">
             <no-games
               :message='noGamesMsg'
             >

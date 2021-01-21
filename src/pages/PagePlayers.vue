@@ -194,6 +194,7 @@ export default {
   @media screen and (max-width: 1000px) {
     .player-section {
       &__search-bar {
+        width: 40%;
         margin-left: 1rem;
       }
 
@@ -216,6 +217,21 @@ export default {
     .player-section {
       background-size: 80% 50%;
       background-position-x: 100px;
+      &__search-bar {
+        width: 40%;
+        margin-left: 1rem;
+      }
+
+    }
+  }
+
+  @media screen and (max-width: 650px) {
+    .player-section {
+
+      &__search-bar {
+        width: 50%;
+      }
+
     }
   }
 
@@ -223,6 +239,10 @@ export default {
     .player-section {
       background-size: 100% 40%;
       background-position-x: 0px;
+
+      &__search-bar {
+        width: 60%;
+      }
     }
   }
 

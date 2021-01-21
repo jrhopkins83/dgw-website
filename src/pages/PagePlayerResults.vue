@@ -10,7 +10,7 @@
           <div class="grid-container">
             <div class="player-image">
               <div class="text-center q-mb-xl">
-                <q-avatar size="78px">
+                <q-avatar>
                   <img :src="player_avatar.avatarUrl">
                 </q-avatar>
               </div>
@@ -115,32 +115,67 @@ html, body, .grid-container { height: 100%; margin: 0; }
 
 .grid-container {
   position: relative;
-  min-height: 93vh;
+  // min-height: 95vh;
   width: 100%;
   color: white;
   display: grid;
-  grid-template-columns: 1.5fr 4.5fr 4fr;
+  grid-template-columns: 1.5fr 4.5fr 3fr;
   gap: 0px 0px;
 
   .player-image {
-    margin-top: 3rem;
+    margin-top: 2rem;
+    .q-avatar {
+      font-size: 78px;
+    }
   }
 
   .headline {
     position: relative;
-    margin-top: 3rem;
+    text-align: center;
+    margin-top: 2rem;
     justify-self: center;
     align-self: center;
   }
 
-  // .right-image{
-
-  // }
 }
 
-@media screen and (min-width: 1366px) {
-  .player-results {
-    min-width: 70rem;
+  @media screen and (max-width: 712px) {
+    .grid-container {
+      grid-template-columns: 1.5fr 8fr 3fr;
+    }
   }
-}
+
+  @media screen and (max-width: 567px) {
+    .grid-container {
+      grid-template-columns: 1.5fr 8fr 2fr;
+    }
+  }
+
+  @media screen and (max-width: 522px) {
+    .grid-container {
+      grid-template-columns: 1fr 8fr 1fr;
+
+      .player-image {
+        .q-avatar {
+          font-size: 54px;
+          margin-left: 1rem;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 465px) {
+    .grid-container {
+      grid-template-columns: 1fr 8fr .5fr;
+    }
+  }
+
+  @media screen and (max-width: 431px) {
+    .grid-container {
+      .results-table {
+        margin-top: 1rem;
+        margin-left: -5rem;
+      }
+    }
+  }
 </style>

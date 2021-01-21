@@ -56,7 +56,7 @@ export default {
 
 <style lang='scss' scoped>
   .results-section {
-    min-width: 70rem;
+    // min-width: 70rem;
 
     li {
       list-style: none;
@@ -65,7 +65,7 @@ export default {
     /* The maximum column width, that can wrap */
       .item-container {
           display: grid;
-          grid-template-columns: 20rem 1fr;
+          grid-template-columns: 12rem 1fr;
       }
 
       .attribute-container {
@@ -75,7 +75,7 @@ export default {
 
       /* Definition of wrapping column width for attribute groups. */
       .player-information {
-          --column-width-min: 8.2em;
+          --column-width-min: 4.2em;
       }
 
       .place, .points , .winnings {
@@ -99,10 +99,9 @@ export default {
     }
 
     .place, .points , .winnings {
-      display: flex;
       align-self: center;
       justify-content: center;
-      }
+    }
 
     &__players {
 

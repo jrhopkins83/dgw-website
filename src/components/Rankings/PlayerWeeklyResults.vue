@@ -11,7 +11,7 @@
             <div class='attribute-container player-information'>
               <div class='attribute place'>Place</div>
               <div class='attribute points'>Points</div>
-              <div class='attribute winnings'>Winnings</div>
+              <div class='attribute winnings'>$ Won</div>
             </div>
           </li>
           <player-result
@@ -132,7 +132,6 @@ export default {
     ol.collection {
       margin: 0 1.6rem .5rem 1.6rem;
       padding: 0px;
-      max-width: 120rem;
     }
 
     li {
@@ -146,7 +145,7 @@ export default {
     /* The maximum column width, that can wrap */
       .item-container {
           display: grid;
-          grid-template-columns: 20rem 1fr;
+          grid-template-columns: 12rem 1fr;
       }
 
       .attribute-container {
@@ -156,7 +155,7 @@ export default {
 
       /* Definition of wrapping column width for attribute groups. */
       .player-information {
-          --column-width-min: 8.2em;
+          --column-width-min: 4.2em;
       }
 
     .collection-container > .item-container:first-child .player-names .attribute {
@@ -211,19 +210,10 @@ export default {
     min-height: auto;
   }
 
-@media screen and (min-width: 1366px) {
-  .results-section {
-
-    &__players {
-      min-width: 70rem;
+  @media screen and (max-width: 600px) {
+    .online-name-header {
+      display: none;
     }
   }
-}
-
-@media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
-  }
-}
 
 </style>

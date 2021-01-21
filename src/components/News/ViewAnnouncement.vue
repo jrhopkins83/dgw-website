@@ -52,8 +52,8 @@ export default {
   position: relative;
   overflow: hidden;
   width: 100%;
-  min-height: 50rem;
-  max-height: 60rem;
+  min-height: 40rem;
+  max-height: 50rem;
   margin-bottom: 1.6rem;
   color: black;
   background-color: $off-white;
@@ -91,17 +91,23 @@ export default {
 @media screen and (max-width: 600px) {
   .news_item {
     margin: 4px;
-      margin: .8rem;
 
-      .headline--subject {
-        font-size: 1.6rem;
-      }
+    .headline--subject {
+      font-size: 1.6rem;
+    }
 
     .news--detail {
       .news-date {
         font-size: 1.6rem;
       }
     }
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .news_item {
+    max-height: 40rem   ;
+
   }
 }
 </style>

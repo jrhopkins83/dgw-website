@@ -14,7 +14,7 @@
         <div class="left-background-image">
 
         </div>
-        <div class="news-item">
+        <div class="news-item gt-xs">
           <q-carousel
             v-model="slide"
             transition-prev="slide-right"
@@ -28,6 +28,30 @@
             prev-icon="arrow_left"
             next-icon="arrow_right"
             height="60rem"
+            class="bg-black shadow-1 rounded-borders"
+          >
+            <q-carousel-slide
+              v-for="(announcement, index) in announcements"
+              :key="announcement.id"
+              :name="index"
+            >
+              <news-item
+                :item="announcement"
+              >
+              </news-item>
+            </q-carousel-slide>
+          </q-carousel>
+        </div>
+        <div class="news-item xs">
+          <q-carousel
+            v-model="slide"
+            transition-prev="slide-right"
+            transition-next="slide-left"
+            swipeable
+            animated
+            control-color="white"
+            navigation
+            padding
             class="bg-black shadow-1 rounded-borders"
           >
             <q-carousel-slide
@@ -165,6 +189,12 @@ html, body, .grid-container { height: 100%; margin: 0; }
   grid-area: news-item;
 }
 
+.news-item.xs {
+  .q-carousel {
+    height: 54rem;
+  }
+}
+
 @media screen and (max-width: 1230px) {
   .grid-container {
     grid-template-columns: 1fr 1fr 1fr 2fr;
@@ -183,28 +213,32 @@ html, body, .grid-container { height: 100%; margin: 0; }
 
 @media screen and (max-width: 788px) {
   .grid-container {
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 6rem repeat(5, 1fr);
     grid-template-areas:
-      "left-image headline headline headline "
-      "news-item news-item news-item"
-      "news-item news-item news-item"
-      "news-item news-item news-item"
-      ". news-item news-item"
-      ". news-item news-item" !important;
-    background-image: url(throwing-cards.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
+      "headline"
+      "news-item"
+      "news-item"
+      "news-item"
+      "news-item"
+      "news-item" !important;
 
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      bottom: 0px;
-      left: 0px;
-      background-color:rgba(0,0,0,0.65)
-    }
     .headline {
+      text-align: center;
+    }
+    .left-image {
+      display: none;
+    }
+    .right-image {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-width: 414px) {
+  .grid-container {
+    .headline {
+      font-size: 2rem;
       text-align: center;
     }
     .left-image {

@@ -54,7 +54,14 @@ export default {
     ...mapGetters('standings', ['standingsFiltered', 'standingsLoaded']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
     txtLastDate: function () {
-      return date.formatDate(this.lastCompletedDate.toDate(), 'dddd MMMM D')
+      let shortDate = ''
+      const startDateTm = this.lastCompletedDate.toDate()
+      if (this.$q.screen.width > 800) {
+        shortDate = date.formatDate(startDateTm, 'ddd, MMM Do')
+      } else {
+        shortDate = date.formatDate(startDateTm, 'MM/DD/YY')
+      }
+      return shortDate
     },
     pageTitle: function () {
       return `Season Standings through ${this.txtLastDate}`

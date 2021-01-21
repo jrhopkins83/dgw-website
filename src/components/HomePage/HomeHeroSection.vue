@@ -168,7 +168,6 @@ export default {
 
       &__message {
         justify-self: center;
-        max-height: 34rem;
         max-width: 40rem;
         margin: 1rem 1.5rem;
       }

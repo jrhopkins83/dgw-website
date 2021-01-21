@@ -135,7 +135,6 @@ export default {
   @media screen and (max-width: 620px) {
     .hero-section {
       overflow: hidden;
-      max-height: 45rem;
       /* grid styles */
       display: grid;
       grid-template-columns: 1fr;

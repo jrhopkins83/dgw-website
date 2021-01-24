@@ -135,7 +135,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { firebaseStore, Timestamp } from 'src/boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
 
@@ -166,7 +166,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('games', ['upcomingGames']),
     noGamesMsg: function () {
       return 'No games with that criteria'
     }

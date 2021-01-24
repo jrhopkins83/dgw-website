@@ -186,7 +186,6 @@ export default {
     &__games {
       position: relative;
       max-width: 70rem;
-      height: 33vh;
       min-height: 26rem;
       background: $white 0% 0% no-repeat padding-box;
       border: 1px solid $light-grey;
@@ -272,15 +271,4 @@ export default {
   }
 }
 
-@media screen and (max-width: 450px) {
-  .schedule-section__games {
-    height: 38vh;
-  }
-}
-
-@media screen and (max-width: 375px) {
-  .schedule-section__games {
-    height: 48vh;
-  }
-}
 </style>

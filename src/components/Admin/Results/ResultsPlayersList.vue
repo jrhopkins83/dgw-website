@@ -173,7 +173,6 @@ export default {
     },
     async submitForm (newPlayer) {
       this.setResultsLoaded(false)
-      this.setFinishedLoaded(false)
       this.$q.loading.show({
         message: `<b>Player ${this.mode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
       })
@@ -188,7 +187,10 @@ export default {
             lastName: newPlayer.lastName,
             nickName: newPlayer.nickName,
             onlineName: newPlayer.onlineName,
-            avatar: null,
+            avatar: {
+              avatarURL: '',
+              avatarName: ''
+            },
             RSVPd: false,
             checkedIn: true,
             finished: false,
@@ -203,12 +205,11 @@ export default {
             return false
           }
           this.setResultsLoaded(true)
-          this.setFinishedLoaded(true)
           this.$q.loading.hide()
         }
       } catch (error) {
         showMessage('error', `Error adding player - ${error}`)
-        this.setPlayersLoaded(true)
+        this.setResultsLoaded(true)
         this.$q.loading.hide()
       }
     },

@@ -106,7 +106,7 @@ export const mixinAddEditPlayer = {
         const userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
         return await userRef.update(playerContactInfo)
       } else {
-        const playerID = await this.addNewPlayer(playerNames, playerContactInfo)
+        const playerID = await this.addNewPlayer(playerNames)
         if (playerID) {
           playerContactInfo.playerID = playerID
           await this.createSubscriber(playerContactInfo)
@@ -118,13 +118,16 @@ export const mixinAddEditPlayer = {
                 uid: newUserID
               }
               await this.createUserPlayerRef(userRef)
-              return this.setUserClaim(newUserID, playerID)
+              await this.setUserClaim(newUserID, playerID)
+              return playerID
             } else {
               return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
             }
           } else {
-            return new Error('New player not created')
+            return playerID
           }
+        } else {
+          return new Error('New player not created')
         }
       }
     },
@@ -242,6 +245,7 @@ export const mixinAddEditPlayer = {
     },
     async createSubscriber (user) {
       try {
+        console.log(user)
         return await firebaseStore
           .collection('subscribers')
           .doc(user.playerID)

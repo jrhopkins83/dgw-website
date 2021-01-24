@@ -163,8 +163,8 @@ export default {
     padding: 2rem;
     background-color: $lightest-grey;
     background-image: url(card-symbols-stretched.jpg);
-    background-repeat: no-repeat;
     background-size: 100% 60%;
+    background-repeat: no-repeat;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 4rem 1fr;

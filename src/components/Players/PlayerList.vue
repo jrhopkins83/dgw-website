@@ -179,25 +179,35 @@ export default {
 <style lang="scss" scoped>
   .players-section {
     position: relative;
-    height: 85%;
-    overflow: hidden;
+    font-size: 18px;
 
     * {
       box-sizing: border-box;
     }
 
     &__players {
-      // background-color: white;
       position: relative;
-      height: 85%;
-      max-width: 80rem;
-      overflow: auto;
-      border-radius: 2.5rem;
+      width: 100%;
+      height: 92%;
       opacity: .9;
+      display: grid;
+      grid-template-columns: 1fr;
 
       &--table {
         margin: 0 1.6rem 1.6rem 1.6rem;
+        position: relative;
+        max-width: 120rem;
         padding: 0px;
+
+        .no-games {
+          max-width: 90vw;
+          font-size: 2.4rem;
+
+        }
+
+        li {
+          list-style: none;
+        }
 
         /* Definition of wrapping column width for attribute groups. */
         .item-container.isAdmin {
@@ -216,56 +226,61 @@ export default {
           position: sticky;
           top: 0;
           z-index: 1;
+          // opacity: 1;
           height: 5rem;
-          text-overflow: initial;
-          white-space: normal;
-          color: black;
-          background-color: $off-white;
-          font-weight: bold;
-          margin-top: 1rem;
-          margin-bottom: .8rem;
-          border-top-left-radius: 8px;
-          border-top-right-radius: 8px;
+          background-color: #000;
+          margin-left: 4px;
+          margin-right: 4px;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
-          overflow: auto;
+          white-space: normal;
+          font-weight: bold;
+          margin-bottom: .8rem;
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
+          display: grid;
+          grid-column-gap: 1.6rem;
 
           .attribute-container {
             display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
 
-              .attribute {
-                display: flex;
-                align-self: end;
-              }
+            .attribute {
+              display: flex;
+              align-self: end;
+            }
           }
-
-          .attribute-container.player-names {
+          .player-names {
             --column-width-min: 6.2em;
           }
-
-          .attribute-container.contact-info {
+          .contact-info {
             --column-width-min: 5.2em;
           }
-
-          .attribute-container.admin-buttons {
+          .admin-buttons {
             --column-width-min: 2em;
-            justify-self: center;
           }
-
         }
       }
-    }
-
-    &__players.isAdmin {
-      max-width: 110rem;
     }
   }
 
   .q-page {
     min-height: auto;
   }
+
+@media screen and (max-width: 450px) {
+  .players-section {
+    &__players--table {
+      .heading-row {
+        height: 7.5rem;
+      }
+    }
+  }
+  .q-avatar {
+    font-size: 54px;
+  }
+}
 
 @media screen and (max-width: 450px) {
   .players-section {

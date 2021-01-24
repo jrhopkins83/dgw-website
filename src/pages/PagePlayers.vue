@@ -125,7 +125,6 @@ export default {
 
   .player-section {
     position: relative;
-    color: black;
     height: 100vh;
     width: 100%;
     background-color: black;
@@ -175,13 +174,13 @@ export default {
       position: relative;
       grid-row-start: 3;
       max-width: 80rem;
+      height: 88%;
       border: inset $lightest-grey;
       border-radius: 1.6rem;
       opacity: .8;
       color: white;
       margin-left: 10rem;
-      height: 88%;
-      overflow: hidden;
+      overflow: auto;
 
     }
     .player-section__list.isAdmin {

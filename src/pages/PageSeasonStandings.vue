@@ -93,7 +93,7 @@ export default {
     display: grid;
     grid-template-columns: 6.5fr 3.5fr;
     align-items: flex-start;
-    // overflow: hidden;
+    overflow: hidden;
 
     &::before {
       content: "";

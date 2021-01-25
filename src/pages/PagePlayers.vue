@@ -134,8 +134,7 @@ export default {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 5rem 5rem 1fr;
-
-    // overflow: hidden;
+    overflow: hidden;
 
     &::before {
       content: "";

@@ -234,6 +234,7 @@ export default {
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
+          overflow: auto;
           white-space: normal;
           font-weight: bold;
           margin-bottom: .8rem;

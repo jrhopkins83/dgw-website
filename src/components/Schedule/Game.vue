@@ -141,12 +141,12 @@ export default {
 
       }
       .attribute-container.game-buttons {
-        --column-width-min: 2em;
+        grid-template-columns: repeat(3, 1fr);
         justify-self: center;
       }
     }
     .item-container.isAdmin {
-      grid-template-columns: 12rem 3.5fr .5fr 2fr;
+      grid-template-columns: 12rem 3.5fr .5fr 1fr;
     }
 
     .item-container.isNotAdmin {

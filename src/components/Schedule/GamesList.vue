@@ -60,20 +60,20 @@
                 @delete="deleteGame"
               >
               </game-row>
+              <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
+                <q-btn
+                  @click="addGame"
+                  round
+                  class="all-pointer-events"
+                  color="grey-7"
+                  size="20px"
+                  icon="add"
+                />
+              </div>
           </ol>
         </template>
       </div>
     </section>
-    <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
-      <q-btn
-        @click="addGame"
-        round
-        class="all-pointer-events"
-        color="grey-7"
-        size="20px"
-        icon="add"
-      />
-    </div>
     <q-dialog
       v-model="showViewGame"
     >
@@ -371,7 +371,7 @@ export default {
           }
         }
         .heading-row.isAdmin {
-          grid-template-columns:  12rem 3.5fr 1fr 2fr;
+          grid-template-columns:  12rem 3.5fr 1fr 1fr;
         }
 
         .heading-row.isNotAdmin {

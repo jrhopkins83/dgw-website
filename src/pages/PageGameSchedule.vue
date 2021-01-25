@@ -12,9 +12,9 @@
         <div class="schedule-section__title text-h3 text-bold">
           Game Schedule
         </div>
-        <div class="schedule-section__games">
+        <div class="schedule-section__games" :class="isAdmin">
           <div class="schedule-section__games--heading">
-            <div :class="isAdmin" class="actions large-screen q-py-none">
+            <div class="actions large-screen q-py-none" :class="isAdmin">
               <q-tabs
                 v-model="tab"
                 dense
@@ -179,10 +179,16 @@ export default {
         font-weight: 500;
     }
 
+    &__games.isAdmin {
+      max-width: 85rem;
+    }
+    &__games.isNotAdmin {
+      max-width: 70rem;
+    }
+
     &__games {
       position: relative;
       grid-row-start: 2;
-      max-width: 70rem;
       height: 92%;
       background: $off-white 0% 0% no-repeat padding-box;
       border: 1px solid $light-grey;
@@ -227,7 +233,7 @@ export default {
       }
 
       &--list.isAdmin {
-        max-width: 75rem;
+        max-width: 85rem;
       }
     }
 

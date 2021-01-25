@@ -24,7 +24,7 @@ const Fieldvalue = firebase.firestore.Fieldvalue
 const storage = firebase.storage()
 
 // Initialize Firebase Performance Monitoring.
-firebase.performance()
+// firebase.performance()
 
 // Use emulators
 // if (window.location.hostname === 'localhost') {

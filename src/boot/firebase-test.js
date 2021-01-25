@@ -15,6 +15,10 @@ var firebaseConfig = {
   messagingSenderId: '53210843527',
   appId: '1:53210843527:web:443fcc1f74d4c2d36e6b22'
 }
+
+// Initialize Firebase Performance Monitoring.
+firebase.performance()
+
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseAuth = firebaseApp.auth()
 const firebaseFunctions = firebaseApp.functions()

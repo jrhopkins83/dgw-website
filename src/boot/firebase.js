@@ -23,6 +23,9 @@ const Timestamp = firebase.firestore.Timestamp
 const Fieldvalue = firebase.firestore.Fieldvalue
 const storage = firebase.storage()
 
+// Initialize Firebase Performance Monitoring.
+firebase.performance()
+
 // Use emulators
 // if (window.location.hostname === 'localhost') {
 //   firebaseStore.settings({

@@ -17,6 +17,9 @@ var firebaseConfig = {
   measurementId: 'G-ZTHN3MFG0R'
 }
 
+// Initialize Firebase Performance Monitoring.
+firebase.performance()
+
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseAuth = firebaseApp.auth()
 const firebaseFunctions = firebaseApp.functions()

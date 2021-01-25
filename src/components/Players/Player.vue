@@ -134,7 +134,7 @@ export default {
 
           /* Definition of wrapping column width for attribute groups. */
           .attribute-container.player-names {
-            --column-width-min: 6.2em;
+            --column-width-min: 7.2em;
           }
 
           .attribute-container.contact-info {

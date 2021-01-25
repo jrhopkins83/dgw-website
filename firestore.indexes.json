@@ -97,6 +97,20 @@
       ]
     },
     {
+      "collectionGroup": "tournamentResults",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "gameID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "onlineName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "weeklyResults",
       "queryScope": "COLLECTION",
       "fields": [

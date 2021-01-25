@@ -230,7 +230,6 @@ export default {
           position: sticky;
           top: 0;
           z-index: 1;
-          height: 5rem;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
@@ -251,7 +250,7 @@ export default {
             /* Definition of wrapping column width for attribute groups. */
           }
           .attribute-container.game-structure {
-              --column-width-min: 5.2em;
+              --column-width-min: 5.5em;
           }
         }
       }
@@ -264,11 +263,30 @@ export default {
 
 @media screen and (max-width: 600px) {
   .schedule-section__games--heading {
-   grid-template-columns: 1fr .25fr;
+    grid-template-columns: 1fr .25fr;
   }
   .online-name-header {
     display: none;
   }
 }
 
+@media screen and (max-width: 291px) {
+  .schedule-section {
+    &__games {
+      grid-template-rows: 4rem 1fr;
+    }
+  }
+  .title {
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  .heading-row {
+    font-weight: 600 !important;
+    grid-column-gap: .5rem !important;
+
+    .game-date {
+      justify-self: center;
+    }
+  }
+}
 </style>

@@ -239,8 +239,22 @@ export default {
       background-size: 100% 40%;
       background-position-x: 0px;
 
+      &__title {
+        font-size: 2rem;
+      }
+
       &__search-bar {
         width: 60%;
+      }
+    }
+  }
+
+  @media screen and (max-width: 377px) {
+    .player-section {
+      grid-template-rows: 7rem 5rem 1fr;
+      &__title {
+        font-size: 1.8rem;
+        text-align: center;
       }
     }
   }

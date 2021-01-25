@@ -134,16 +134,17 @@ export default {
 
   @media screen and (max-width: 620px) {
     .hero-section {
+      max-height: 56rem;
       overflow: hidden;
       /* grid styles */
       display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: 5rem 1fr 1fr;
+      grid-template-rows: 3rem 1fr .6fr;
       grid-template-areas:
         "title"
         "message"
         "pool";
-      grid-gap: 2rem;
+      grid-gap: 1rem;
 
       &::before {
         background-color: rgba(0,0,0,0.7);
@@ -160,20 +161,36 @@ export default {
       }
 
       &__pool {
+        align-self: center;
         justify-self: center;
-        margin-right: 2rem;
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
+        margin-right: 0;
+        margin-top: .5rem;
+        margin-bottom: .5rem;
       }
 
       &__message {
-        justify-self: center;
+        align-self: flex-start;
+        justify-self: flex-start;
+        max-height: 30rem;
         max-width: 40rem;
-        margin: 1rem 1.5rem;
+        margin: 1rem;
       }
 
     }
 
+  }
+  @media screen and (max-width: 377px) {
+    .hero-section {
+      &__title {
+        font-size: 2.4rem;
+        line-height: 1.5rem;
+      }
+      &__players--table {
+        .heading-row {
+          height: 10rem;
+        }
+      }
+    }
   }
 
 </style>

@@ -40,7 +40,7 @@ export default {
     date_short: function () {
       // replace after getting data form FS
       const startDateTm = this.game.gameDate.toDate()
-      const shortDate = date.formatDate(startDateTm, 'MM/DD/YY')
+      const shortDate = date.formatDate(startDateTm, 'M/D/YY')
       return shortDate
     },
     buyIn_formatted () {
@@ -92,15 +92,14 @@ export default {
     min-height: auto;
   }
 
-@media screen and (max-width: 600px) {
-  .online-name-header {
-    display: none;
+@media screen and (max-width: 291px) {
+  .item-row {
+    grid-column-gap: .5rem !important;
+
+    .game-date {
+      justify-self: center;
+    }
   }
 }
 
-@media screen and (max-width: 450px) {
-  .item-row {
-    height: 4.5rem;
-  }
-}
 </style>

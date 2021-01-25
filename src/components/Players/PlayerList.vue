@@ -227,7 +227,7 @@ export default {
           top: 0;
           z-index: 1;
           // opacity: 1;
-          height: 5rem;
+          min-height: 5rem;
           background-color: #000;
           margin-left: 4px;
           margin-right: 4px;
@@ -252,7 +252,7 @@ export default {
             }
           }
           .player-names {
-            --column-width-min: 6.2em;
+            --column-width-min: 7.2em;
           }
           .contact-info {
             --column-width-min: 5.2em;
@@ -270,28 +270,28 @@ export default {
   }
 
 @media screen and (max-width: 450px) {
-  .players-section {
-    &__players--table {
-      .heading-row {
-        height: 7.5rem;
-      }
-    }
-  }
+  // .players-section {
+  //   &__players--table {
+  //     .heading-row {
+  //       height: 7.5rem;
+  //     }
+  //   }
+  // }
   .q-avatar {
     font-size: 54px;
   }
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 377px) {
   .players-section {
+    &__title {
+      font-size: 54px;
+    }
     &__players--table {
       .heading-row {
-        height: 7.5rem;
+        height: 10rem;
       }
     }
-  }
-  .q-avatar {
-    font-size: 54px;
   }
 }
 

@@ -60,18 +60,18 @@
                 @delete="deleteGame"
               >
               </game-row>
-              <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
-                <q-btn
-                  @click="addGame"
-                  round
-                  class="all-pointer-events"
-                  color="grey-7"
-                  size="20px"
-                  icon="add"
-                />
-              </div>
           </ol>
         </template>
+      </div>
+      <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
+        <q-btn
+          @click="addGame"
+          round
+          class="all-pointer-events"
+          color="grey-7"
+          size="20px"
+          icon="add"
+        />
       </div>
     </section>
     <q-dialog

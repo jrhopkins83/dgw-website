@@ -18,7 +18,7 @@ var firebaseConfig = {
 }
 
 // Initialize Firebase Performance Monitoring.
-firebase.performance()
+// firebase.performance()
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseAuth = firebaseApp.auth()

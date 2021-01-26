@@ -34,15 +34,15 @@
             @confirmDelete="confirmDelete"
           >
           </player-row>
-        <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
-          <q-btn
-            @click="addPlayer"
-            round
-            class="all-pointer-events"
-            color="grey-6"
-            size="20px"
-            icon="add"
-          />
+          <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
+            <q-btn
+              @click="addPlayer"
+              round
+              class="all-pointer-events"
+              color="grey-6"
+              size="20px"
+              icon="add"
+            />
         </div>
         </ol>
       </div>

@@ -33,11 +33,12 @@ const actions = {
   setMessagesLoaded ({ commit }, value) {
     commit('SET_MESSAGES_LOADED', value)
   },
-  async fbMessages ({ commit, dispatch }) {
+  async fbMessages ({ commit, dispatch, state, rootState }) {
     try {
+      const msgLimit = rootState.leagueSettings.leagueInfo.messageLimit
       const messagesRef = firebaseStore.collection('messages')
         .orderBy('timestamp')
-        .limit(20)
+        .limit(msgLimit)
       await dispatch('bindMessagesRef', messagesRef)
       return commit('SET_MESSAGES_LOADED', true)
     } catch (error) {

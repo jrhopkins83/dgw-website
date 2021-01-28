@@ -69,5 +69,15 @@ service cloud.firestore {
       allow write: if userIsAdmin();
       allow update: if request.auth.token.playerID == playerID;
     }
+
+    // Messages:
+    //   - Anyone can read.
+    //   - Authenticated users can add and edit messages.
+    //   - Validation: Check name is same as auth token and text length below 300 char or that imageUrl is a URL.
+    //   - Deletes are not allowed.
+    match /messages/{messageId} {
+      allow read, write: if request.auth.uid != null;
+    }
+
   }
 }

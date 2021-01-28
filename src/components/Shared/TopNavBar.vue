@@ -76,123 +76,138 @@
           </template>
         </div>
         <q-btn
-          class="mobile-menu"
-          icon="menu"
-          dense
-          flat
+          icon="chat_bubble_outline"
           round
+          flat
+          to="/chat"
         >
-          <q-menu
-            transition-show="jump-down"
-            transition-hide="jump-up"
-          >
-          <q-list style="min-width: 27rem">
-            <q-item
-              clickable
-              ripple
-              to="/"
-            >
-              <q-item-section>
-                HOME
-              </q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              ripple
-              to = '/season-standings'
-            >
-              <q-item-section>
-                SEASON STANDINGS
-              </q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              ripple
-              to= "/weekly-results"
-            >
-              <q-item-section>
-                WEEKLY RESULTS
-              </q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              ripple
-              :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
-            >
-              <q-item-section>
-                SCHEDULE
-              </q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              ripple
-              :to = '{ name: "Players" , params: { mode: "view" } }'
-            >
-              <q-item-section>
-                PLAYERS
-              </q-item-section>
-            </q-item>
-            <q-item
-              clickable
-              ripple
-              to="/announcements"
-            >
-              <q-item-section>
-                ANNOUNCEMENTS
-              </q-item-section>
-            </q-item>
-            <template v-if="userInfo.isAdmin">
-              <q-btn-dropdown
-                class="auto-close stretch flat label text-bold"
-                style="font-size: 15px"
-                label="Admin"
-                auto-close
-                flat
-                stretch
-              >
-                <q-list style="min-width: 27rem">
-                  <q-item
-                    clickable
-                    ripple
-                    to="/league-info"
-                  >
-                    <q-item-section>
-                      LEAGUE INFO
-                    </q-item-section>
-                  </q-item>
-                  <q-item
-                    clickable
-                    ripple
-                    :to = '{ name: "GameSchedule" , params: { mode: "edit" } }'
-                  >
-                    <q-item-section>
-                      EDIT SCHEDULE
-                    </q-item-section>
-                  </q-item>
-                  <q-item
-                    clickable
-                    ripple
-                    :to = '{ name: "Players" , params: { mode: "edit" } }'
-                  >
-                    <q-item-section>
-                      EDIT PLAYERS
-                    </q-item-section>
-                  </q-item>
-                  <q-item
-                    clickable
-                    ripple
-                    to="/edit-announcements"
-                  >
-                    <q-item-section>
-                      EDIT ANNOUNCEMENTS
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-            </template>
-          </q-list>
-          </q-menu>
         </q-btn>
+        <q-btn
+          icon="help"
+          round
+          flat
+          to="/help"
+        >
+        </q-btn>
+        <div class="mobile-menu">
+          <q-btn
+            icon="menu"
+            dense
+            flat
+            round
+          >
+            <q-menu
+              transition-show="jump-down"
+              transition-hide="jump-up"
+            >
+            <q-list style="min-width: 27rem">
+              <q-item
+                clickable
+                ripple
+                to="/"
+              >
+                <q-item-section>
+                  HOME
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                ripple
+                to = '/season-standings'
+              >
+                <q-item-section>
+                  SEASON STANDINGS
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                ripple
+                to= "/weekly-results"
+              >
+                <q-item-section>
+                  WEEKLY RESULTS
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                ripple
+                :to = '{ name: "GameSchedule" , params: { mode: "view" } }'
+              >
+                <q-item-section>
+                  SCHEDULE
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                ripple
+                :to = '{ name: "Players" , params: { mode: "view" } }'
+              >
+                <q-item-section>
+                  PLAYERS
+                </q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                ripple
+                to="/announcements"
+              >
+                <q-item-section>
+                  ANNOUNCEMENTS
+                </q-item-section>
+              </q-item>
+              <template v-if="userInfo.isAdmin">
+                <q-btn-dropdown
+                  class="auto-close stretch flat label text-bold"
+                  style="font-size: 15px"
+                  label="Admin"
+                  auto-close
+                  flat
+                  stretch
+                >
+                  <q-list style="min-width: 27rem">
+                    <q-item
+                      clickable
+                      ripple
+                      to="/league-info"
+                    >
+                      <q-item-section>
+                        LEAGUE INFO
+                      </q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      ripple
+                      :to = '{ name: "GameSchedule" , params: { mode: "edit" } }'
+                    >
+                      <q-item-section>
+                        EDIT SCHEDULE
+                      </q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      ripple
+                      :to = '{ name: "Players" , params: { mode: "edit" } }'
+                    >
+                      <q-item-section>
+                        EDIT PLAYERS
+                      </q-item-section>
+                    </q-item>
+                    <q-item
+                      clickable
+                      ripple
+                      to="/edit-announcements"
+                    >
+                      <q-item-section>
+                        EDIT ANNOUNCEMENTS
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-btn-dropdown>
+              </template>
+            </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
 
         <q-btn
           v-if="loggedIn"
@@ -258,11 +273,6 @@ export default {
         {
           label: 'Announcements',
           value: 'Announcements'
-        },
-        {
-          label: '',
-          icon: 'help',
-          value: 'Help'
         }
       ]
     }
@@ -375,6 +385,12 @@ export default {
           display: inline-block;
         }
       }
+      .desktop-menu {
+        display: flex;
+      }
+      .mobile-menu {
+        display: none;
+      }
     }
   }
 
@@ -399,12 +415,5 @@ export default {
       display: flex;
     }
   }
-  @media screen and (min-width: 1291px) {
-    .desktop-menu {
-      display: flex;
-    }
-    .mobile-menu {
-      display: none;
-    }
-  }
+
 </style>

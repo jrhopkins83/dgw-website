@@ -11,6 +11,7 @@ import weeklyResults from './store-weekly-results'
 import tourneyResults from './store-tourney-results'
 import standings from './store-season-standings'
 import players from './store-players'
+import messages from './store-messages'
 import { vuexfireMutations } from 'vuexfire'
 
 /*
@@ -29,6 +30,7 @@ const initialState = {
   weeklyResults: weeklyResults.state,
   tourneyResults: tourneyResults.state,
   standings: standings.state,
+  messages: messages.state,
   players: players.players,
   subscribers: players.subscribers
 }
@@ -42,7 +44,8 @@ const Store = new Vuex.Store({
     tourneyResults,
     weeklyResults,
     standings,
-    players
+    players,
+    messages
   },
   mutations: {
     ...vuexfireMutations,

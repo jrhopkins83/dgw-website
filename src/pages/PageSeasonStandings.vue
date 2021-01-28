@@ -87,7 +87,6 @@ export default {
     color: black;
     height: 100vh;
     width: 100%;
-    display: flex;
     align-items: center;
     justify-content: center;
     display: grid;

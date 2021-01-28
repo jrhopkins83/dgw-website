@@ -68,6 +68,14 @@ const routes = [{
       },
       component: () => import('pages/PageHelp.vue')
     }, {
+      path: 'chat',
+      name: 'Chat',
+      props: true,
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('pages/PageChat.vue')
+    }, {
       path: 'user-profile',
       name: 'UserProfile',
       props: true,

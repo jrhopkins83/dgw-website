@@ -97,7 +97,7 @@ import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 export default {
   components: {
     player: require('src/components/Admin/Results/ResultsPlayer.vue').default,
-    noPlayers: require('components/Shared/NoPlayers.vue').default,
+    noPlayers: require('components/Shared/NoRecords.vue').default,
     addPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default
   },
   mixins: [mixinAddEditPlayer],

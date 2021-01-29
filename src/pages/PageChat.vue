@@ -87,7 +87,7 @@ export default {
       right: 0px;
       bottom: 0px;
       left: 0px;
-      background: transparent linear-gradient(307deg, #060607 0%, #4c11b9 43%, #1E1F20 100%) 0% 0% no-repeat padding-box;;
+      background: transparent linear-gradient(307deg, #060607 0%, #acaaaf 43%, #1E1F20 100%) 0% 0% no-repeat padding-box;;
       background-repeat: no-repeat;
       // background-size: 60% 100%;
     }
@@ -112,7 +112,7 @@ export default {
         right: 0px;
         bottom: 0px;
         left: 0px;
-        background-image: url(blue-quad-aces.jpg);
+        background-image: url(poker-dark-background.png);
         background-size: 100% 100%;
         background-repeat: no-repeat;
 

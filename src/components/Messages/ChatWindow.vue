@@ -28,34 +28,30 @@
       <q-separator />
 
       <q-card-section horizontal>
-        <q-form
-          @submit="sendMessage"
-          class="q-gutter-md"
-        >
+        <q-form @submit.prevent="sendMessage">
           <q-input
+            class="message-text"
             v-model="message.text"
             label="Message"
             bottom-slots
-            class="message-text"
+            clearable
+            clear-icon="close"
+            maxlength="300"
           >
-            <template v-slot:append>
-              <q-icon
-                v-if="message.text !== ''"
-                @click="message.text = ''"
-                class="cursor-pointer"
-                name="close"
-              />
-            </template>
-
             <template v-slot:after>
               <q-btn
                 :disable="emptyText"
+                :loading="submitting"
                 type="submit"
                 color="grey-9"
                 label="Send"
                 no-caps
                 @click="sendMessage"
-              />
+              >
+                <template v-slot:loading>
+                  <q-spinner-facebook />
+                </template>
+              </q-btn>
             </template>
           </q-input>
         </q-form>
@@ -79,6 +75,7 @@ export default {
   data () {
     return {
       noMessages: 'No messages have been posted yet',
+      submitting: false,
       message: {
         text: '',
         uid: this.userInfo.uid,

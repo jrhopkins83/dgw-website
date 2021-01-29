@@ -145,7 +145,7 @@ export default {
     /* The maximum column width, that can wrap */
       .item-container {
           display: grid;
-          grid-template-columns: 12rem 1fr;
+          grid-template-columns: 14rem 1fr;
       }
 
       .attribute-container {

@@ -10,7 +10,7 @@ firestoreOptions.wait = true
 const initialState = () => {
   return {
     gameDates: [],
-    lastCompletedDate: null,
+    lastCompletedGame: null,
     gamesLoaded: false,
     gameFilter: ''
   }
@@ -29,7 +29,7 @@ const mutations = {
     Object.assign(state.gameDates, games)
   },
   SET_LAST_COMPLETED_DATE (state, value) {
-    state.lastCompletedDate = value
+    state.lastCompletedGame = value
   },
   SET_GAME_FILTER (state, value) {
     state.gameFilter = value
@@ -54,15 +54,9 @@ const actions = {
       .orderBy('gameDate', 'desc')
       .where('complete', '==', true)
       .limit(1)
-    const dateSnap = await datesRef.get()
-    let dateDoc = null
-    if (!dateSnap.empty) {
-      dateSnap.forEach(doc => {
-        dateDoc = doc.data()
-      })
-      commit('SET_LAST_COMPLETED_DATE', dateDoc.gameDate)
-      commit('SET_GAMES_LOADED', true)
-    }
+
+    await dispatch('bindLastComplDate', datesRef)
+    commit('SET_GAMES_LOADED', true)
     return true
   },
   bindLeagueDates: firestoreAction(async (context, ref) => {
@@ -70,6 +64,12 @@ const actions = {
   }),
   unbindLeagueDates: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('gameDates')
+  }),
+  bindLastComplDate: firestoreAction(async (context, ref) => {
+    return await context.bindFirestoreRef('lastCompletedGame', ref)
+  }),
+  unbindLastComplDate: firestoreAction((context, ref) => {
+    context.unbindFirestoreRef('lastCompletedGame')
   }),
   setLastCompletedDate ({ commit }, value) {
     commit('SET_LAST_COMPLETED_DATE', value)
@@ -94,7 +94,7 @@ const getters = {
     return state.gamesLoaded
   },
   lastCompletedDate: state => {
-    return state.lastCompletedDate
+    return state.lastCompletedGame[0].gameDate
   },
   gameDatesSorted: (state) => {
     const gameDatesSorted = {},

@@ -12,33 +12,87 @@
         <div class="player-section__title text-h3 text-bold">
           Donkey's Gone Wild Players
         </div>
-          <div class="player-section__search-bar" :class="isAdmin">
-            <search>
-            </search>
-          </div>
-          <div class="player-section__list" :class="isAdmin">
-            <player-list
-              :playerList="playerList"
-              :isAdmin="isAdmin"
-              :adminButtons="adminButtons"
-            >
-            </player-list>
-          </div>
-          </div>
+        <div class="player-section__search-bar" :class="isAdmin">
+          <search>
+          </search>
+        </div>
+        <div class="player-section__list" :class="isAdmin">
+          <player-list
+            :playerList="playerList"
+            :isAdmin="isAdmin"
+            :adminButtons="adminButtons"
+            @editPlayer="editPlayer"
+            @deletePlayer="confirmDelete"
+          >
+          </player-list>
+        </div>
+        <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
+          <q-btn
+            @click="addPlayer"
+            round
+            class="all-pointer-events"
+            color="grey-6"
+            size="20px"
+            icon="add"
+          />
+        </div>
+        <q-dialog
+          v-model="showEditPlayer"
+        >
+          <edit-player-details
+            :player="player"
+            :editMode="editMode"
+            @submit="submitForm"
+            @close="showEditPlayer=false"
+          />
+        </q-dialog>
+        <q-dialog
+          v-model="confirm"
+        >
+          <q-card style="width: 700px; max-width: 80vw;">
+            <q-card-section>
+              <div class="text-h3">
+                {{ dialogHeader}}
+              </div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+              {{ dialogMsg }}
+            </q-card-section>
+
+            <q-card-actions align="center">
+              <q-btn
+                @click="deletePlayer"
+                color="blue-10"
+                label="Confirm"
+              />
+              <q-btn
+                v-close-popup
+                color="negative"
+                label="Cancel"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </div>
     </transition>
   </q-page>
 </template>
 
 <script>
+import { firebaseStore } from 'src/boot/firebase'
 import { mapGetters, mapActions } from 'vuex'
 import { showMessage } from 'src/functions/functions-common'
+import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
   name: 'PagePlayers',
   components: {
     playerList: require('components/Players/PlayerList.vue').default,
+    editPlayerDetails: require('components/Players/Modals/ModalAddEditPlayer .vue').default,
     search: require('components/Players/Search.vue').default
   },
+  mixins: [mixinAddEditPlayer],
   props: {
     mode: {
       type: String,
@@ -47,7 +101,10 @@ export default {
   },
   data () {
     return {
-
+      showEditPlayer: false,
+      editMode: '',
+      id: '',
+      player: {}
     }
   },
   computed: {
@@ -84,6 +141,7 @@ export default {
   },
   methods: {
     ...mapActions('players', ['setPlayersLoaded', 'fbPlayers', 'setSearch']),
+    ...mapActions('players', ['setPlayersLoaded']),
     async loadPlayers () {
       try {
         await this.fbPlayers()
@@ -99,6 +157,67 @@ export default {
             showMessage('error', 'Error getting players: ' + error)
         }
         this.setResultsLoaded(true)
+      }
+    },
+    addPlayer () {
+      this.editMode = 'add'
+      this.showEditPlayer = true
+    },
+    editPlayer (value) {
+      this.player = value[0]
+      this.id = value[1]
+      this.editMode = value[2]
+      this.showEditPlayer = true
+    },
+    confirmDelete (value) {
+      this.player = value[0]
+      this.dialogHeader = 'Confirm Delete?'
+      this.dialogMsg = `Are you sure you want to delete ${this.player.firstName} ${this.player.lastName}?`
+      this.confirm = true
+    },
+    async deletePlayer (value) {
+      this.setPlayersLoaded(false)
+      this.$q.loading.show({
+        message: '<b>Player Deletion</b> is in progress.<br/><span class="text-info">Hang on...</span>'
+      })
+      try {
+        const playersRef = firebaseStore.collection('players')
+        await playersRef.doc(this.player.playerID).delete()
+        this.setPlayersLoaded(true)
+        this.player = {}
+        this.confirm = false
+        this.$q.loading.hide()
+      } catch (error) {
+        switch (error) {
+          case 'permission-denied':
+            showMessage('error', "You don't have access to add data.")
+            break
+          case 'not-found':
+            showMessage('error', 'Record not found in database')
+            break
+          default:
+            showMessage('error', 'Error deleting player: ' + error)
+        }
+      }
+    },
+    async submitForm (player) {
+      this.setPlayersLoaded(false)
+      this.$q.loading.show({
+        message: `<b>Player ${this.editMode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
+      })
+      try {
+        await this.savePlayer(player)
+        this.showEditPlayer = false
+        showMessage('Success', `Player ${this.editMode} complete`)
+        this.setPlayersLoaded(true)
+        this.id = ''
+        this.player = {}
+        this.$q.loading.hide()
+      } catch (error) {
+        showMessage('error', `Error adding player - ${error}`)
+        this.setPlayersLoaded(true)
+        this.$q.loading.hide()
+        this.id = ''
       }
     }
   },
@@ -184,7 +303,7 @@ export default {
     }
     .player-section__list.isAdmin {
       margin-left: 7rem;
-      max-width: 110rem;
+      max-width: 120rem;
     }
 
   }

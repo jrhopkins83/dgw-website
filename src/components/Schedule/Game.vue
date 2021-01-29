@@ -19,7 +19,7 @@
           Details
         </div>
       </div>
-      <div class="attribute-container game-buttons" v-if="adminButtons && !game.complete" >
+      <div class="attribute-container game-buttons" v-if="adminButtons" >
         <div class="attribute edit">
           <q-btn
             icon="edit"
@@ -50,6 +50,15 @@
             flat
             size="md"
             @click="$emit('enterResults', id)"
+          />
+        </div>
+        <div class="attribute complete" v-else>
+          <q-btn
+            disable
+            icon="flag"
+            flat
+            color="grey-1"
+            size="md"
           />
         </div>
       </div>

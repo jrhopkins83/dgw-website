@@ -63,7 +63,7 @@
           </ol>
         </template>
       </div>
-      <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
+      <div class="vertical-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
         <q-btn
           @click="addGame"
           round

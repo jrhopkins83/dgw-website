@@ -6,7 +6,7 @@
           <!-- The first list item is the header of the table -->
           <li class='item item-container heading-row q-pb-sm' :class="isAdmin">
             <div class='attribute-container avatar'>
-              <div class='attribute player-img'></div>
+              <div class='attribute player-img'>Photo</div>
             </div>
             <!-- Enclose semantically similar attributes as a div hierarchy -->
               <div class='attribute-container player-names q-pl-xs'>
@@ -31,76 +31,24 @@
             :isAdmin="isAdmin"
             :adminButtons="adminButtons"
             @editPlayer="editPlayer"
-            @confirmDelete="confirmDelete"
+            @deletePlayer="confirmDelete"
           >
           </player-row>
-          <div class="fixed-bottom text-center q-mb-lg no-pointer-events" v-if="adminButtons">
-            <q-btn
-              @click="addPlayer"
-              round
-              class="all-pointer-events"
-              color="grey-6"
-              size="20px"
-              icon="add"
-            />
-        </div>
         </ol>
       </div>
     </section>
-    <q-dialog
-      v-model="showEditPlayer"
-    >
-      <edit-player-details
-        :player="player"
-        :mode="mode"
-        @submit="submitForm"
-        @close="showEditPlayer=false"
-      />
-    </q-dialog>
-    <q-dialog
-      v-model="confirm"
-    >
-      <q-card style="width: 700px; max-width: 80vw;">
-        <q-card-section>
-          <div class="text-h3">
-            {{ dialogHeader}}
-          </div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          {{ dialogMsg }}
-        </q-card-section>
-
-        <q-card-actions align="center">
-          <q-btn
-            @click="deletePlayer"
-            color="blue-10"
-            label="Confirm"
-          />
-          <q-btn
-            v-close-popup
-            color="negative"
-            label="Cancel"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
 <script>
-import { firebaseStore } from 'src/boot/firebase'
-import { toTitleCase, showMessage } from 'src/functions/functions-common'
-import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
+import { toTitleCase } from 'src/functions/functions-common'
 import { mapActions } from 'vuex'
 
 export default {
   name: 'PlayerList',
   components: {
-    editPlayerDetails: require('components/Players/Modals/ModalAddEditPlayer .vue').default,
     playerRow: require('components/Players/Player.vue').default
   },
-  mixins: [mixinAddEditPlayer],
   props: [
     'playerList',
     'isAdmin',
@@ -113,64 +61,15 @@ export default {
   },
   methods: {
     ...mapActions('players', ['setPlayersLoaded']),
-    addPlayer () {
-      this.mode = 'add'
-      this.showEditPlayer = true
-    },
     editPlayer (value) {
       this.mode = 'edit'
       this.player = value[0]
       this.id = value[1]
-      this.showEditPlayer = true
+      this.$emit('editPlayer', [this.player, this.id, this.mode])
     },
     confirmDelete (value) {
       this.player = value[0]
-      this.dialogHeader = 'Confirm Delete?'
-      this.dialogMsg = `Are you sure you want to delete ${this.player.firstName} ${this.player.lastName}?`
-      this.confirm = true
-    },
-    async deletePlayer (value) {
-      this.setPlayersLoaded(false)
-      this.$q.loading.show({
-        message: '<b>Player Deletion</b> is in progress.<br/><span class="text-info">Hang on...</span>'
-      })
-      try {
-        const playersRef = firebaseStore.collection('players')
-        await playersRef.doc(this.player.playerID).delete()
-        this.setPlayersLoaded(true)
-        this.player = {}
-        this.showViewPlayer = false
-        this.$q.loading.hide()
-      } catch (error) {
-        switch (error) {
-          case 'permission-denied':
-            showMessage('error', "You don't have access to add data.")
-            break
-          case 'not-found':
-            showMessage('error', 'Record not found in database')
-            break
-          default:
-            showMessage('error', 'Error deleting player: ' + error)
-        }
-      }
-    },
-    async submitForm (player) {
-      this.setPlayersLoaded(false)
-      this.$q.loading.show({
-        message: `<b>Player ${this.mode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
-      })
-      try {
-        await this.savePlayer(player)
-        showMessage('Success', `Player ${this.mode} complete`)
-        this.setPlayersLoaded(true)
-        this.$q.loading.hide()
-        this.id = ''
-      } catch (error) {
-        showMessage('error', `Error adding player - ${error}`)
-        this.setPlayersLoaded(true)
-        this.$q.loading.hide()
-        this.id = ''
-      }
+      this.$emit('deletePlayer', [this.player])
     }
   }
 }
@@ -194,7 +93,7 @@ export default {
       grid-template-columns: 1fr;
 
       &--table {
-        margin: 0 1.6rem 1.6rem 1.6rem;
+        margin: 0;
         position: relative;
         max-width: 120rem;
         padding: 0px;
@@ -212,8 +111,8 @@ export default {
         /* Definition of wrapping column width for attribute groups. */
         .item-container.isAdmin {
           display: grid;
-          grid-template-columns: 5em 2.5fr 2fr 9rem;
-          grid-gap: 4px;
+          grid-template-columns: 5em 2.5fr 2fr 8rem;
+          grid-column-gap: 4px;
         }
 
         .item-container.isNotAdmin {
@@ -227,17 +126,16 @@ export default {
           top: 0;
           z-index: 1;
           // opacity: 1;
-          min-height: 5rem;
           background-color: #000;
           margin-left: 4px;
           margin-right: 4px;
+          height: auto;
           align-items:flex-end;
           justify-content: center;
           text-overflow: initial;
           overflow: auto;
           white-space: normal;
           font-weight: bold;
-          margin-bottom: .8rem;
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
           display: grid;
@@ -246,20 +144,28 @@ export default {
           .attribute-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(var(--column-width-min), 1fr));
+            padding: 1rem .5rem 1rem .5rem;
 
             .attribute {
               display: flex;
               align-self: end;
             }
+            .attribute.phone {
+              justify-self: center;
+            }
+          }
+          .avatar {
+            color: black;
           }
           .player-names {
-            --column-width-min: 7.2em;
+            --column-width-min: 7.1em;
           }
           .contact-info {
             --column-width-min: 5.2em;
           }
           .admin-buttons {
             --column-width-min: 2em;
+            justify-self: center;
           }
         }
       }
@@ -283,15 +189,16 @@ export default {
   }
 }
 
-@media screen and (max-width: 377px) {
+@media screen and (max-width: 383px) {
   .players-section {
     &__title {
       font-size: 54px;
     }
-    &__players--table {
-      .heading-row {
-        height: 10rem;
-      }
+    .heading-row {
+      height: 7rem;
+    }
+    .player-names {
+      --column-width-min: 9rem !important;
     }
   }
 }

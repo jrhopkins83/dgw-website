@@ -18,7 +18,7 @@
       </div>
       <div class='attribute-container contact-info q-pl-xs' v-if="adminButtons">
         <div class='attribute email'>{{ player.email}}</div>
-        <div class='attribute games gt-xs'>{{ player.phoneNumber }}</div>
+        <div class='attribute phone gt-xs'>{{ player.phoneNumber }}</div>
       </div>
       <div class="attribute-container admin-buttons" v-if="adminButtons" >
         <div class="attribute edit">
@@ -34,7 +34,7 @@
             icon="delete"
             flat
             size="md"
-            @click="$emit('confirmDelete', [player, id])"
+            @click="$emit('deletePlayer', [player, id])"
           />
         </div>
       </div>
@@ -101,7 +101,7 @@ export default {
 
         .item-container.isAdmin {
           display: grid;
-          grid-template-columns: 5em 2.5fr 2fr 9rem;
+          grid-template-columns: 5em 2.5fr 2fr 8rem;
           grid-gap: 4px;
         }
 
@@ -130,6 +130,9 @@ export default {
                 font-size: 64px;
               }
             }
+            .attribute.phone {
+              justify-self: center;
+            }
           }
 
           /* Definition of wrapping column width for attribute groups. */
@@ -142,7 +145,7 @@ export default {
           }
 
           .attribute-container.admin-buttons {
-            --column-width-min: 2em;
+            grid-template-columns: repeat(2, 1fr);
             justify-self: center;
           }
 
@@ -165,4 +168,9 @@ export default {
   }
 }
 
+@media screen and (max-width: 383px) {
+  .player-names {
+    --column-width-min: 9rem !important;
+  }
+}
 </style>

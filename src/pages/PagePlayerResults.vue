@@ -137,6 +137,10 @@ html, body, .grid-container { height: 100%; margin: 0; }
     align-self: center;
   }
 
+  .player-results {
+    max-width: 70rem;
+  }
+
 }
 
   @media screen and (max-width: 712px) {

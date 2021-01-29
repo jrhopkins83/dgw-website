@@ -171,7 +171,7 @@ export default {
     &__players {
       // background-color:$off-white;
       height: 74vh;
-      max-width: 64rem;
+      max-width: 70rem;
       overflow: hidden;
       border-radius: 2.5rem;
       opacity: 1;
@@ -179,7 +179,7 @@ export default {
       .player-table {
         margin: 0 1.6rem 1.6rem 1.6rem;
         position: relative;
-        max-width: 64rem;
+        max-width: 70rem;
         max-height: 40rem;
         overflow: auto;
 

@@ -194,7 +194,7 @@ export default {
       overflow: hidden;
       display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: 2.5rem 1fr;
+      grid-template-rows: 4rem 1fr;
 
       &--heading {
         position: relative;

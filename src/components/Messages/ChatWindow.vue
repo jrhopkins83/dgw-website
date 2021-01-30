@@ -4,6 +4,15 @@
       <q-scroll-area
         ref="chatScroll"
       >
+        <div class="show-message-button text-center no-pointer-events" v-if="showNewMessageButton">
+          <q-btn
+            @click="scrollToBottom"
+            class="all-pointer-events"
+            color="blue"
+            no-caps
+            label="New Messages"
+          />
+        </div>
         <template v-if="!Object.keys(messages).length">
           <div class="no-message">
             <no-messages
@@ -80,6 +89,19 @@ export default {
         playerName: `${this.userInfo.firstName} ${this.userInfo.lastName}`,
         avatarUrl: this.userInfo.avatar.avatarUrl,
         timeStamp: null
+      },
+      showNewMessageButton: false
+    }
+  },
+  watch: {
+    messageCount: function () {
+      // Check if scroll position at bottom of the scroll area
+      // If not and the show new message button is not already visible, make it visible
+      if (this.scrollProperties.scrollPosition !== this.scrollProperties.scrollHeight - this.scrollProperties.offsetHeight &&
+        !this.showNewMessageButton) {
+        this.showNewMessageButton = true
+      } else {
+        this.scroll()
       }
     }
   },
@@ -90,15 +112,30 @@ export default {
       } else {
         return true
       }
+    },
+    scrollProperties () {
+      const scrollArea = this.$refs.chatScroll
+      const scrollTarget = scrollArea.getScrollTarget()
+      return {
+        scrollHeight: scrollTarget.scrollHeight,
+        offsetHeight: scrollTarget.offsetHeight,
+        scrollPosition: scrollArea.getScrollPosition()
+      }
+    },
+    messageCount () {
+      return this.messages.length
     }
   },
   methods: {
     ...mapActions('messages', ['addMessage']),
     scroll () {
       const scrollArea = this.$refs.chatScroll
-      const scrollTarget = scrollArea.getScrollTarget()
       const duration = 350
-      scrollArea.setScrollPosition(scrollTarget.scrollHeight, duration)
+      scrollArea.setScrollPosition(this.scrollProperties.scrollHeight, duration)
+    },
+    scrollToBottom () {
+      this.scroll()
+      this.showNewMessageButton = false
     },
     async sendMessage () {
       try {
@@ -133,11 +170,15 @@ export default {
     align-content: center;
 
     .chat-list-card {
+      position: relative;
       height: 96%;
       width: 100%;
       top: 1.6rem;
       left: 1.6rem;
 
+      .show-message-button {
+        font-weight: bold;
+      }
       .no-message {
         margin-top: 10rem;
       }

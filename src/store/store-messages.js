@@ -35,7 +35,10 @@ const actions = {
   },
   async fbMessages ({ commit, dispatch, state, rootState }) {
     try {
-      const msgLimit = rootState.leagueSettings.leagueInfo.messageLimit
+      let msgLimit = rootState.leagueSettings.leagueInfo.messageLimit
+      if (!msgLimit) {
+        msgLimit = 20 // Use 20 as default
+      }
       const messagesRef = firebaseStore.collection('messages')
         .orderBy('timestamp')
         .limit(msgLimit)

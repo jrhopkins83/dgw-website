@@ -87,7 +87,7 @@ export default {
       right: 0px;
       bottom: 0px;
       left: 0px;
-      background: transparent linear-gradient(307deg, #060607 0%, #acaaaf 43%, #1E1F20 100%) 0% 0% no-repeat padding-box;;
+      background: transparent linear-gradient(110deg, #504F4B 0%, #3B3A37 47%, #10100F 100%) 0% 0% no-repeat padding-box;
       background-repeat: no-repeat;
       // background-size: 60% 100%;
     }

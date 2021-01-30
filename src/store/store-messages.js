@@ -42,7 +42,7 @@ const actions = {
       await dispatch('bindMessagesRef', messagesRef)
       return commit('SET_MESSAGES_LOADED', true)
     } catch (error) {
-      return showMessage('error', 'Error getting document:', error)
+      return showMessage('error', 'Error getting messages document:', error.message)
     }
   },
   bindMessagesRef: firestoreAction((context, ref) => {

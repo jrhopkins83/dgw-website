@@ -2,9 +2,7 @@
   <div class="message-container">
     <q-card class="chat-list-card" flat bordered>
       <q-scroll-area
-        ref="first"
-        :delay="350"
-        @scroll="onScrollFirst"
+        ref="chatScroll"
       >
         <template v-if="!Object.keys(messages).length">
           <div class="no-message">
@@ -96,13 +94,11 @@ export default {
   },
   methods: {
     ...mapActions('messages', ['addMessage']),
-    scroll (source, position) {
-      this.$refs[source].setScrollPosition(position)
-    },
-    onScrollFirst ({ verticalPosition }) {
-      this.position = verticalPosition + 200
-      this.scroll('first', verticalPosition + 150)
-      console.log(this.position)
+    scroll () {
+      const scrollArea = this.$refs.chatScroll
+      const scrollTarget = scrollArea.getScrollTarget()
+      const duration = 350
+      scrollArea.setScrollPosition(scrollTarget.scrollHeight, duration)
     },
     async sendMessage () {
       try {
@@ -116,10 +112,14 @@ export default {
         }
         await messagesRef.add(newMessage)
         this.message.text = ''
+        this.scroll()
       } catch (error) {
         showMessage('Error', `Error saving new message to Firebase Database: ${error.message}`)
       }
     }
+  },
+  mounted () {
+    this.scroll()
   }
 }
 </script>

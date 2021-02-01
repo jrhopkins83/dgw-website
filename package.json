@@ -22,6 +22,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "cropperjs": "^1.5.9",
+    "emoji-mart-vue": "^2.6.6",
     "firebase": "^7.24.0",
     "pica": "^6.1.1",
     "quasar": "^1.0.0",

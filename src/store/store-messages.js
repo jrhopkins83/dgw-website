@@ -67,7 +67,28 @@ const getters = {
     return state.messages
   },
   messagesSorted: (state, getters) => {
-    return getters.messages.reverse()
+    const messagesSorted = [],
+      keysOrdered = Object.keys(getters.messages)
+
+    keysOrdered.sort((a, b) => {
+      if (getters.messages[a].timestamp) {
+        const playerAProp = getters.messages[a].timestamp
+        const playerBProp = getters.messages[b].timestamp
+
+        if (playerAProp < playerBProp) {
+          return 1
+        } else if (playerAProp > playerBProp) {
+          return -1
+        } else {
+          return 0
+        }
+      }
+    })
+
+    keysOrdered.forEach((key) => {
+      messagesSorted.push(getters.messages[key])
+    })
+    return messagesSorted.reverse()
   },
   messagesLoaded: state => {
     return state.messagesLoaded

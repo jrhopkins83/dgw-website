@@ -40,7 +40,7 @@ const actions = {
         msgLimit = 20 // Use 20 as default
       }
       const messagesRef = firebaseStore.collection('messages')
-        .orderBy('timestamp')
+        .orderBy('timestamp', 'desc')
         .limit(msgLimit)
       await dispatch('bindMessagesRef', messagesRef)
       return commit('SET_MESSAGES_LOADED', true)
@@ -65,6 +65,9 @@ const actions = {
 const getters = {
   messages: state => {
     return state.messages
+  },
+  messagesSorted: (state, getters) => {
+    return getters.messages.reverse()
   },
   messagesLoaded: state => {
     return state.messagesLoaded

@@ -10,7 +10,7 @@
         <div class="left-column">
           <div class="chat-window">
             <messages
-              :messages="messages"
+              :messages="messagesSorted"
               :userInfo="userInfo"
             >
             </messages>
@@ -40,7 +40,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('messages', ['messages', 'messagesLoaded']),
+    ...mapGetters('messages', ['messagesSorted', 'messagesLoaded']),
     ...mapGetters('leagueSettings', ['userInfo']),
     player_avatar: function () {
       if (this.playerNames.avatar.avatarUrl) {

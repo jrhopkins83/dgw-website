@@ -61,6 +61,7 @@ firebase.firestore().enablePersistence()
   })
 
 export {
+  firebase,
   firebaseAuth,
   firebaseFunctions,
   firebaseStore,

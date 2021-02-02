@@ -15,7 +15,9 @@
     "emulators2": "firebase emulators:start --import=dir/base2",
     "emulators3": "firebase emulators:start --import=dir/base3",
     "emulators4": "firebase emulators:start --import=dir/base4",
-    "test": "jest ./spec --detectOpenHandles"
+    "test": "jest ./spec --detectOpenHandles",
+    "deploy-test": "quasar build && firebase deploy -P staging",
+    "deploy-prod": "quasar build && firebase deploy -P prod"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -45,7 +47,8 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.1.2",
     "jest": "^26.6.3",
-    "prettier": "^2.1.2"
+    "prettier": "^2.1.2",
+    "workbox-webpack-plugin": "^5.1.4"
   },
   "browserslist": [
     "last 10 Chrome versions",

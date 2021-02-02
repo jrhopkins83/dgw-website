@@ -133,7 +133,7 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'dgw-website',
+        name: 'Donkey\'s Gone Wild Website',
         short_name: 'dgw-website',
         description: 'Donkey\'s Gone Wild poker league website',
         display: 'standalone',

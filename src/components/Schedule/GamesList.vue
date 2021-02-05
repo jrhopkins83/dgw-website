@@ -260,7 +260,7 @@ export default {
           buyIn: buyIn,
           rebuy: rebuy,
           addOn: addOn,
-          seasonTourney: game.seasonTourney,
+          seasonTournament: game.seasonTournament,
           location: game.location,
           notes: game.notes
         }

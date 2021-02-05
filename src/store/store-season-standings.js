@@ -157,8 +157,15 @@ const getters = {
             }
           }
 
+          if (newPlayer.games > 0) {
+            newPlayer.pts_game = Number.parseFloat(newPlayer.totalPoints / newPlayer.games).toFixed(2)
+          } else {
+            newPlayer.pts_game = 0
+          }
           rankedPlayers.push(newPlayer)
+          console.log('# ranked players ', rankedPlayers.length)
         }
+        console.log('Ranked players: ', JSON.stringify(rankedPlayers))
         return rankedPlayers
       } catch (error) {
         console.log('Error ranking players: ', error)
@@ -179,11 +186,6 @@ const getters = {
 
         if (playerNameLowerCase.includes(searchLowerCase)) {
           player.fullName = fullName
-          if (player.games > 0) {
-            player.pts_game = Number.parseFloat(player.totalPoints / player.games).toFixed(2)
-          } else {
-            return 0
-          }
           standingsFiltered.push(player)
         }
       })

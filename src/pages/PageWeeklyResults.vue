@@ -64,7 +64,6 @@ export default {
     ...mapGetters('games', ['completedGames', 'gamesLoaded', 'gameDates']),
     ...mapGetters('weeklyResults', ['search', 'weeklyResultsLoaded', 'resultsFiltered']),
     ...mapGetters('players', ['playersLoaded', 'playersFiltered']),
-    ...mapGetters('tournamentResults', ['tournamentInfo']),
     completedGamesArr: function () {
       return Object.values(this.completedGames)
     },
@@ -74,7 +73,6 @@ export default {
   },
   methods: {
     ...mapActions('weeklyResults', ['fbWeeklyResults', 'setResultsLoaded', 'setSearch']),
-    ...mapActions('tournamentResults', ['fbTournamentInfo']),
     updateGameDate (date) {
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'

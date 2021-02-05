@@ -163,9 +163,7 @@ const getters = {
             newPlayer.pts_game = 0
           }
           rankedPlayers.push(newPlayer)
-          console.log('# ranked players ', rankedPlayers.length)
         }
-        console.log('Ranked players: ', JSON.stringify(rankedPlayers))
         return rankedPlayers
       } catch (error) {
         console.log('Error ranking players: ', error)

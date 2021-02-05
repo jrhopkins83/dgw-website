@@ -13,6 +13,7 @@ sgMail.setApiKey(API_KEY)
 // console.log('TEMPLATE_ID: ', TEMPLATE_ID)
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
+console.log('process.envFIREBASE_CONFIG', process.env.FIREBASE_CONFIG)
 // Admin functions
 exports.setAdminClaim = functions.https.onCall((data, context) => {
   // get user and add admin custom claim
@@ -193,3 +194,66 @@ function createSeasonScore (event, playerID, totals) {
   // }
 }
 
+// Sends a notification to all users when game results have been updated.
+exports.sendNotifications = functions.firestore
+  .document('gameDates/{gameId}')
+  .onUpdate(async (change, context) => {
+    const previousValue = change.before.data()
+    const newValue = change.after.data()
+
+    const oldComplete = previousValue.complete
+    const newComplete = newValue.complete
+    const gameDate = newValue.gameDate.toDate()
+    const txtGameDate = gameDate.toLocaleDateString()
+
+    // If game is MTT and complete now true but previously false, send notification to all users
+    if (newValue.type === 'MTT' && newComplete && !oldComplete) {
+      // Notification details.
+      const url = (adminConfig.projectId === 'fir-authdemo-5cd82') ? 'https://donkeysgonewild.fun/#/weekly-results' : 'https://donkeysgonewild.com/#/weekly-results'
+      const payload = {
+        notification: {
+          title: `DGW Game Results Updated`,
+          body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
+          icon: '/icons/icon-192x192.png',
+          data: `{"action": "openUrl", "url": "${url}"}`
+        }
+      }
+
+      // Get the list of device tokens.
+      const allTokens = await admin.firestore().collection('fcmTokens').get()
+      const tokens = []
+      allTokens.forEach((tokenDoc) => {
+        tokens.push(tokenDoc.id)
+      })
+
+      if (tokens.length > 0) {
+        // Send notifications to all tokens.
+        try {
+          const response = await admin.messaging().sendToDevice(tokens, payload)
+          await cleanupTokens(response, tokens)
+          console.log('Notifications have been sent and tokens cleaned up.')
+        } catch (error) {
+          console.error('error sending message: ', error)
+        }
+      }
+    }
+  })
+
+// Cleans up the tokens that are no longer valid.
+function cleanupTokens (response, tokens) {
+  // For each notification we check if there was an error.
+  const tokensDelete = []
+  response.results.forEach((result, index) => {
+    const error = result.error
+    if (error) {
+      console.error('Failure sending notification to', tokens[index], error)
+      // Cleanup the tokens who are not registered anymore.
+      if (error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered') {
+        const deleteTask = admin.firestore().collection('fcmTokens').doc(tokens[index]).delete()
+        tokensDelete.push(deleteTask)
+      }
+    }
+  })
+  return Promise.all(tokensDelete)
+}

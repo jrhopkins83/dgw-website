@@ -6,6 +6,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = function (/* ctx */) {
   return {
@@ -63,6 +64,12 @@ module.exports = function (/* ctx */) {
 
       // https://quasar.dev/quasar-cli/handling-webpack
       extendWebpack (cfg) {
+        // Copy the firebase service worker file
+        cfg.plugins.push(new CopyWebpackPlugin({
+          patterns: [
+            { from: 'src/fcm-sw/', to: '' }
+          ]
+        }))
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -120,7 +127,9 @@ module.exports = function (/* ctx */) {
       'fadeIn',
       'fadeInLeft',
       'fadeOut',
-      'fadeOutRight'
+      'fadeOutRight',
+      'slideInUp',
+      'slideOutDown'
     ],
 
     // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
@@ -130,15 +139,15 @@ module.exports = function (/* ctx */) {
 
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+      workboxPluginMode: 'InjectManifest', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'dgw-website',
+        name: 'Donkey\'s Gone Wild Website',
         short_name: 'dgw-website',
         description: 'Donkey\'s Gone Wild poker league website',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
+        background_color: '#ac4745',
         theme_color: '#027be3',
         icons: [
           {

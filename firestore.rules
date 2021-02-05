@@ -79,5 +79,11 @@ service cloud.firestore {
       allow read, write: if request.auth.uid != null;
     }
 
+    // fcmTokens:
+    //   - TO-DO: Update so that only user owners and admins can read/write tokens
+    match /fcmTokens/{tokenId} {
+      allow read, write: if request.auth.uid != null;
+    }
+
   }
 }

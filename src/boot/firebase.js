@@ -1,5 +1,5 @@
 import firebase from 'firebase/app'
-
+import '@firebase/messaging'
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
@@ -22,6 +22,7 @@ const firebaseStore = firebaseApp.firestore()
 const Timestamp = firebase.firestore.Timestamp
 const Fieldvalue = firebase.firestore.Fieldvalue
 const storage = firebase.storage()
+const messaging = firebase.messaging()
 
 // Initialize Firebase Performance Monitoring.
 // firebase.performance()
@@ -66,5 +67,6 @@ export {
   firebaseStore,
   Timestamp,
   Fieldvalue,
-  storage
+  storage,
+  messaging
 }

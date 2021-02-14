@@ -13,7 +13,6 @@ sgMail.setApiKey(API_KEY)
 // console.log('TEMPLATE_ID: ', TEMPLATE_ID)
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
-console.log('process.envFIREBASE_CONFIG', process.env.FIREBASE_CONFIG)
 // Admin functions
 exports.setAdminClaim = functions.https.onCall((data, context) => {
   // get user and add admin custom claim
@@ -209,7 +208,7 @@ exports.sendNotifications = functions.firestore
     // If game is MTT and complete now true but previously false, send notification to all users
     if (newValue.type === 'MTT' && newComplete && !oldComplete) {
       // Notification details.
-      const url = (adminConfig.projectId === 'fir-authdemo-5cd82') ? 'https://donkeysgonewild.fun/#/weekly-results' : 'https://donkeysgonewild.com/#/weekly-results'
+      const url = '/weekly-results'
       const payload = {
         notification: {
           title: `DGW Game Results Updated`,

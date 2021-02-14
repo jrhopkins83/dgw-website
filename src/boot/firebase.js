@@ -22,7 +22,11 @@ const firebaseStore = firebaseApp.firestore()
 const Timestamp = firebase.firestore.Timestamp
 const Fieldvalue = firebase.firestore.Fieldvalue
 const storage = firebase.storage()
-const messaging = firebase.messaging()
+
+let messaging = null
+if ('PushManager' in window) {
+  messaging = firebase.messaging()
+}
 
 // Initialize Firebase Performance Monitoring.
 // firebase.performance()
@@ -52,7 +56,7 @@ firebaseStore.settings({
   ignoreUndefinedProperties: true
 })
 
-firebase.firestore().enablePersistence()
+firebase.firestore().enablePersistence({ synchronizeTabs: true })
   .catch(function (error) {
     if (error.code === 'failed-precondition') {
       console.log('persistence failed-precondition')

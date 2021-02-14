@@ -9,10 +9,11 @@ register(process.env.SERVICE_WORKER_FILE, {
   // to ServiceWorkerContainer.register()
   // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Parameter
 
-  // registrationOptions: { scope: './' },
+  registrationOptions: { scope: './' },
 
-  ready (/* registration */) {
-    // console.log('Service worker is active.')
+  ready (registration) {
+    console.log('process env SW: ', process.env.SERVICE_WORKER_FILE)
+    console.log('Service worker is active.')
   },
 
   registered (/* registration */) {

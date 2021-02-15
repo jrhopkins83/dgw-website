@@ -1,5 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+let webPush = require('web-push')
 
 admin.initializeApp()
 
@@ -11,6 +12,16 @@ const API_KEY = 'SG.36P8QeRURHO3n9va-pSfhw.u8M8tj6kLp8vEQ4GoGZW1g9DHnp-GroDO2vX7
 sgMail.setApiKey(API_KEY)
 // console.log('API_KEY: ', API_KEY)
 // console.log('TEMPLATE_ID: ', TEMPLATE_ID)
+
+/*
+  config - webPush
+*/
+
+webPush.setVapidDetails(
+  'mailto:test@test.com',
+  'BD9d2d8NNm30iU4hzsKBRhpBD27wJo93TRtHbeHWYNPO9QjfSmSP579aP7hPiZZB1vTpwsQ6EsZ6Gkzh8YLlzk0', // public key
+  'c3dii9ZWil5tWJg1HUBsVh7-BJ87Fh1G3j1ciADI49k' // private key
+)
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
 // Admin functions
@@ -193,3 +204,96 @@ function createSeasonScore (event, playerID, totals) {
   // }
 }
 
+// Sends a notification to all users when game results have been updated.
+exports.sendNotifications = functions.firestore
+  .document('gameDates/{gameId}')
+  .onUpdate(async (change, context) => {
+    const previousValue = change.before.data()
+    const newValue = change.after.data()
+
+    const oldComplete = previousValue.complete
+    const newComplete = newValue.complete
+    const gameDate = newValue.gameDate.toDate()
+    const txtGameDate = gameDate.toLocaleDateString()
+
+    // If game is MTT and complete now true but previously false, send notification to all users
+    if (newValue.type === 'MTT' && newComplete && !oldComplete) {
+      // Notification details.
+      const url = '/weekly-results'
+      // Get the list of device subscriptions (FCM tokens if using Firebase)
+      const subscribers = await admin.firestore().collection('subscribers').get()
+      const pushSubscriptions = []
+      let messagingType = ''
+      subscribers.forEach((subscriptionDoc) => {
+        const subscription = subscriptionDoc.data()
+        if (subscription.fcmToken) {
+          pushSubscriptions.push(subscription.fcmToken) // if using Fireabase Cloud Messaging
+          messagingType = 'FCM'
+          const subscription = subscriptionDoc.data()
+        } else if (subscription.pushSubscription) {
+          pushSubscriptions.push(subscription.pushSubscription)
+        }
+      })
+
+      if (pushSubscriptions.length > 0) {
+        // Send notifications to all subscriptions.
+        let response = null
+        try {
+          if (messagingType === 'FCM') {
+            const pushContent = {
+              notification: {
+                title: `DGW Game Results Updated`,
+                body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
+                icon: '/icons/icon-192x192.png',
+                data: `{"action": "openUrl", "url": "${url}"}`
+              }
+            }
+
+            const response = await admin.messaging().sendToDevice(pushSubscriptions, payload)
+            await cleanupTokens(response, subscriptions)
+            console.log('Notifications have been sent and tokens cleaned up.')
+          } else {
+            pushSubscriptions.forEach(async subscription => {
+              const pushSubscription = {
+                endpoint: subscription.endpoint,
+                keys: {
+                  auth: subscription.keys.auth,
+                  p256dh: subscription.keys.p256dh
+                }
+              }
+              let pushContent = {
+                title: `DGW Game Results Updated`,
+                body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
+                action: 'openUrl',
+                openUrl: url
+              }
+              let pushContentStringified = JSON.stringify(pushContent)
+              response = await webPush.sendNotification(pushSubscription, pushContentStringified)
+              console.log('sendNotification response: ', response)
+            })
+          }
+        } catch (error) {
+          console.error('error sending message: ', error)
+        }
+      }
+    }
+  })
+
+// Cleans up the tokens that are no longer valid.
+function cleanupTokens (response, tokens) {
+  // For each notification we check if there was an error.
+  const tokensDelete = []
+  response.results.forEach((result, index) => {
+    const error = result.error
+    if (error) {
+      console.error('Failure sending notification to', tokens[index], error)
+      // Cleanup the tokens who are not registered anymore.
+      if (error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered') {
+        const deleteTask = admin.firestore().collection('fcmTokens').doc(tokens[index]).delete()
+        tokensDelete.push(deleteTask)
+      }
+    }
+  })
+  return Promise.all(tokensDelete)
+}

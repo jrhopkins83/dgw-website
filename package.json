@@ -7,10 +7,15 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
+    "deploy-test": "quasar build && firebase deploy -P staging",
+    "deploy-prod": "quasar build && firebase deploy -P prod",
     "devIOS": "quasar dev -m capacitor -T ios",
     "devAndroid": "quasar dev -m capacitor -T android",
     "buildIOS": "quasar build -m capacitor -T ios",
     "buildAndroud": "quasar build -m capacitor -T android",
+    "icons": "icongenie generate -i icon.png --skip-trim --theme-color ac4745",
+    "deploy-test-pwa": "quasar build -m pwa && firebase deploy -P staging",
+    "deploy-prod-pwa": "quasar build -m pwa && firebase deploy -P prod",
     "emulators1": "firebase emulators:start --import=dir/base1",
     "emulators2": "firebase emulators:start --import=dir/base2",
     "emulators3": "firebase emulators:start --import=dir/base3",
@@ -31,7 +36,8 @@
     "v-money": "^0.8.1",
     "vuedraggable": "^2.24.3",
     "vuelidate": "^0.7.6",
-    "vuexfire": "^3.2.4"
+    "vuexfire": "^3.2.4",
+    "web-push": "^3.4.4"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",

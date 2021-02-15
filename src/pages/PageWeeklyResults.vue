@@ -73,16 +73,15 @@ export default {
   },
   methods: {
     ...mapActions('weeklyResults', ['fbWeeklyResults', 'setResultsLoaded', 'setSearch']),
+    ...mapActions('tournamentResults', ['fbTournamentInfo']),
+    ...mapActions('games', ['fbGetGames']),
     updateGameDate (date) {
       this.pickDate = date
       const txtGameDate = date + ' 19:00:00'
       this.gameDate = Timestamp.fromDate(new Date(txtGameDate))
       this.fbWeeklyResults(this.gameDate)
-    }
-  },
-
-  async beforeMount () {
-    if (Object.keys(this.completedGames).length) {
+    },
+    async getResults () {
       if (this.completedGamesArr[0].gameDate) {
         this.gameDate = this.completedGamesArr[0].gameDate
         await this.fbWeeklyResults(this.gameDate)
@@ -90,6 +89,15 @@ export default {
           this.setResultsLoaded(true)
         }
       }
+    }
+  },
+
+  async mounted () {
+    if (Object.keys(this.completedGames).length) {
+      this.getResults()
+    } else {
+      await this.fbGetGames()
+      this.getResults()
     }
   },
   destroyed () {

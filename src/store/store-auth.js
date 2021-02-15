@@ -87,6 +87,7 @@ const actions = {
     firebaseAuth.signOut()
   },
   async handleAuthStateChange ({ commit, dispatch, state }) {
+    console.log('in handleAuthStateChange before onAuthStateChanged pathname = ', window.location.pathname)
     firebaseAuth.onAuthStateChanged(async user => {
       Loading.show()
       let success = false
@@ -103,8 +104,13 @@ const actions = {
               root: true
             })
             if (success) {
+              // We save the Firebase Messaging Device token and enable notifications.
               Loading.hide()
-              this.$router.push('/').catch(error => { })
+              let pathname = window.location.pathname
+              if (pathname === '/auth') {
+                pathname = '/'
+              }
+              this.$router.push({ path: pathname }).catch(error => { })
             } else {
               return false
             }

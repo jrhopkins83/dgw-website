@@ -92,8 +92,9 @@
 </template>
 
 <script>
-import { firebaseStore, messaging } from 'boot/firebase'
+import { firebaseStore } from 'boot/firebase'
 import { mapGetters } from 'vuex'
+// const qs = require('qs')
 
 export default {
   name: 'PageIndex',
@@ -142,33 +143,39 @@ export default {
     enableNotifications () {
       // First check if browser supports push notifications and if not, hide the banner
       if (this.pushNotificationsSupported) {
-        const vapidKey = 'BKZG37hWd5N3pHwNuORfurhTjuhaA3gg2T4sCvYa8Wrg7HnYcsRI_85m3Dzm7KiIEXFdvS6s46lN2brSRbgx2SY'
-        const that = this
-        // navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        //   .then(registration => {
-        //     messaging.useServiceWorker(registration)
+        // *** Firebase Cloud Messaging ***
 
-        //   })
-        messaging.getToken({ vapidKey: vapidKey }).then(function (currentToken) {
-          if (currentToken) {
-            // Saving the Device Token to the datastore.
-            firebaseStore.collection('fcmTokens').doc(currentToken)
-              .set({ uid: that.userInfo.uid })
-              .then(() => {
-                console.log('Token successfully written!')
-                that.neverShowNotificationsBanner()
-                // Call method to listen for notifications
-                that.receiveMessage()
-              })
-              .catch((error) => {
-                console.error('Error writing token: ', error)
-              })
-          } else {
-            // Need to request permissions to show notifications.
-            that.requestNotificationsPermissions()
+        // const that = this
+        // const vapidKey = 'BKZG37hWd5N3pHwNuORfurhTjuhaA3gg2T4sCvYa8Wrg7HnYcsRI_85m3Dzm7KiIEXFdvS6s46lN2brSRbgx2SY'
+        // messaging.getToken({ vapidKey: vapidKey }).then(function (currentToken) {
+        //   if (currentToken) {
+        //     // Save the Device Token to the datastore.
+        //     firebaseStore.collection('fcmTokens').doc(currentToken)
+        //       .set({ uid: that.userInfo.uid })
+        //       .then(() => {
+        //         console.log('Token successfully written!')
+        //         that.neverShowNotificationsBanner()
+        //         // Call method to listen for notifications
+        //         that.receiveMessage()
+        //       })
+        //       .catch((error) => {
+        //         console.error('Error writing token: ', error)
+        //       })
+        //   } else {
+        //     // Need to request permissions to show notifications.
+        //     that.requestNotificationsPermissions()
+        //   }
+        // }).catch(function (error) {
+        //   console.error('Unable to get messaging token.', error)
+        // })
+
+        // *** Webpush notifications
+        Notification.requestPermission(result => {
+          console.log('result: ', result)
+          this.neverShowNotificationsBanner()
+          if (result === 'granted') {
+            this.checkForExistingPushSubscription()
           }
-        }).catch(function (error) {
-          console.error('Unable to get messaging token.', error)
         })
       } else {
         this.neverShowNotificationsBanner()
@@ -186,26 +193,85 @@ export default {
       })
     },
 
-    receiveMessage () {
-      if (this.pushNotificationsSupported) {
-        messaging.onMessage((payload) => {
-          console.log('Message received. ', payload)
-          console.log('payload data: ', payload.data['gcm.notification.data'])
-          navigator.serviceWorker.getRegistration('/firebase-cloud-messaging-push-scope').then(registration => {
-            const options = {
-              badge: '/icons/icon-192x192.png',
-              body: payload.notification.body,
-              icon: '/icons/icon-192x192.png',
-              data: payload.data['gcm.notification.data']
-            }
-            registration.showNotification(
-              payload.notification.title,
-              options
-            )
-          })
+    // receiveMessage () {
+    //   if (this.pushNotificationsSupported) {
+    //     messaging.onMessage((payload) => {
+    //       console.log('Message received. ', payload)
+    //       console.log('payload data: ', payload.data['gcm.notification.data'])
+    //       navigator.serviceWorker.getRegistration('/firebase-cloud-messaging-push-scope').then(registration => {
+    //         const options = {
+    //           badge: '/icons/icon-192x192.png',
+    //           body: payload.notification.body,
+    //           icon: '/icons/icon-192x192.png',
+    //           data: payload.data['gcm.notification.data']
+    //         }
+    //         registration.showNotification(
+    //           payload.notification.title,
+    //           options
+    //         )
+    //       })
+    //     })
+    //     // [END messaging_receive_message]
+    //   }
+    // },
+    checkForExistingPushSubscription () {
+      if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
+        let reg
+        navigator.serviceWorker.ready.then(swreg => {
+          reg = swreg
+          return swreg.pushManager.getSubscription()
+        }).then(sub => {
+          if (!sub) {
+            this.createPushSubscription(reg)
+          }
         })
-        // [END messaging_receive_message]
       }
+    },
+    createPushSubscription (reg) {
+      const vapidPublicKey = 'BD9d2d8NNm30iU4hzsKBRhpBD27wJo93TRtHbeHWYNPO9QjfSmSP579aP7hPiZZB1vTpwsQ6EsZ6Gkzh8YLlzk0'
+      const vapidPublicKeyConverted = this.urlBase64ToUint8Array(vapidPublicKey)
+      reg.pushManager.subscribe({
+        applicationServerKey: vapidPublicKeyConverted,
+        userVisibleOnly: true
+      }).then(newSub => {
+        const newSubData = newSub.toJSON()
+        // const newSubDataQS = qs.stringify(newSubData)
+
+        console.log('newSubData:', newSubData)
+        // Save the Device Token to the datastore.
+        const pushSubscription = {
+          endpoint: newSubData.endpoint,
+          keys: {
+            auth: newSubData.keys.auth,
+            p256dh: newSubData.keys.p256dh
+          }
+        }
+        return firebaseStore.collection('subscribers').doc(this.userInfo.playerID)
+          .update({ pushSubscription: pushSubscription })
+          .then(() => {
+            console.log('Subscription successfully written!')
+            this.neverShowNotificationsBanner()
+          })
+          .catch((error) => {
+            console.error('Error writing Subscription: ', error)
+          })
+      }).catch(error => {
+        console.log('Error creating subscription: ', error)
+      })
+    },
+    urlBase64ToUint8Array (base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4)
+      const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/')
+
+      const rawData = window.atob(base64)
+      const outputArray = new Uint8Array(rawData.length)
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i)
+      }
+      return outputArray
     }
 
   },

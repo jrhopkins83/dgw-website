@@ -48,6 +48,7 @@ self.addEventListener('push', event => {
           badge: 'icons/icon-128x128.png',
           image: data.imageUrl,
           data: {
+            action: data.action,
             openUrl: data.openUrl
           }
         }
@@ -62,7 +63,7 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   const notification = event.notification
-  const action = event.action
+  const action = notification.data.action
 
   if (action === 'openUrl') {
     event.waitUntil(

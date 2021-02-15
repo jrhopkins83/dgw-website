@@ -1,5 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+let webPush = require('web-push')
 
 admin.initializeApp()
 
@@ -11,6 +12,16 @@ const API_KEY = 'SG.36P8QeRURHO3n9va-pSfhw.u8M8tj6kLp8vEQ4GoGZW1g9DHnp-GroDO2vX7
 sgMail.setApiKey(API_KEY)
 // console.log('API_KEY: ', API_KEY)
 // console.log('TEMPLATE_ID: ', TEMPLATE_ID)
+
+/*
+  config - webPush
+*/
+
+webPush.setVapidDetails(
+  'mailto:test@test.com',
+  'BD9d2d8NNm30iU4hzsKBRhpBD27wJo93TRtHbeHWYNPO9QjfSmSP579aP7hPiZZB1vTpwsQ6EsZ6Gkzh8YLlzk0', // public key
+  'c3dii9ZWil5tWJg1HUBsVh7-BJ87Fh1G3j1ciADI49k' // private key
+)
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)
 // Admin functions
@@ -209,28 +220,58 @@ exports.sendNotifications = functions.firestore
     if (newValue.type === 'MTT' && newComplete && !oldComplete) {
       // Notification details.
       const url = '/weekly-results'
-      const payload = {
-        notification: {
-          title: `DGW Game Results Updated`,
-          body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
-          icon: '/icons/icon-192x192.png',
-          data: `{"action": "openUrl", "url": "${url}"}`
+      // Get the list of device subscriptions (FCM tokens if using Firebase)
+      const subscribers = await admin.firestore().collection('subscribers').get()
+      const pushSubscriptions = []
+      let messagingType = ''
+      subscribers.forEach((subscriptionDoc) => {
+        const subscription = subscriptionDoc.data()
+        if (subscription.fcmToken) {
+          pushSubscriptions.push(subscription.fcmToken) // if using Fireabase Cloud Messaging
+          messagingType = 'FCM'
+          const subscription = subscriptionDoc.data()
+        } else if (subscription.pushSubscription) {
+          pushSubscriptions.push(subscription.pushSubscription)
         }
-      }
-
-      // Get the list of device tokens.
-      const allTokens = await admin.firestore().collection('fcmTokens').get()
-      const tokens = []
-      allTokens.forEach((tokenDoc) => {
-        tokens.push(tokenDoc.id)
       })
 
-      if (tokens.length > 0) {
-        // Send notifications to all tokens.
+      if (pushSubscriptions.length > 0) {
+        // Send notifications to all subscriptions.
+        let response = null
         try {
-          const response = await admin.messaging().sendToDevice(tokens, payload)
-          await cleanupTokens(response, tokens)
-          console.log('Notifications have been sent and tokens cleaned up.')
+          if (messagingType === 'FCM') {
+            const pushContent = {
+              notification: {
+                title: `DGW Game Results Updated`,
+                body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
+                icon: '/icons/icon-192x192.png',
+                data: `{"action": "openUrl", "url": "${url}"}`
+              }
+            }
+
+            const response = await admin.messaging().sendToDevice(pushSubscriptions, payload)
+            await cleanupTokens(response, subscriptions)
+            console.log('Notifications have been sent and tokens cleaned up.')
+          } else {
+            pushSubscriptions.forEach(async subscription => {
+              const pushSubscription = {
+                endpoint: subscription.endpoint,
+                keys: {
+                  auth: subscription.keys.auth,
+                  p256dh: subscription.keys.p256dh
+                }
+              }
+              let pushContent = {
+                title: `DGW Game Results Updated`,
+                body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
+                action: 'openUrl',
+                openUrl: url
+              }
+              let pushContentStringified = JSON.stringify(pushContent)
+              response = await webPush.sendNotification(pushSubscription, pushContentStringified)
+              console.log('sendNotification response: ', response)
+            })
+          }
         } catch (error) {
           console.error('error sending message: ', error)
         }

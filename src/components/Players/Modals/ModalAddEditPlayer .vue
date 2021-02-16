@@ -3,7 +3,11 @@
 
     <q-card class="add-player">
       <q-card-section>
-        <modal-header>{{ heading }}</modal-header>
+        <modal-header
+          @close="$emit('close')"
+        >
+        {{ heading }}
+        </modal-header>
         <q-form
           ref="playerForm"
         >

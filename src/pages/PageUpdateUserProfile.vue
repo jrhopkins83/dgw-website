@@ -57,6 +57,7 @@
                 :heading="heading"
                 :mode="'profile'"
                 @submit="savePlayer"
+                @close="$router.go(-1)"
               />
 
             </div>

@@ -13,10 +13,11 @@
       >
         <div class="constrain">
           <q-banner
-            class="bg-grey-3 q-mb-md"
+            class="bg-grey-3 q-mb-xs"
+            inline-actions
           >
             <template v-slot:avatar>
-              <q-icon name="eva-bell-outline" color="primary" />
+              <q-icon name="notifications" color="primary" />
             </template>
 
             Would you like to enable notifications?

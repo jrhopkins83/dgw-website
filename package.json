@@ -20,9 +20,7 @@
     "emulators2": "firebase emulators:start --import=dir/base2",
     "emulators3": "firebase emulators:start --import=dir/base3",
     "emulators4": "firebase emulators:start --import=dir/base4",
-    "test": "jest ./spec --detectOpenHandles",
-    "deploy-test": "quasar build && firebase deploy -P staging",
-    "deploy-prod": "quasar build && firebase deploy -P prod"
+    "test": "jest ./spec --detectOpenHandles"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",

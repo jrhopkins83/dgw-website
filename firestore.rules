@@ -85,5 +85,11 @@ service cloud.firestore {
       allow read, write: if request.auth.uid != null;
     }
 
+    // web push subscriptions:
+    //   - TO-DO: Update so that only user owners and admins can read/write tokens
+    match /notifSubscribers/{subId} {
+      allow read, write: if request.auth.uid != null;
+    }
+
   }
 }

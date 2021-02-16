@@ -101,14 +101,7 @@ export default {
       this.$q.localStorage.set('neverShowAppInstallBanner', true)
     }
   },
-  created () {
-    console.log('MainLayout.vue created: ', window.location.pathname)
-  },
-  beforeMount () {
-    console.log('MainLayout.vue beforeMount: ', window.location.pathname)
-  },
   mounted () {
-    console.log('MainLayout.vue mounted: ', window.location.pathname)
     const userLoggedIn = this.$q.localStorage.getItem('loggedIn')
     const neverShowAppInstallBanner = this.$q.localStorage.getItem('neverShowAppInstallBanner')
 

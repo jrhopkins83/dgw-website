@@ -18,7 +18,7 @@ sgMail.setApiKey(API_KEY)
 */
 
 webPush.setVapidDetails(
-  'mailto:test@test.com',
+  'mailto:jrhopkins83@gmail.com',
   'BD9d2d8NNm30iU4hzsKBRhpBD27wJo93TRtHbeHWYNPO9QjfSmSP579aP7hPiZZB1vTpwsQ6EsZ6Gkzh8YLlzk0', // public key
   'c3dii9ZWil5tWJg1HUBsVh7-BJ87Fh1G3j1ciADI49k' // private key
 )
@@ -221,57 +221,48 @@ exports.sendNotifications = functions.firestore
       // Notification details.
       const url = '/weekly-results'
       // Get the list of device subscriptions (FCM tokens if using Firebase)
-      const subscribers = await admin.firestore().collection('subscribers').get()
+      const subscribers = await admin.firestore().collection('notifSubscribers').get()
       const pushSubscriptions = []
       let messagingType = ''
       subscribers.forEach((subscriptionDoc) => {
         const subscription = subscriptionDoc.data()
-        if (subscription.fcmToken) {
-          pushSubscriptions.push(subscription.fcmToken) // if using Fireabase Cloud Messaging
-          messagingType = 'FCM'
-          const subscription = subscriptionDoc.data()
-        } else if (subscription.pushSubscription) {
-          pushSubscriptions.push(subscription.pushSubscription)
-        }
+        subscription.pushSubscription.docId = subscriptionDoc.id
+
+        pushSubscriptions.push(subscription.pushSubscription)
       })
 
       if (pushSubscriptions.length > 0) {
         // Send notifications to all subscriptions.
         let response = null
         try {
-          if (messagingType === 'FCM') {
-            const pushContent = {
-              notification: {
-                title: `DGW Game Results Updated`,
-                body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
-                icon: '/icons/icon-192x192.png',
-                data: `{"action": "openUrl", "url": "${url}"}`
+          const pushErrors = []
+          pushSubscriptions.forEach(async subscription => {
+            const pushSubscription = {
+              endpoint: subscription.endpoint,
+              keys: {
+                auth: subscription.keys.auth,
+                p256dh: subscription.keys.p256dh
               }
             }
-
-            const response = await admin.messaging().sendToDevice(pushSubscriptions, payload)
-            await cleanupTokens(response, subscriptions)
-            console.log('Notifications have been sent and tokens cleaned up.')
-          } else {
-            pushSubscriptions.forEach(async subscription => {
-              const pushSubscription = {
-                endpoint: subscription.endpoint,
-                keys: {
-                  auth: subscription.keys.auth,
-                  p256dh: subscription.keys.p256dh
-                }
-              }
-              let pushContent = {
-                title: `DGW Game Results Updated`,
-                body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
-                action: 'openUrl',
-                openUrl: url
-              }
-              let pushContentStringified = JSON.stringify(pushContent)
+            let pushContent = {
+              title: `DGW Game Results Updated`,
+              body: `Results for ${txtGameDate} have been posted.  Click on the notification to view the updates.`,
+              action: 'openUrl',
+              openUrl: url
+            }
+            let pushContentStringified = JSON.stringify(pushContent)
+            try {
               response = await webPush.sendNotification(pushSubscription, pushContentStringified)
-              console.log('sendNotification response: ', response)
-            })
-          }
+            } catch (error) {
+              console.log('sendNotification error response: ', error.statusCode)
+              console.log('subscription doc id: ', subscription.docId)
+              const statusCode = error.statusCode
+              subscription.statusCode = statusCode
+              console.log('sendNotification error, subscription: ', JSON.stringify(subscription))
+              cleanupSubscriptions(subscription)
+            }
+          })
+
         } catch (error) {
           console.error('error sending message: ', error)
         }
@@ -279,7 +270,27 @@ exports.sendNotifications = functions.firestore
     }
   })
 
-// Cleans up the tokens that are no longer valid.
+// Cleans up the subscriptions that are no longer valid.
+async function cleanupSubscriptions (pushError) {
+  try {
+    // For each notification we check if there was an error.
+    const statusCode = pushError.statusCode
+    const docId = pushError.docId
+
+    console.error('Failure sending notification to', docId, statusCode)
+    // Cleanup the subscriptions who are not registered anymore.
+    if (statusCode === 410) {
+      return await admin.firestore().collection('notifSubscribers').doc(docId).delete()
+    } else {
+      return true
+    }
+  } catch (error) {
+    console.error('Error cleaning up subscription: ', error, JSON.stringify(pushError))
+  }
+
+}
+
+// Cleans up the web push subscriptions that are no longer valid.
 function cleanupTokens (response, tokens) {
   // For each notification we check if there was an error.
   const tokensDelete = []

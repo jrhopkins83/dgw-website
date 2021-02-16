@@ -17,7 +17,6 @@ const state = {
 const mutations = {
   SET_APP_LOADED (state, value) {
     state.loggedIn = value
-    console.log('state.loggedIn: ', state.loggedIn)
   },
   SET_LOGGEDIN (state, value) {
     state.loggedIn = value
@@ -87,7 +86,6 @@ const actions = {
     firebaseAuth.signOut()
   },
   async handleAuthStateChange ({ commit, dispatch, state }) {
-    console.log('in handleAuthStateChange before onAuthStateChanged pathname = ', window.location.pathname)
     firebaseAuth.onAuthStateChanged(async user => {
       Loading.show()
       let success = false

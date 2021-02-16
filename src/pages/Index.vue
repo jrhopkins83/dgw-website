@@ -246,8 +246,8 @@ export default {
             p256dh: newSubData.keys.p256dh
           }
         }
-        return firebaseStore.collection('subscribers').doc(this.userInfo.playerID)
-          .update({ pushSubscription: pushSubscription })
+        return firebaseStore.collection('notifSubscribers')
+          .add({ pushSubscription: pushSubscription })
           .then(() => {
             console.log('Subscription successfully written!')
             this.neverShowNotificationsBanner()

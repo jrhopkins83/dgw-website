@@ -131,8 +131,20 @@ export default {
     initNotificationsBanner () {
       const neverShowNotificationsBanner = this.$q.localStorage.getItem('neverShowNotificationsBanner')
 
-      if (!neverShowNotificationsBanner) {
-        this.showNotificationsBanner = true
+      if ('permissions' in navigator) {
+        navigator.permissions.query({ name: 'notifications' })
+          .then((permission) => {
+            console.log('notification permission state is ', permission.state)
+            permission.onchange = () => {
+              // Show notification banner if user has manually changed notification permission back to ask
+              if (permission.state === 'prompt' && neverShowNotificationsBanner) {
+                this.showNotificationsBanner = true
+              }
+            }
+            if (!neverShowNotificationsBanner) {
+              this.showNotificationsBanner = true
+            }
+          })
       }
     },
     neverShowNotificationsBanner () {
@@ -143,32 +155,6 @@ export default {
     enableNotifications () {
       // First check if browser supports push notifications and if not, hide the banner
       if (this.pushNotificationsSupported) {
-        // *** Firebase Cloud Messaging ***
-
-        // const that = this
-        // const vapidKey = 'BKZG37hWd5N3pHwNuORfurhTjuhaA3gg2T4sCvYa8Wrg7HnYcsRI_85m3Dzm7KiIEXFdvS6s46lN2brSRbgx2SY'
-        // messaging.getToken({ vapidKey: vapidKey }).then(function (currentToken) {
-        //   if (currentToken) {
-        //     // Save the Device Token to the datastore.
-        //     firebaseStore.collection('fcmTokens').doc(currentToken)
-        //       .set({ uid: that.userInfo.uid })
-        //       .then(() => {
-        //         console.log('Token successfully written!')
-        //         that.neverShowNotificationsBanner()
-        //         // Call method to listen for notifications
-        //         that.receiveMessage()
-        //       })
-        //       .catch((error) => {
-        //         console.error('Error writing token: ', error)
-        //       })
-        //   } else {
-        //     // Need to request permissions to show notifications.
-        //     that.requestNotificationsPermissions()
-        //   }
-        // }).catch(function (error) {
-        //   console.error('Unable to get messaging token.', error)
-        // })
-
         // *** Webpush notifications
         Notification.requestPermission(result => {
           console.log('result: ', result)

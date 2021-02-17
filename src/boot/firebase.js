@@ -32,23 +32,23 @@ if ('PushManager' in window) {
 // firebase.performance()
 
 // Use emulators
-// if (window.location.hostname === 'localhost') {
-//   firebaseStore.settings({
-//     host: 'localhost:8080',
-//     ssl: false,
-//     ignoreUndefinedProperties: true
-//   })
-//   firebaseFunctions.useFunctionsEmulator('http://localhost:5001')
-// } else {
-//   firebase.firestore().enablePersistence()
-//     .catch(function (err) {
-//       if (err.code === 'failed-precondition') {
-//         console.log('persistence failed-precondition')
-//       } else if (err.code === 'unimplemented') {
-//         console.log('persistence unimplemented')
-//       }
-//     })
-// }
+if (window.location.hostname === 'localhost') {
+  firebaseStore.settings({
+    host: 'localhost:8080',
+    ssl: false,
+    ignoreUndefinedProperties: true
+  })
+  firebaseFunctions.useFunctionsEmulator('http://localhost:5001')
+} else {
+  firebase.firestore().enablePersistence()
+    .catch(function (err) {
+      if (err.code === 'failed-precondition') {
+        console.log('persistence failed-precondition')
+      } else if (err.code === 'unimplemented') {
+        console.log('persistence unimplemented')
+      }
+    })
+}
 
 // *** Use Firebase server
 firebaseStore.settings({

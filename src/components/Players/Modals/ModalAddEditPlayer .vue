@@ -109,14 +109,6 @@
                 label="Receive email communications"
               />
             </div>
-            <!-- TO-DO: Uncomment when SMS functionality added -->
-            <!-- <div class="q-gutter-sm">
-              <q-checkbox
-                v-model="formData.notificationOptin"
-                color="blue-7"
-                label="Receive SMS texts"
-              />
-            </div> -->
           </div>
         </q-form>
 

@@ -1,3 +1,5 @@
+import { uid } from 'quasar'
+
 /* eslint-disable no-undef */
 export default {
   logEvent (category, action, label, value) {

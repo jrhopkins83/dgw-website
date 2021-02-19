@@ -1,24 +1,22 @@
 /* eslint-disable no-undef */
 export default {
-  logEvent (category, action, label, value, sessionId = null) {
+  logEvent (category, action, label, value) {
     dataLayer.push({
       event: 'customEvent',
       category: category,
       action: action,
       label: label,
       cid: this.getCid(),
-      value: value,
-      sessionId: sessionId
+      value: value
     })
   },
 
-  logPage (path, name, sessionId = null) {
+  logPage (path, name) {
     dataLayer.push({
       path: path,
       event: 'customPageView',
       screenName: name,
-      cid: this.getCid(),
-      sessionId: sessionId
+      cid: this.getCid()
     })
   },
 

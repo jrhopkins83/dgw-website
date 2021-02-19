@@ -1,4 +1,4 @@
-import ga from 'google-analytics.js'
+import ga from 'analytics.js'
 
 export default ({ router }) => {
   router.afterEach((to, from) => {

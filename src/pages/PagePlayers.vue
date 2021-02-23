@@ -94,7 +94,7 @@ export default {
   name: 'PagePlayers',
   components: {
     playerList: require('components/Players/PlayerList.vue').default,
-    updatePlayerProfile: require('components/Players/Modals/updatePlayerProfile.vue.vue').default,
+    updatePlayerProfile: require('components/Players/Modals/updatePlayerProfile.vue').default,
     search: require('components/Players/Search.vue').default
   },
   mixins: [mixinAddEditPlayer],

@@ -5,10 +5,7 @@
       enter-active-class="animated zoomIn"
       leave-active-class="animated zoomOut"
     >
-      <div
-        class="container"
-        v-if="leagueInfoLoaded"
-      >
+      <div class="container">
         <update-player-profile
           :player="userInfo"
           @submit="savePlayer"
@@ -30,7 +27,7 @@ import { showMessage } from 'src/functions/functions-common'
 export default {
   name: 'EditProfile',
   components: {
-    updatePlayerProfile: require('components/Players/Modals/updatePlayerProfile.vue.vue').default
+    updatePlayerProfile: require('components/Players/Modals/updatePlayerProfile.vue').default
   },
   data () {
     return {

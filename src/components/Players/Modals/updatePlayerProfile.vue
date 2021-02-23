@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="outline"
-    v-if="leagueInfoLoaded"
-  >
+  <div class="outline">
     <div class="row header">
       <div class="col-12 header__title">
         <div class="header__title text-center text-h3 text-bold q-mt-md">
@@ -43,9 +40,9 @@
           </div>
         </div>
       </div>
-      <div class="col-10 profile-section__user-info q-px-md">
+      <div class="col-10 profile-section__player-info q-px-md">
         <edit-player
-          :player="userInfo"
+          :player="player"
           :heading="heading"
           :mode="'profile'"
           @submit="savePlayer"
@@ -56,9 +53,9 @@
     </div>
     <q-dialog v-model="showChangePhoto">
       <modal-change-photo
-        :image="user_avatar.url"
-        :imageName="user_avatar.name"
-        :userInfo="userInfo"
+        :image="player_avatar.url"
+        :imageName="player_avatar.name"
+        :player="player"
         :imageType="imageType"
         @close="showChangePhoto=false"
       />
@@ -91,29 +88,9 @@ export default {
     }
   },
   computed: {
-    user: function () {
-      const user = {
-        avatar: this.userInfo.avatar.avatarUrl,
-        avatarName: this.userInfo.avatarName.avatarName,
-        photo: this.userInfo.photo.photoUrl,
-        photoName: this.userInfo.photoName,
-        email: this.userInfo.email,
-        emailOptin: this.userInfo.emailOptin,
-        firstName: this.userInfo.firstName,
-        isAdmin: this.userInfo.isAdmin,
-        lastName: this.userInfo.lastName,
-        nickName: this.userInfo.nickName,
-        notificationOptin: this.userInfo.notificationOptin,
-        onlineName: this.userInfo.onlineName,
-        phoneNumber: this.userInfo.phoneNumber,
-        playerID: this.userInfo.playerID,
-        uid: this.userInfo.uid
-      }
-      return user
-    },
-    user_avatar: function () {
-      if (this.userInfo.avatar.avatarUrl) {
-        return this.userInfo.avatar
+    player_avatar: function () {
+      if (this.player.avatar.avatarUrl) {
+        return this.player.avatar
       } else {
         const image = {
           avatarUrl: 'default.jpg',
@@ -122,9 +99,9 @@ export default {
         return image
       }
     },
-    user_photo: function () {
-      if (this.userInfo.photo.photoUrl) {
-        return this.userInfo.photo
+    player_photo: function () {
+      if (this.player.photo.photoUrl) {
+        return this.player.photo
       } else {
         const image = {
           photoUrl: 'default.jpg',
@@ -154,7 +131,7 @@ export default {
         nickName: player.nickName,
         onlineName: player.onlineName
       }
-      const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
+      const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
       await playerRef.update(playerNames)
       this.setUserInfo(playerNames)
 
@@ -164,8 +141,8 @@ export default {
         emailOptin: player.emailOptin,
         notificationOptin: player.notificationOptin
       }
-      const userRef = firebaseStore.collection('subscribers').doc(this.userInfo.playerID)
-      await userRef.update(playerContactInfo)
+      const subscriberRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
+      await subscriberRef.update(playerContactInfo)
       this.setUserInfo(playerContactInfo)
       this.saveUserInfoLS()
 
@@ -182,53 +159,43 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .outline {
+    height: 79vh;
+    width: 64vw;
+    background-color: $off-white;
 
-  .container {
-    display: flex;              /* establish flex container */
-    flex-direction: column;     /* stack flex items vertically */
-    justify-content: center;    /* center items vertically, in this case */
-    align-items: center;        /* center items horizontally, in this case */
-    height: 92vh;
+    .header {
+      position: relative;
+      width: 100%;
+      height: 43px;
 
-    .outline {
-      height: 79vh;
-      width: 64vw;
-      background-color: $off-white;
-
-      .header {
-        position: relative;
-        width: 100%;
-        height: 43px;
-
-        &__title {
-          height: 27px;
-          margin: 5px;
-        }
-
+      &__title {
+        height: 27px;
+        margin: 5px;
       }
 
-      .profile-section {
-        height: 60rem;
+    }
 
-        &__photo {
-          margin-top: .8rem;
-          height: 57rem;
-        }
+    .profile-section {
+      height: 60rem;
 
-        &__user-info {
-          margin-top: .8rem;
-          height: 57rem;
-        }
-
+      &__photo {
+        margin-top: .8rem;
+        height: 57rem;
       }
-    }
-    .profile {
-      height: 60%;
-      width: 60%;
-      border: solid black;
-      align-self: center;
-    }
 
+      &__player-info {
+        margin-top: .8rem;
+        height: 57rem;
+      }
+
+    }
+  }
+  .profile {
+    height: 60%;
+    width: 60%;
+    border: solid black;
+    align-self: center;
   }
 
   @media screen and (max-width: 385px) {

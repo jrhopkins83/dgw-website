@@ -21,7 +21,7 @@
               ref="editor"
               :progress.sync="progress"
               :data="data"
-              :userInfo="userInfo"
+              :player="player"
               :imageType="imageType"
               @save="$emit('save', data.avatarUrl)"
               @close="$emit('close')"
@@ -37,11 +37,6 @@
               ref="viewer"
               :data="data"
             />
-          <!-- <div class="crop-preview">
-            <div class="canvas">
-              <img :src="data.croppedUrl" alt="">
-            </div>
-          </div> -->
         </div>
 
       </q-card-section>
@@ -95,7 +90,7 @@ export default {
     editor: require('components/Players/Modals/Photo/editor.vue').default
   },
   props: {
-    userInfo: {
+    player: {
       type: Object
     },
     imageUrl: {

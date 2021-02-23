@@ -90,7 +90,7 @@
                 :rules="[required, email]"
               />
             </div>
-            <div class="row q-mb-md q-pa-xs" v-if="!firstTimeLogin">
+            <div class="row q-mb-md q-pa-xs" v-if="!resetPassword">
               <q-input
                 ref="password"
                 v-model="formData.password"
@@ -121,11 +121,11 @@
                 align="around"
               >
                 <q-btn
-                  v-if="LoginError.errorCode=='auth/too-many-requests' || firstTimeLogin"
+                  v-if="LoginError.errorCode=='auth/too-many-requests' || resetPassword"
                   class="action-button"
                   color="primary"
                   label="Reset Password"
-                  @click="resetPassword"
+                  @click="sendReset"
                 >
                 <q-tooltip>
                   Click to send password reset email
@@ -139,9 +139,9 @@
                   type="submit"
                 >
                 </q-btn>
-                <q-checkbox v-if="!firstTimeLogin"
-                  v-model="firstTimeLogin"
-                  label="First time logging in?"
+                <q-checkbox v-if="!resetPassword"
+                  v-model="resetPassword"
+                  label="First time logging in or forgot password?"
                 />
               </q-card-actions>
             </div>
@@ -257,7 +257,7 @@ export default {
       existPlayer: false,
       dialogMsg: '',
       message: '',
-      firstTimeLogin: false,
+      resetPassword: false,
       newUser: {},
       validation: false,
       hideForm: false,
@@ -335,9 +335,9 @@ export default {
         this.codePrompt = true
       }
     },
-    resetPassword () {
+    sendReset () {
       this.sendReset(this.formData.email)
-      this.firstTimeLogin = false
+      this.resetPassword = false
       this.formData.email = ''
     }
 

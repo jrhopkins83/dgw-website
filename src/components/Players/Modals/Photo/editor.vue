@@ -79,28 +79,6 @@
           Rotate Right
         </q-tooltip>
       </q-btn>
-      <!-- <q-btn
-        flat
-        color="white"
-        data-action="flip-horizontal"
-        icon="flip_to_back"
-        @click="click('flip-horizontal')"
-      >
-        <q-tooltip content-class="bg-info">
-          Flip Horizontal
-        </q-tooltip>
-      </q-btn>
-      <q-btn
-        flat
-        color="white"
-        data-action="flip-vertical"
-        icon="flip_to_front"
-        @click="click('flip-vertical')"
-      >
-        <q-tooltip content-class="bg-info">
-          Flip Vertical
-        </q-tooltip>
-      </q-btn> -->
     </q-btn-group>
 
   </div>
@@ -117,7 +95,7 @@ export default {
   name: 'Editor',
 
   props: {
-    userInfo: {
+    player: {
       type: Object
     },
     imageType: {
@@ -141,8 +119,8 @@ export default {
 
   computed: {
     user_avatar: function () {
-      if (this.userInfo.avatar) {
-        return this.userInfo.avatar
+      if (this.player.avatar) {
+        return this.player.avatar
       } else {
         return this.data.url
       }
@@ -404,7 +382,7 @@ export default {
         // Compress and convert to blob
         const uploadFile = await compressImage(data.roundedCanvas)
 
-        const fileName = `${this.userInfo.firstName}_${this.userInfo.lastName}.png`
+        const fileName = `${this.player.firstName}_${this.player.lastName}.png`
 
         const upload = {
           imageType: this.imageType,
@@ -480,7 +458,7 @@ export default {
                     avatarName: this.data.avatarName
                   }
                 }
-                const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
+                const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
                 playerRef.update(playerAvatar)
                   .then(() => {
                     this.setUserInfo(playerAvatar)
@@ -500,7 +478,7 @@ export default {
                     photoName: this.data.photoName
                   }
                 }
-                const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
+                const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
                 playerRef.update(playerPhoto)
                   .then(() => {
                     this.setUserInfo(playerPhoto)

@@ -1,5 +1,6 @@
 import { firebaseStore, firebaseFunctions } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
+import { mapActions } from 'vuex'
 
 export const mixinAddEditPlayer = {
   data () {
@@ -16,6 +17,7 @@ export const mixinAddEditPlayer = {
   },
 
   methods: {
+    ...mapActions('auth', ['sendReset']),
     async lookupLeagueCode (code) {
       const snapShot = await firebaseStore.collection('leagueAuthCodes')
         .where('authCode', '==', code)
@@ -101,19 +103,24 @@ export const mixinAddEditPlayer = {
       }
 
       if (this.mode === 'edit') {
-        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+        const playerRef = firebaseStore.collection('players').doc(player.playerID)
         await playerRef.update(playerNames)
         if (player.createUser) {
           const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
           if (newUserID) {
             const userRef = {
-              playerID: this.player.playerID,
+              playerID: player.playerID,
               uid: newUserID
             }
             await this.createUserPlayerRef(userRef)
+            const request = {
+              email: playerContactInfo.email,
+              requester: 'admin'
+            }
+            this.sendReset(request)
           }
         }
-        const subscriberRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
+        const subscriberRef = firebaseStore.collection('subscribers').doc(player.playerID)
         return await subscriberRef.update(playerContactInfo)
       } else {
         const playerID = await this.addNewPlayer(playerNames)
@@ -129,6 +136,11 @@ export const mixinAddEditPlayer = {
               }
               await this.createUserPlayerRef(userRef)
               await this.setUserClaim(newUserID, playerID)
+              const request = {
+                email: playerContactInfo.email,
+                requester: 'admin'
+              }
+              this.sendReset(request)
               return playerID
             } else {
               return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)

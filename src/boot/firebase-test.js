@@ -35,15 +35,6 @@ if (window.location.hostname === 'localhost') {
   })
   firebaseFunctions.useFunctionsEmulator('http://localhost:5001')
   firebaseAuth.useEmulator('http://localhost:9099')
-} else {
-  firebase.firestore().enablePersistence()
-    .catch(function (err) {
-      if (err.code === 'failed-precondition') {
-        console.log('persistence failed-precondition')
-      } else if (err.code === 'unimplemented') {
-        console.log('persistence unimplemented')
-      }
-    })
 }
 
 // *** Use Firebase server

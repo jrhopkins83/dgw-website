@@ -155,6 +155,7 @@ export default {
       noEmail: true,
       noUserId: false,
       formData: {
+        playerID: null,
         firstName: null,
         lastName: null,
         onlineName: null,
@@ -206,6 +207,7 @@ export default {
         }
 
         this.playerToSubmit = {
+          playerID: this.player.playerID,
           firstName: toTitleCase(this.formData.firstName).trim(),
           lastName: toTitleCase(this.formData.lastName).trim(),
           email: this.formData.email,

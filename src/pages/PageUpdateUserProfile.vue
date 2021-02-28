@@ -8,6 +8,7 @@
       <div class="container">
         <update-player-profile
           :player="userInfo"
+          :editor="'user'"
           @submit="savePlayer"
           @close="$router.go(-1)"
         >
@@ -19,7 +20,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { firebaseStore } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
 // import { firebaseStore } from 'src/boot/firebase'
@@ -27,7 +28,7 @@ import { showMessage } from 'src/functions/functions-common'
 export default {
   name: 'EditProfile',
   components: {
-    updatePlayerProfile: require('components/Players/Modals/updatePlayerProfile.vue').default
+    updatePlayerProfile: require('components/Players/Modals/ModalUpdatePlayer.vue').default
   },
   data () {
     return {
@@ -37,6 +38,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('leagueSettings', ['leagueInfoLoaded', 'userInfo']),
+    player: function () {
+      return this.userInfo
+    },
     user_avatar: function () {
       if (this.player.avatar.avatarUrl) {
         return this.player.avatar

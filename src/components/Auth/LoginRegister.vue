@@ -336,7 +336,11 @@ export default {
       }
     },
     sendReset () {
-      this.sendReset(this.formData.email)
+      const request = {
+        email: this.formData.email,
+        requester: 'user'
+      }
+      this.sendReset(request)
       this.resetPassword = false
       this.formData.email = ''
     }

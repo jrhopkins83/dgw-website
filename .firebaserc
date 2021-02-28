@@ -17,6 +17,7 @@
   },
   "projects": {
     "prod": "donkeys-gone-wild",
-    "staging": "fir-authdemo-5cd82"
+    "staging": "fir-authdemo-5cd82",
+    "default": "fir-authdemo-5cd82"
   }
 }

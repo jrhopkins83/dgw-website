@@ -23,7 +23,7 @@
               :data="data"
               :player="player"
               :imageType="imageType"
-              @save="$emit('save', data.avatarUrl)"
+              @saveUrl="saveUrl"
               @close="$emit('close')"
             />
             <loader
@@ -52,6 +52,7 @@
       <q-card-section class="actions q-pa-none">
         <q-card-actions align="evenly">
           <q-btn
+            v-if="data.name"
             label="Change Photo"
             color="grey-9"
             style="width:14rem;"
@@ -79,6 +80,7 @@
 </template>
 
 <script>
+import { firebaseStore } from 'boot/firebase'
 
 export default {
   name: 'ModalChangePhoto',
@@ -96,7 +98,7 @@ export default {
     imageUrl: {
       type: String
     },
-    itemId: {
+    editor: {
       type: String
     },
     imageType: {
@@ -115,8 +117,8 @@ export default {
         croppedUrl: '',
         roundedCanvas: '',
         type: '',
-        imageName: this.imageName,
-        imageUrl: this.imageUrl
+        imageName: '',
+        imageUrl: ''
       },
       progress: 0
     }
@@ -149,7 +151,7 @@ export default {
           break
 
         case 'upload':
-          await editor.upload()
+          await editor.upload(this.editor)
           break
 
         default:
@@ -160,6 +162,33 @@ export default {
     },
     async savePhoto () {
       await this.change('upload')
+    },
+    async saveUrl () {
+      if (this.imageType === 'avatar') {
+        const playerAvatar = {
+          avatar: {
+            avatarUrl: this.data.imageUrl,
+            avatarName: this.data.imageName
+          }
+        }
+        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+        await playerRef.update(playerAvatar)
+        if (this.editor === 'user') {
+          this.setUserInfo(playerAvatar)
+        }
+      } else {
+        const playerPhoto = {
+          photo: {
+            photoUrl: this.data.imageUrl,
+            photoName: this.data.imageName
+          }
+        }
+        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+        await playerRef.update(playerPhoto)
+        if (this.editor === 'user') {
+          this.setUserInfo(playerPhoto)
+        }
+      }
       this.change('stop')
       this.$emit('close')
     }

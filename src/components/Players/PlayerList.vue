@@ -64,8 +64,7 @@ export default {
     editPlayer (value) {
       this.mode = 'edit'
       this.player = value[0]
-      this.id = value[1]
-      this.$emit('editPlayer', [this.player, this.id, this.mode])
+      this.$emit('editPlayer', [this.player, this.mode])
     },
     confirmDelete (value) {
       this.player = value[0]

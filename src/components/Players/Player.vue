@@ -26,7 +26,7 @@
             icon="edit"
             flat
             size="md"
-            @click="$emit('editPlayer', [player, id])"
+            @click="$emit('editPlayer', [player])"
           />
         </div>
         <div class="attribute delete">
@@ -71,9 +71,7 @@ export default {
     }
   },
   methods: {
-    selectPlayer () {
-      this.$emit('select', this.player.playerID)
-    }
+
   },
   mounted () {
 

@@ -152,7 +152,9 @@ const actions = {
     }
     commit('SET_APP_LOADED', true)
   },
-  sendReset ({ commit }, email) {
+  sendReset ({ commit }, request) {
+    const email = request.email
+    const requester = request.requester
     // Have Firebase Auth send a reset e-mail
     firebaseAuth.sendPasswordResetEmail(email)
       .then(() => {
@@ -161,9 +163,11 @@ const actions = {
           errorMessage: null
         }
         commit('SET_ERROR_MESSAGE', LoginError)
-        showMessage('Success', 'Look in your email inbox for a link to reset your password.')
+        if (requester === 'user') {
+          showMessage('Success', 'Look in your email inbox for a link to reset your password.')
+        }
       }).catch(error => {
-        showMessage('error', `Error  requesting reset: ${error.message}`)
+        showMessage('error', `Error requesting reset: ${error.message}`)
       })
   }
 }

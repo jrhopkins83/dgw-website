@@ -42,9 +42,11 @@
           v-model="showEditPlayer"
         >
           <update-player-profile
-            :player="player"
-            @submit="savePlayer"
-            @close="showEditPlayer=false"
+            :playerToEdit="playerToEdit"
+            :editor="'admin'"
+            :mode="mode"
+            :editMode="editMode"
+            @close="closeEditor"
           >
             Edit Player
           </update-player-profile>
@@ -94,22 +96,17 @@ export default {
   name: 'PagePlayers',
   components: {
     playerList: require('components/Players/PlayerList.vue').default,
-    updatePlayerProfile: require('components/Players/Modals/updatePlayerProfile.vue').default,
+    updatePlayerProfile: require('components/Players/Modals/ModalUpdatePlayer.vue').default,
     search: require('components/Players/Search.vue').default
   },
   mixins: [mixinAddEditPlayer],
-  props: {
-    mode: {
-      type: String,
-      default: 'view'
-    }
-  },
   data () {
     return {
+      mode: 'view',
       showEditPlayer: false,
       editMode: '',
       id: '',
-      player: {}
+      playerToEdit: {}
     }
   },
   computed: {
@@ -169,15 +166,14 @@ export default {
       this.showEditPlayer = true
     },
     editPlayer (value) {
-      this.player = value[0]
-      this.id = value[1]
-      this.editMode = value[2]
+      this.playerToEdit = value[0]
+      this.editMode = value[1]
       this.showEditPlayer = true
     },
     confirmDelete (value) {
-      this.player = value[0]
+      this.playerToEdit = value[0]
       this.dialogHeader = 'Confirm Delete?'
-      this.dialogMsg = `This will also delete all results for ${this.player.firstName} ${this.player.lastName}. Are you sure you want to delete?`
+      this.dialogMsg = `This will also delete all results for ${this.playerToEdit.firstName} ${this.playerToEdit.lastName}. Are you sure you want to delete?`
       this.confirm = true
     },
     async deletePlayer (value) {
@@ -185,34 +181,20 @@ export default {
       this.$q.loading.show({
         message: '<b>Player Deletion</b> is in progress.<br/><span class="text-info">Hang on...</span>'
       })
-      await this.deletePlayerDocs(this.player.playerID)
+      await this.deletePlayerDocs(this.playerToEdit.playerID)
       this.setPlayersLoaded(true)
-      this.player = {}
+      this.playerToEdit = {}
       this.confirm = false
       this.$q.loading.hide()
     },
-    async savePlayer (player) {
-      this.setPlayersLoaded(false)
-      this.$q.loading.show({
-        message: `<b>Player ${this.editMode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
-      })
-      try {
-        await this.savePlayer(player)
-        this.showEditPlayer = false
-        showMessage('Success', `Player ${this.editMode} complete`)
-        this.setPlayersLoaded(true)
-        this.id = ''
-        this.player = {}
-        this.$q.loading.hide()
-      } catch (error) {
-        showMessage('error', `Error adding player - ${error}`)
-        this.setPlayersLoaded(true)
-        this.$q.loading.hide()
-        this.id = ''
-      }
+    closeEditor () {
+      this.showEditPlayer = false
+      this.playerToEdit = {}
     }
   },
-
+  created () {
+    this.mode = this.$route.params.mode
+  },
   async beforeMount () {
     if (!this.userInfo.isAdmin && this.mode === 'edit') {
       this.$router.go(-1)

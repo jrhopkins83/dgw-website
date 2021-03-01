@@ -36,16 +36,24 @@
             icon="add"
           />
         </div>
+
+        <!-- edit player -->
         <q-dialog
           v-model="showEditPlayer"
         >
-          <edit-player-details
-            :player="player"
+          <update-player-profile
+            :playerToEdit="playerToEdit"
+            :editor="'admin'"
+            :mode="mode"
             :editMode="editMode"
-            @submit="submitForm"
-            @close="showEditPlayer=false"
-          />
+            @saveChanges="saveChanges"
+            @close="closeEditor"
+          >
+            {{ textMode}} Player
+          </update-player-profile>
         </q-dialog>
+
+        <!-- confirm delete -->
         <q-dialog
           v-model="confirm"
         >
@@ -80,31 +88,26 @@
 </template>
 
 <script>
-import { firebaseStore } from 'src/boot/firebase'
+// import { firebaseStore } from 'src/boot/firebase'
 import { mapGetters, mapActions } from 'vuex'
-import { showMessage } from 'src/functions/functions-common'
+import { showMessage, toTitleCase } from 'src/functions/functions-common'
 import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
   name: 'PagePlayers',
   components: {
     playerList: require('components/Players/PlayerList.vue').default,
-    editPlayerDetails: require('components/Players/Modals/ModalAddEditPlayer .vue').default,
+    updatePlayerProfile: require('components/Players/Modals/ModalUpdatePlayer.vue').default,
     search: require('components/Players/Search.vue').default
   },
   mixins: [mixinAddEditPlayer],
-  props: {
-    mode: {
-      type: String,
-      default: 'view'
-    }
-  },
   data () {
     return {
+      mode: 'view',
       showEditPlayer: false,
       editMode: '',
       id: '',
-      player: {}
+      playerToEdit: {}
     }
   },
   computed: {
@@ -123,6 +126,9 @@ export default {
       } else {
         return false
       }
+    },
+    textMode: function () {
+      return toTitleCase(this.editMode)
     },
     playerList: function () {
       const players = Object.values(this.playersFiltered)
@@ -161,18 +167,18 @@ export default {
     },
     addPlayer () {
       this.editMode = 'add'
+      this.playerToEdit.emailOptIn = true
       this.showEditPlayer = true
     },
     editPlayer (value) {
-      this.player = value[0]
-      this.id = value[1]
-      this.editMode = value[2]
+      this.playerToEdit = value[0]
+      this.editMode = value[1]
       this.showEditPlayer = true
     },
     confirmDelete (value) {
-      this.player = value[0]
+      this.playerToEdit = value[0]
       this.dialogHeader = 'Confirm Delete?'
-      this.dialogMsg = `Are you sure you want to delete ${this.player.firstName} ${this.player.lastName}?`
+      this.dialogMsg = `This will also delete all results for ${this.playerToEdit.firstName} ${this.playerToEdit.lastName}. Are you sure you want to delete?`
       this.confirm = true
     },
     async deletePlayer (value) {
@@ -180,48 +186,36 @@ export default {
       this.$q.loading.show({
         message: '<b>Player Deletion</b> is in progress.<br/><span class="text-info">Hang on...</span>'
       })
-      try {
-        const playersRef = firebaseStore.collection('players')
-        await playersRef.doc(this.player.playerID).delete()
-        this.setPlayersLoaded(true)
-        this.player = {}
-        this.confirm = false
-        this.$q.loading.hide()
-      } catch (error) {
-        switch (error) {
-          case 'permission-denied':
-            showMessage('error', "You don't have access to add data.")
-            break
-          case 'not-found':
-            showMessage('error', 'Record not found in database')
-            break
-          default:
-            showMessage('error', 'Error deleting player: ' + error)
-        }
-      }
+      await this.deletePlayerDocs(this.playerToEdit.playerID)
+      this.setPlayersLoaded(true)
+      this.playerToEdit = {}
+      this.confirm = false
+      this.$q.loading.hide()
     },
-    async submitForm (player) {
-      this.setPlayersLoaded(false)
+    closeEditor () {
+      this.showEditPlayer = false
+      this.playerToEdit = {}
+    },
+    async saveChanges (playerToSubmit) {
       this.$q.loading.show({
         message: `<b>Player ${this.editMode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
       })
       try {
-        await this.savePlayer(player)
-        this.showEditPlayer = false
+        await this.savePlayer(playerToSubmit)
+
         showMessage('Success', `Player ${this.editMode} complete`)
-        this.setPlayersLoaded(true)
-        this.id = ''
-        this.player = {}
         this.$q.loading.hide()
+        this.closeEditor()
       } catch (error) {
-        showMessage('error', `Error adding player - ${error}`)
-        this.setPlayersLoaded(true)
+        showMessage('error', `Error ${this.editMode}ing player - ${error}`)
         this.$q.loading.hide()
-        this.id = ''
+        this.closeEditor()
       }
     }
   },
-
+  created () {
+    this.mode = this.$route.params.mode
+  },
   async beforeMount () {
     if (!this.userInfo.isAdmin && this.mode === 'edit') {
       this.$router.go(-1)

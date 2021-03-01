@@ -68,7 +68,7 @@
 
       <div class="absolute-bottom text-center q-mb-lg no-pointer-events" v-if="type==='checked-in'">
         <q-btn
-          @click="showAddPlayer = true"
+          @click="addPlayer"
           round
           class="all-pointer-events"
           color="blue-5"
@@ -76,14 +76,21 @@
           icon="add"
         />
       </div>
-      <q-dialog v-model="showAddPlayer">
-        <add-player
-          :player="null"
-          :mode="mode"
-          @submit="submitForm"
-          @close="showAddPlayer=false"
-        />
-      </q-dialog>
+        <q-dialog
+          v-model="showAddPlayer"
+        >
+          <update-player-profile
+            :playerToEdit="playerToEdit"
+            :editor="'admin'"
+            :mode="mode"
+            :editMode="editMode"
+            @saveChanges="saveChanges"
+            @close="closeEditor"
+          >
+            Add Player
+          </update-player-profile>
+        </q-dialog>
+
     </section>
   </div>
 </template>
@@ -98,15 +105,17 @@ export default {
   components: {
     player: require('src/components/Admin/Results/ResultsPlayer.vue').default,
     noPlayers: require('components/Shared/NoRecords.vue').default,
-    addPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default
+    updatePlayerProfile: require('components/Players/Modals/ModalUpdatePlayer.vue').default
   },
   mixins: [mixinAddEditPlayer],
   props: ['players', 'type'],
   data () {
     return {
       showAddPlayer: false,
+      editMode: 'add',
       playerSorted: false,
-      mode: 'add'
+      mode: 'add',
+      playerToEdit: {}
     }
   },
   computed: {
@@ -171,18 +180,23 @@ export default {
         this.setSort(property)
       }
     },
-    async submitForm (newPlayer) {
+    addPlayer () {
+      this.editMode = 'add'
+      this.playerToEdit.emailOptIn = true
+      this.showAddPlayer = true
+    },
+    async saveChanges (newPlayer) {
       this.setResultsLoaded(false)
       this.$q.loading.show({
         message: `<b>Player ${this.mode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
       })
       try {
-        const newPlayerID = await this.savePlayer(newPlayer)
-        if (newPlayerID) {
+        newPlayer.playerID = await this.savePlayer(newPlayer)
+        if (newPlayer.playerID) {
           const newPlayerResult = {
             gameDate: this.tournamentInfo.gameDate,
             gameID: this.tournamentInfo.id,
-            playerID: newPlayerID,
+            playerID: newPlayer.playerID,
             firstName: newPlayer.firstName,
             lastName: newPlayer.lastName,
             nickName: newPlayer.nickName,
@@ -236,6 +250,9 @@ export default {
 
         return finishedSorted
       }
+    },
+    closeEditor () {
+      this.showAddPlayer = false
     }
   }
 }

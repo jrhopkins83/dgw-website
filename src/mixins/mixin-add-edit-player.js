@@ -1,5 +1,6 @@
 import { firebaseStore, firebaseFunctions } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
+import { mapActions } from 'vuex'
 
 export const mixinAddEditPlayer = {
   data () {
@@ -16,6 +17,7 @@ export const mixinAddEditPlayer = {
   },
 
   methods: {
+    ...mapActions('auth', ['sendReset']),
     async lookupLeagueCode (code) {
       const snapShot = await firebaseStore.collection('leagueAuthCodes')
         .where('authCode', '==', code)
@@ -83,14 +85,8 @@ export const mixinAddEditPlayer = {
         lastName: player.lastName,
         nickName: player.nickName,
         onlineName: player.onlineName,
-        avatar: {
-          avatarUrl: '',
-          avatarName: ''
-        },
-        photo: {
-          photoUrl: '',
-          photoName: ''
-        }
+        avatar: player.avatar,
+        photo: player.photo
       }
 
       const playerContactInfo = {
@@ -100,15 +96,31 @@ export const mixinAddEditPlayer = {
         notificationOptin: player.notificationOptin
       }
 
-      if (this.mode === 'edit') {
-        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
+      if (this.editMode === 'edit') {
+        const playerRef = firebaseStore.collection('players').doc(player.playerID)
         await playerRef.update(playerNames)
-        const userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
-        return await userRef.update(playerContactInfo)
+        if (player.createUser) {
+          const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
+          if (newUserID) {
+            const userRef = {
+              playerID: player.playerID,
+              uid: newUserID
+            }
+            await this.createUserPlayerRef(userRef)
+            const request = {
+              email: playerContactInfo.email,
+              requester: 'admin'
+            }
+            this.sendReset(request)
+          }
+        }
+        const subscriberRef = firebaseStore.collection('subscribers').doc(player.playerID)
+        return await subscriberRef.update(playerContactInfo)
       } else {
         const playerID = await this.addNewPlayer(playerNames)
         if (playerID) {
           playerContactInfo.playerID = playerID
+          playerContactInfo.emailOptin = true
           await this.createSubscriber(playerContactInfo)
           if (playerContactInfo.email) {
             const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
@@ -119,6 +131,11 @@ export const mixinAddEditPlayer = {
               }
               await this.createUserPlayerRef(userRef)
               await this.setUserClaim(newUserID, playerID)
+              const request = {
+                email: playerContactInfo.email,
+                requester: 'admin'
+              }
+              this.sendReset(request)
               return playerID
             } else {
               return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
@@ -258,6 +275,60 @@ export const mixinAddEditPlayer = {
       } catch (error) {
         showMessage('error', `Error adding subscriber information: ${error.message}`)
         return error
+      }
+    },
+    async deletePlayerDocs (playerID) {
+      try {
+        const promises = []
+        // Delete player document
+        const playersRef = firebaseStore.collection('players')
+        promises.push(playersRef.doc(playerID).delete())
+        // Delete player document
+        const subscriberRef = firebaseStore.collection('subscribers')
+        promises.push(subscriberRef.doc(playerID).delete())
+        // Delete player season standings document
+        const seasonRef = firebaseStore.collection('seasonStandings')
+        promises.push(seasonRef.doc(playerID).delete())
+
+        // Delete player weekly results documents
+        const weeklyRef = firebaseStore.collection('weeklyResults')
+        const weeklyResults = await weeklyRef
+          .where('playerID', '==', playerID).get()
+        weeklyResults.forEach(result => {
+          const resultId = result.id
+          return promises.push(weeklyRef.doc(resultId).delete())
+        })
+
+        // Delete player tournament results documents
+        const tournamentRef = firebaseStore.collection('tournamentResults')
+        const tournamentResults = await tournamentRef
+          .where('playerID', '==', playerID).get()
+        tournamentResults.forEach(result => {
+          const resultId = result.id
+          return promises.push(tournamentRef.doc(resultId).delete())
+        })
+
+        // Delete player user document
+        const userRef = firebaseStore.collection('users')
+        const userDocs = await userRef
+          .where('playerID', '==', playerID).get()
+        userDocs.forEach(user => {
+          const userId = user.id
+          return promises.push(userRef.doc(userId).delete())
+        })
+        // TO-DO: Delete userID
+        return await Promise.all(promises)
+      } catch (error) {
+        switch (error) {
+          case 'permission-denied':
+            showMessage('error', "You don't have access to add data.")
+            break
+          case 'not-found':
+            showMessage('error', 'Player not found in database')
+            break
+          default:
+            showMessage('error', `Error deleting player: ${error.message}`)
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
 import firebase from 'firebase/app'
-import '@firebase/messaging'
+
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
@@ -15,6 +15,10 @@ var firebaseConfig = {
   messagingSenderId: '53210843527',
   appId: '1:53210843527:web:443fcc1f74d4c2d36e6b22'
 }
+
+// Initialize Firebase Performance Monitoring.
+// firebase.performance() TO-DO: Figure out how to include performance monitoring
+
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 const firebaseAuth = firebaseApp.auth()
 const firebaseFunctions = firebaseApp.functions()
@@ -23,32 +27,16 @@ const Timestamp = firebase.firestore.Timestamp
 const Fieldvalue = firebase.firestore.Fieldvalue
 const storage = firebase.storage()
 
-let messaging = null
-if ('PushManager' in window) {
-  messaging = firebase.messaging()
-}
-
-// Initialize Firebase Performance Monitoring.
-// firebase.performance()
-
 // Use emulators
-if (window.location.hostname === 'localhost') {
-  firebaseStore.settings({
-    host: 'localhost:8080',
-    ssl: false,
-    ignoreUndefinedProperties: true
-  })
-  firebaseFunctions.useFunctionsEmulator('http://localhost:5001')
-} else {
-  firebase.firestore().enablePersistence()
-    .catch(function (err) {
-      if (err.code === 'failed-precondition') {
-        console.log('persistence failed-precondition')
-      } else if (err.code === 'unimplemented') {
-        console.log('persistence unimplemented')
-      }
-    })
-}
+// if (window.location.hostname === 'localhost') {
+//   firebaseStore.settings({
+//     host: 'localhost:8080',
+//     ssl: false,
+//     ignoreUndefinedProperties: true
+//   })
+//   firebaseFunctions.useFunctionsEmulator('http://localhost:5001')
+//   firebaseAuth.useEmulator('http://localhost:9099')
+// }
 
 // *** Use Firebase server
 firebaseStore.settings({
@@ -56,7 +44,7 @@ firebaseStore.settings({
   ignoreUndefinedProperties: true
 })
 
-firebase.firestore().enablePersistence({ synchronizeTabs: true })
+firebase.firestore().enablePersistence()
   .catch(function (error) {
     if (error.code === 'failed-precondition') {
       console.log('persistence failed-precondition')
@@ -66,12 +54,10 @@ firebase.firestore().enablePersistence({ synchronizeTabs: true })
   })
 
 export {
-  firebase,
   firebaseAuth,
   firebaseFunctions,
   firebaseStore,
   Timestamp,
   Fieldvalue,
-  storage,
-  messaging
+  storage
 }

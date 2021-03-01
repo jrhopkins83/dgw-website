@@ -79,28 +79,6 @@
           Rotate Right
         </q-tooltip>
       </q-btn>
-      <!-- <q-btn
-        flat
-        color="white"
-        data-action="flip-horizontal"
-        icon="flip_to_back"
-        @click="click('flip-horizontal')"
-      >
-        <q-tooltip content-class="bg-info">
-          Flip Horizontal
-        </q-tooltip>
-      </q-btn>
-      <q-btn
-        flat
-        color="white"
-        data-action="flip-vertical"
-        icon="flip_to_front"
-        @click="click('flip-vertical')"
-      >
-        <q-tooltip content-class="bg-info">
-          Flip Vertical
-        </q-tooltip>
-      </q-btn> -->
     </q-btn-group>
 
   </div>
@@ -110,14 +88,14 @@
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { compressImage } from 'src/functions/functions-common'
-import { firebaseStore, storage } from 'boot/firebase'
+import { storage } from 'boot/firebase'
 import { mapActions } from 'vuex'
 
 export default {
   name: 'Editor',
 
   props: {
-    userInfo: {
+    player: {
       type: Object
     },
     imageType: {
@@ -135,17 +113,21 @@ export default {
       cropBoxData: null,
       croppedData: null,
       cropper: null,
-      uploadProgress: 0
+      uploadProgress: 0,
+      project: 'fir-authdemo-5cd82'
     }
   },
 
   computed: {
     user_avatar: function () {
-      if (this.userInfo.avatar) {
-        return this.userInfo.avatar
+      if (this.player.avatar) {
+        return this.player.avatar
       } else {
         return this.data.url
       }
+    },
+    bucketUrl: function () {
+      return `https://firebasestorage.googleapis.com/v0/b/${this.project}.appspot.com`
     }
   },
 
@@ -397,16 +379,17 @@ export default {
       }
     },
 
-    async upload () {
+    async upload (editor) {
       const { data } = this
 
       if (data.cropped) {
         // Compress and convert to blob
         const uploadFile = await compressImage(data.roundedCanvas)
 
-        const fileName = `${this.userInfo.firstName}_${this.userInfo.lastName}.png`
+        const fileName = `${this.player.firstName}_${this.player.lastName}.png`
 
         const upload = {
+          editor: editor,
           imageType: this.imageType,
           uploadFile: uploadFile,
           name: fileName
@@ -429,7 +412,7 @@ export default {
       const storageRef = storage.ref()
       const storagePath = `user_${upload.imageType}s/${upload.name}`
       const uploadTask = storageRef.child(storagePath).put(upload.uploadFile, metadata)
-
+      // gs://fir-authdemo-5cd82.appspot.com/user_photos/Roger_Hopkins.png
       // Listen for state changes, errors, and completion of the upload.
       uploadTask.on('state_changed', // or 'state_changed'
         (snapshot) => {
@@ -448,7 +431,8 @@ export default {
               console.log('Upload is running')
               break
           }
-        }, (error) => {
+        },
+        (error) => {
           // A full list of error codes is available at
           // https://firebase.google.com/docs/storage/web/handle-errors
           switch (error.code) {
@@ -464,50 +448,17 @@ export default {
               // Unknown error occurred, inspect error.serverResponse
               break
           }
-        }, () => {
-          // Upload completed successfully, now we can get the download URL
+          return error
+        },
+        () => {
+          // Upload completed successfully, now we can save the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(async (downloadURL) => {
-            if (upload.imageType === 'avatar') {
-              this.update({
-                loading: false,
-                avatar: downloadURL,
-                avatarName: upload.name
-              })
-              if (this.data.avatar) {
-                const playerAvatar = {
-                  avatar: {
-                    avatarUrl: this.data.avatar,
-                    avatarName: this.data.avatarName
-                  }
-                }
-                const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
-                playerRef.update(playerAvatar)
-                  .then(() => {
-                    this.setUserInfo(playerAvatar)
-                    // return this.$emit('completed')
-                  })
-              }
-            } else {
-              this.update({
-                loading: false,
-                photo: downloadURL,
-                photoName: upload.name
-              })
-              if (this.data.photo) {
-                const playerPhoto = {
-                  photo: {
-                    photoUrl: this.data.photo,
-                    photoName: this.data.photoName
-                  }
-                }
-                const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
-                playerRef.update(playerPhoto)
-                  .then(() => {
-                    this.setUserInfo(playerPhoto)
-                    // return this.$emit('completed')
-                  })
-              }
-            }
+            this.update({
+              loading: false,
+              imageUrl: downloadURL,
+              imageName: upload.name
+            })
+            this.$emit('saveUrl')
           })
         })
     },

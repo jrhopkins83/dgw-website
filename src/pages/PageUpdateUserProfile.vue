@@ -5,181 +5,86 @@
       enter-active-class="animated zoomIn"
       leave-active-class="animated zoomOut"
     >
-      <div
-        class="container"
-        v-if="leagueInfoLoaded"
-      >
-        <div class="outline">
-          <div class="row header">
-            <div class="col-12 header__title">
-              <div class="header__title text-center text-h3 text-bold q-mt-md">
-                Edit Profile
-              </div>
-            </div>
-          </div>
-          <div class="row profile-section q-pa-md">
-            <div class="col-2 profile-section__photo q-px-xs">
-              <div class="photo-area">
-
-                <div class="text-center q-mb-xl">
-                  <q-avatar size="78px">
-                    <img :src="user_avatar.avatarUrl">
-                  </q-avatar>
-                  <q-btn
-                    color="grey-10"
-                    no-caps
-                    label="Change Avatar"
-                    class="q-mt-md"
-                    @click="changeAvatar"
-                  >
-                    <q-tooltip content-class="bg-info">Your avatar will be displayed on all standings and results lisits</q-tooltip>
-                  </q-btn>
-                </div>
-                <div class="text-center">
-                  <q-avatar size="78px">
-                    <img :src="user_photo.photoUrl">
-                  </q-avatar>
-                  <q-btn
-                    color="grey-10"
-                    no-caps
-                    label="Change Photo"
-                    class="q-mt-md"
-                    @click="changePhoto"
-                  >
-                    <q-tooltip content-class="bg-info">Your avatar will be displayed on the player list</q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
-            </div>
-            <div class="col-10 profile-section__user-info q-px-md">
-              <edit-player
-                :player="userInfo"
-                :heading="heading"
-                :mode="'profile'"
-                @submit="savePlayer"
-                @close="$router.go(-1)"
-              />
-
-            </div>
-          </div>
-        </div>
+      <div class="container">
+        <update-player-profile
+          :playerToEdit="userInfo"
+          :editor="'user'"
+          :mode="mode"
+          :editMode="editMode"
+          @saveChanges="saveChanges"
+          @close="closeEditor"
+        >
+          Update Profile
+        </update-player-profile>
       </div>
     </transition>
-    <q-dialog v-model="showChangePhoto">
-      <modal-change-photo
-        :image="user_avatar.url"
-        :imageName="user_avatar.name"
-        :userInfo="userInfo"
-        :imageType="imageType"
-        @close="showChangePhoto=false"
-      />
-    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { firebaseStore } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
-// import { firebaseStore } from 'src/boot/firebase'
+import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
   name: 'EditProfile',
   components: {
-    modalChangePhoto: require('components/Players/Modals/ModalChangePhoto.vue').default,
-    editPlayer: require('components/Players/Modals/ModalAddEditPlayer .vue').default
+    updatePlayerProfile: require('components/Players/Modals/ModalUpdatePlayer.vue').default
   },
+  mixins: [mixinAddEditPlayer],
   data () {
     return {
+      mode: 'edit',
       heading: 'Contact Info',
+      editMode: 'edit',
       showChangePhoto: false,
       imageType: ''
     }
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leagueInfoLoaded', 'userInfo']),
-    user: function () {
-      const user = {
-        avatar: this.userInfo.avatar.avatarUrl,
-        avatarName: this.userInfo.avatarName.avatarName,
-        photo: this.userInfo.photo.photoUrl,
-        photoName: this.userInfo.photoName,
-        email: this.userInfo.email,
-        emailOptin: this.userInfo.emailOptin,
-        firstName: this.userInfo.firstName,
-        isAdmin: this.userInfo.isAdmin,
-        lastName: this.userInfo.lastName,
-        nickName: this.userInfo.nickName,
-        notificationOptin: this.userInfo.notificationOptin,
-        onlineName: this.userInfo.onlineName,
-        phoneNumber: this.userInfo.phoneNumber,
-        playerID: this.userInfo.playerID,
-        uid: this.userInfo.uid
-      }
-      return user
-    },
-    user_avatar: function () {
-      if (this.userInfo.avatar.avatarUrl) {
-        return this.userInfo.avatar
-      } else {
-        const image = {
-          avatarUrl: 'default.jpg',
-          avatarName: 'default.jpg'
-        }
-        return image
-      }
-    },
-    user_photo: function () {
-      if (this.userInfo.photo.photoUrl) {
-        return this.userInfo.photo
-      } else {
-        const image = {
-          photoUrl: 'default.jpg',
-          photoName: 'default.jpg'
-        }
-        return image
-      }
-    }
+    ...mapGetters('leagueSettings', ['leagueInfoLoaded', 'userInfo'])
   },
   methods: {
     ...mapActions('leagueSettings', ['setUserInfo', 'saveUserInfoLS']),
-    changePhoto () {
-      this.imageType = 'photo'
-      this.showChangePhoto = true
-    },
-    changeAvatar () {
-      this.imageType = 'avatar'
-      this.showChangePhoto = true
-    },
-    async savePlayer (player) {
-      this.$q.loading.show({
-        message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
-      })
-      const playerNames = {
-        firstName: player.firstName,
-        lastName: player.lastName,
-        nickName: player.nickName,
-        onlineName: player.onlineName
-      }
-      const playerRef = firebaseStore.collection('players').doc(this.userInfo.playerID)
-      await playerRef.update(playerNames)
-      this.setUserInfo(playerNames)
-
-      const playerContactInfo = {
-        email: player.email,
-        phoneNumber: player.phoneNumber,
-        emailOptin: player.emailOptin,
-        notificationOptin: player.notificationOptin
-      }
-      const userRef = firebaseStore.collection('subscribers').doc(this.userInfo.playerID)
-      await userRef.update(playerContactInfo)
-      this.setUserInfo(playerContactInfo)
-      this.saveUserInfoLS()
-
-      this.$q.loading.hide()
-      showMessage('Success', 'Profile updated')
+    closeEditor () {
+      this.showEditPlayer = false
+      this.playerToEdit = {}
       this.$router.go(-1)
+    },
+    async saveChanges (playerToSubmit) {
+      this.$q.loading.show({
+        message: `<b>Player ${this.editMode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
+      })
+      try {
+        await this.savePlayer(playerToSubmit)
+        if (playerToSubmit.avatarChanged) {
+          const playerAvatar = {
+            avatar: {
+              avatarUrl: playerToSubmit.avatar.avatarUrl,
+              avatarName: playerToSubmit.avatar.avatarName
+            }
+          }
+          this.setUserInfo(playerAvatar)
+        }
+        if (playerToSubmit.photoChanged) {
+          const playerPhoto = {
+            photo: {
+              photoUrl: playerToSubmit.photo.photoUrl,
+              photoName: playerToSubmit.photo.photoName
+            }
+          }
+          this.setUserInfo(playerPhoto)
+        }
+
+        showMessage('Success', `Player ${this.editMode} complete`)
+        this.$q.loading.hide()
+        this.$router.go(-1)
+      } catch (error) {
+        showMessage('error', `Error ${this.editMode}ing player - ${error}`)
+        this.$q.loading.hide()
+      }
     }
+
   },
   async beforeMount () {
 

@@ -21,9 +21,9 @@
               ref="editor"
               :progress.sync="progress"
               :data="data"
-              :userInfo="userInfo"
+              :player="player"
               :imageType="imageType"
-              @save="$emit('save', data.avatarUrl)"
+              @saveUrl="saveUrl"
               @close="$emit('close')"
             />
             <loader
@@ -37,11 +37,6 @@
               ref="viewer"
               :data="data"
             />
-          <!-- <div class="crop-preview">
-            <div class="canvas">
-              <img :src="data.croppedUrl" alt="">
-            </div>
-          </div> -->
         </div>
 
       </q-card-section>
@@ -57,6 +52,7 @@
       <q-card-section class="actions q-pa-none">
         <q-card-actions align="evenly">
           <q-btn
+            v-if="data.name"
             label="Change Photo"
             color="grey-9"
             style="width:14rem;"
@@ -95,13 +91,13 @@ export default {
     editor: require('components/Players/Modals/Photo/editor.vue').default
   },
   props: {
-    userInfo: {
+    player: {
       type: Object
     },
     imageUrl: {
       type: String
     },
-    itemId: {
+    editor: {
       type: String
     },
     imageType: {
@@ -120,8 +116,8 @@ export default {
         croppedUrl: '',
         roundedCanvas: '',
         type: '',
-        imageName: this.imageName,
-        imageUrl: this.imageUrl
+        imageName: '',
+        imageUrl: ''
       },
       progress: 0
     }
@@ -154,7 +150,7 @@ export default {
           break
 
         case 'upload':
-          await editor.upload()
+          await editor.upload(this.editor)
           break
 
         default:
@@ -165,7 +161,14 @@ export default {
     },
     async savePhoto () {
       await this.change('upload')
+    },
+    async saveUrl () {
+      const image = {
+        imageUrl: this.data.imageUrl,
+        imageName: this.data.imageName
+      }
       this.change('stop')
+      this.$emit('updateImage', image)
       this.$emit('close')
     }
   }

@@ -85,14 +85,8 @@ export const mixinAddEditPlayer = {
         lastName: player.lastName,
         nickName: player.nickName,
         onlineName: player.onlineName,
-        avatar: {
-          avatarUrl: '',
-          avatarName: ''
-        },
-        photo: {
-          photoUrl: '',
-          photoName: ''
-        }
+        avatar: player.avatar,
+        photo: player.photo
       }
 
       const playerContactInfo = {
@@ -102,7 +96,7 @@ export const mixinAddEditPlayer = {
         notificationOptin: player.notificationOptin
       }
 
-      if (this.mode === 'edit') {
+      if (this.editMode === 'edit') {
         const playerRef = firebaseStore.collection('players').doc(player.playerID)
         await playerRef.update(playerNames)
         if (player.createUser) {
@@ -126,6 +120,7 @@ export const mixinAddEditPlayer = {
         const playerID = await this.addNewPlayer(playerNames)
         if (playerID) {
           playerContactInfo.playerID = playerID
+          playerContactInfo.emailOptin = true
           await this.createSubscriber(playerContactInfo)
           if (playerContactInfo.email) {
             const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')

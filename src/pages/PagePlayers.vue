@@ -46,9 +46,10 @@
             :editor="'admin'"
             :mode="mode"
             :editMode="editMode"
+            @saveChanges="saveChanges"
             @close="closeEditor"
           >
-            Edit Player
+            {{ textMode}} Player
           </update-player-profile>
         </q-dialog>
 
@@ -89,7 +90,7 @@
 <script>
 // import { firebaseStore } from 'src/boot/firebase'
 import { mapGetters, mapActions } from 'vuex'
-import { showMessage } from 'src/functions/functions-common'
+import { showMessage, toTitleCase } from 'src/functions/functions-common'
 import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
@@ -125,6 +126,9 @@ export default {
       } else {
         return false
       }
+    },
+    textMode: function () {
+      return toTitleCase(this.editMode)
     },
     playerList: function () {
       const players = Object.values(this.playersFiltered)
@@ -163,6 +167,7 @@ export default {
     },
     addPlayer () {
       this.editMode = 'add'
+      this.playerToEdit.emailOptIn = true
       this.showEditPlayer = true
     },
     editPlayer (value) {
@@ -190,6 +195,22 @@ export default {
     closeEditor () {
       this.showEditPlayer = false
       this.playerToEdit = {}
+    },
+    async saveChanges (playerToSubmit) {
+      this.$q.loading.show({
+        message: `<b>Player ${this.editMode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
+      })
+      try {
+        await this.savePlayer(playerToSubmit)
+
+        showMessage('Success', `Player ${this.editMode} complete`)
+        this.$q.loading.hide()
+        this.closeEditor()
+      } catch (error) {
+        showMessage('error', `Error ${this.editMode}ing player - ${error}`)
+        this.$q.loading.hide()
+        this.closeEditor()
+      }
     }
   },
   created () {

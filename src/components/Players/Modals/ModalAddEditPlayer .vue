@@ -15,7 +15,7 @@
             <div class="col-12 col-md-6 q-pa-sm">
               <q-input
                 ref="first"
-                v-model="formData.firstName"
+                v-model="localPlayer.firstName"
                 lazy-rules
                 label="First Name"
                 stack-label
@@ -29,7 +29,7 @@
             <div class="col-12 col-md-6 q-pa-sm">
               <q-input
                 ref="last"
-                v-model="formData.lastName"
+                v-model="localPlayer.lastName"
                 label="Last Name"
                 stack-label
                 clearable
@@ -46,7 +46,7 @@
               <q-input
                 ref="email"
                 type="email"
-                v-model="formData.email"
+                v-model="localPlayer.email"
                 @change="checkUserId"
                 lazy-rules
                 clearable
@@ -64,7 +64,7 @@
               <q-input
                 ref="phone"
                 type="tel"
-                v-model="formData.phoneNumber"
+                v-model="localPlayer.phoneNumber"
                 lazy-rules
                 clearable
                 clear-icon="close"
@@ -80,7 +80,7 @@
             <div class="col-12 col-md-6 q-pa-sm">
               <q-input
                 ref="nickName"
-                v-model="formData.nickName"
+                v-model="localPlayer.nickName"
                 label="Nick Name"
                 stack-label
                 clearable
@@ -92,7 +92,7 @@
             <div class="col-12 col-md-6 q-pa-sm">
               <q-input
                 ref="onlineName"
-                v-model="formData.onlineName"
+                v-model="localPlayer.onlineName"
                 label="Online Name"
                 stack-label
                 clearable
@@ -102,10 +102,10 @@
               />
             </div>
           </div>
-          <div class="q-ml-sm q-my-md" v-if="formData.email">
+          <div class="q-ml-sm q-my-md" v-if="localPlayer.email">
             <div class="q-gutter-sm">
               <q-checkbox
-                v-model="formData.emailOptin"
+                v-model="localPlayer.emailOptin"
                 color="blue-7"
                 label="Receive email communications"
               />
@@ -115,19 +115,6 @@
 
       </q-card-section>
 
-        <q-card-actions align="center">
-          <q-btn
-            label="Submit"
-            color="blue-9"
-            @click="submitForm"
-          />
-
-          <q-btn
-            label="Cancel"
-            color="primary"
-            @click="$emit('close')"
-          />
-        </q-card-actions>
     </q-card>
   </div>
 </template>
@@ -136,7 +123,6 @@
 import formMixin from 'src/mixins/form'
 import { selectAll } from 'src/directives/directive-select-all'
 import { email, required, phone } from 'src/utils/validators'
-import { toTitleCase } from 'src/functions/functions-common'
 
 export default {
   mixins: [formMixin],
@@ -144,34 +130,28 @@ export default {
     modalHeader: require('components/Modals/Shared/ModalHeader.vue').default
   },
   props: {
-    player: {
+    value: {
       type: Object
     },
     heading: String,
-    mode: String
+    mode: String,
+    createUser: Boolean
   },
   data () {
     return {
       noEmail: true,
-      noUserId: false,
-      formData: {
-        playerID: null,
-        firstName: null,
-        lastName: null,
-        onlineName: null,
-        nickName: null,
-        email: null,
-        phoneNumber: null,
-        emailOptin: null,
-        notificationOptin: null,
-        createUser: false
-      },
-      playerToSubmit: {},
-      validation: false
+      noUserId: false
     }
   },
   computed: {
-
+    localPlayer: {
+      get () {
+        return this.value
+      },
+      set (container) {
+        this.$emit('input', container)
+      }
+    }
   },
   methods: {
     email,
@@ -180,46 +160,7 @@ export default {
     async checkUserId () {
       this.$refs.email.validate()
       if (this.noEmail && !this.$refs.email.hasError) {
-        this.formData.createUser = true
-      }
-    },
-    async submitForm () {
-      this.$refs.first.validate()
-      this.$refs.last.validate()
-      this.$refs.email.validate()
-
-      // if (this.$v.$invalid) {
-      //   this.$nextTick(() => this.focusFirstStatus())
-      if (this.$refs.first.hasError || this.$refs.last.hasError || this.$refs.email.hasError) {
-        this.formHasError = true
-      }
-
-      let nickName = null
-      let onlineName = null
-
-      if (!this.formHasError) {
-        if (this.formData.nickName) {
-          nickName = this.formData.nickName.trim()
-        }
-
-        if (this.formData.onlineName) {
-          onlineName = this.formData.onlineName.trim()
-        }
-
-        this.playerToSubmit = {
-          playerID: this.player.playerID,
-          firstName: toTitleCase(this.formData.firstName).trim(),
-          lastName: toTitleCase(this.formData.lastName).trim(),
-          email: this.formData.email,
-          phoneNumber: this.formData.phoneNumber,
-          nickName: nickName,
-          onlineName: onlineName,
-          emailOptin: this.formData.emailOptin,
-          notificationOptin: this.formData.notificationOptin,
-          createUser: this.formData.createUser
-        }
-
-        this.$emit('submit', this.playerToSubmit)
+        this.$emit('update:createUser', true)
       }
     }
   },
@@ -227,15 +168,11 @@ export default {
     selectAll
   },
   mounted () {
-    if (this.player) {
-      this.formData = Object.assign({}, this.player)
-      this.formData.createUser = false
-      if (this.player.email.length) {
+    if (this.value) {
+      this.createUser = false
+      if (this.value.email) {
         this.noEmail = false
       }
-    } else {
-      this.formData.emailOptin = true
-      this.formData.notificationOptin = true
     }
   }
 

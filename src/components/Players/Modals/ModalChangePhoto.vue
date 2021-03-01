@@ -80,7 +80,6 @@
 </template>
 
 <script>
-import { firebaseStore } from 'boot/firebase'
 
 export default {
   name: 'ModalChangePhoto',
@@ -164,32 +163,12 @@ export default {
       await this.change('upload')
     },
     async saveUrl () {
-      if (this.imageType === 'avatar') {
-        const playerAvatar = {
-          avatar: {
-            avatarUrl: this.data.imageUrl,
-            avatarName: this.data.imageName
-          }
-        }
-        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
-        await playerRef.update(playerAvatar)
-        if (this.editor === 'user') {
-          this.setUserInfo(playerAvatar)
-        }
-      } else {
-        const playerPhoto = {
-          photo: {
-            photoUrl: this.data.imageUrl,
-            photoName: this.data.imageName
-          }
-        }
-        const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
-        await playerRef.update(playerPhoto)
-        if (this.editor === 'user') {
-          this.setUserInfo(playerPhoto)
-        }
+      const image = {
+        imageUrl: this.data.imageUrl,
+        imageName: this.data.imageName
       }
       this.change('stop')
+      this.$emit('updateImage', image)
       this.$emit('close')
     }
   }

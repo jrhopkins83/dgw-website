@@ -7,12 +7,14 @@
     >
       <div class="container">
         <update-player-profile
-          :player="userInfo"
+          :playerToEdit="userInfo"
           :editor="'user'"
-          @submit="savePlayer"
-          @close="$router.go(-1)"
+          :mode="mode"
+          :editMode="editMode"
+          @saveChanges="saveChanges"
+          @close="closeEditor"
         >
-          Edit Player
+          Update Profile
         </update-player-profile>
       </div>
     </transition>
@@ -21,89 +23,68 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { firebaseStore } from 'boot/firebase'
 import { showMessage } from 'src/functions/functions-common'
-// import { firebaseStore } from 'src/boot/firebase'
+import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
   name: 'EditProfile',
   components: {
     updatePlayerProfile: require('components/Players/Modals/ModalUpdatePlayer.vue').default
   },
+  mixins: [mixinAddEditPlayer],
   data () {
     return {
+      mode: 'edit',
       heading: 'Contact Info',
+      editMode: 'edit',
       showChangePhoto: false,
       imageType: ''
     }
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leagueInfoLoaded', 'userInfo']),
-    player: function () {
-      return this.userInfo
-    },
-    user_avatar: function () {
-      if (this.player.avatar.avatarUrl) {
-        return this.player.avatar
-      } else {
-        const image = {
-          avatarUrl: 'default.jpg',
-          avatarName: 'default.jpg'
-        }
-        return image
-      }
-    },
-    user_photo: function () {
-      if (this.player.photo.photoUrl) {
-        return this.player.photo
-      } else {
-        const image = {
-          photoUrl: 'default.jpg',
-          photoName: 'default.jpg'
-        }
-        return image
-      }
-    }
+    ...mapGetters('leagueSettings', ['leagueInfoLoaded', 'userInfo'])
   },
   methods: {
     ...mapActions('leagueSettings', ['setUserInfo', 'saveUserInfoLS']),
-    changePhoto () {
-      this.imageType = 'photo'
-      this.showChangePhoto = true
-    },
-    changeAvatar () {
-      this.imageType = 'avatar'
-      this.showChangePhoto = true
-    },
-    async savePlayer (player) {
-      this.$q.loading.show({
-        message: '<b>Adding New Players</b> is in progress.<br/><span class="text-info">Hang on...</span>'
-      })
-      const playerNames = {
-        firstName: player.firstName,
-        lastName: player.lastName,
-        nickName: player.nickName,
-        onlineName: player.onlineName
-      }
-      const playerRef = firebaseStore.collection('players').doc(this.player.playerID)
-      await playerRef.update(playerNames)
-      this.setUserInfo(playerNames)
-
-      const playerContactInfo = {
-        email: player.email,
-        phoneNumber: player.phoneNumber,
-        emailOptin: player.emailOptin,
-        notificationOptin: player.notificationOptin
-      }
-      const userRef = firebaseStore.collection('subscribers').doc(this.player.playerID)
-      await userRef.update(playerContactInfo)
-      this.setUserInfo(playerContactInfo)
-      this.saveUserInfoLS()
-
-      this.$q.loading.hide()
-      showMessage('Success', 'Profile updated')
+    closeEditor () {
+      this.showEditPlayer = false
+      this.playerToEdit = {}
       this.$router.go(-1)
+    },
+    async saveChanges (playerToSubmit) {
+      this.$q.loading.show({
+        message: `<b>Player ${this.editMode}</b> is in progress.<br/><span class="text-info">Hang on...</span>`
+      })
+      try {
+        await this.savePlayer(playerToSubmit)
+        if (playerToSubmit.avatarChanged) {
+          const playerAvatar = {
+            avatar: {
+              avatarUrl: playerToSubmit.avatar.avatarUrl,
+              avatarName: playerToSubmit.avatar.avatarName
+            }
+          }
+          this.setUserInfo(playerAvatar)
+        }
+        if (playerToSubmit.photoChanged) {
+          const playerPhoto = {
+            photo: {
+              photoUrl: playerToSubmit.photo.photoUrl,
+              photoName: playerToSubmit.photo.photoName
+            }
+          }
+          this.setUserInfo(playerPhoto)
+        }
+
+        showMessage('Success', `Player ${this.editMode} complete`)
+        this.$q.loading.hide()
+        this.$router.go(-1)
+      } catch (error) {
+        showMessage('error', `Error ${this.editMode}ing player - ${error}`)
+        this.$q.loading.hide()
+      }
     }
+
   },
   async beforeMount () {
 

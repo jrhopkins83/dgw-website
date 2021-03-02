@@ -1,6 +1,10 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 let webPush = require('web-push')
+const functions = require('firebase-functions')
+const firestore = require('@google-cloud/firestore')
+
+const client = new firestore.v1.FirestoreAdminClient()
 
 admin.initializeApp()
 
@@ -69,7 +73,7 @@ exports.setPlayerClaim = functions.https.onCall((data, context) => {
 exports.createUser = functions.https.onCall((data, context) => {
   if (context.auth.token.isAdmin !== true) {
     return {
-      error: 'Only admins can add other admins'
+      error: 'Only admins can create users.'
     }
   }
   return admin.auth().createUser(data)
@@ -170,6 +174,7 @@ exports.weeklySummary = functions.firestore.document('/weeklyResults/{id}')
         }
       }
     }
+    return true
   })
 
 function updateSeasonScore (event, playerID, totals) {
@@ -287,7 +292,7 @@ async function cleanupSubscriptions (pushError) {
   } catch (error) {
     console.error('Error cleaning up subscription: ', error, JSON.stringify(pushError))
   }
-
+  return true
 }
 
 // Cleans up the web push subscriptions that are no longer valid.
@@ -308,3 +313,29 @@ function cleanupTokens (response, tokens) {
   })
   return Promise.all(tokensDelete)
 }
+
+// Backup functions
+function backupFirestore () {
+  const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT
+  const databaseName = client.databasePath(projectId, '(default)')
+
+  return client
+    .exportDocuments({
+      name: databaseName,
+      // Add your bucket name here
+      outputUriPrefix: 'gs://your-bucket-name',
+      // Empty array == all collections
+      collectionIds: []
+    })
+    .then(([response]) => {
+      console.log(`Operation Name: ${response.name}`)
+      return response
+    })
+    .catch(err => {
+      console.error(err)
+      throw new Error('Export operation failed')
+    })
+}
+
+// Schedule the automated backup
+functions.pubsub.schedule('every 24 hours').onRun(backupFirestore)

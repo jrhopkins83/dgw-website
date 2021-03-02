@@ -323,7 +323,7 @@ function backupFirestore () {
     .exportDocuments({
       name: databaseName,
       // Add your bucket name here
-      outputUriPrefix: 'gs://your-bucket-name',
+      outputUriPrefix: 'gs://donkeys-gone-wild-backups',
       // Empty array == all collections
       collectionIds: []
     })

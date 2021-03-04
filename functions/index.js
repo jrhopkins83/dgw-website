@@ -1,7 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 let webPush = require('web-push')
-const functions = require('firebase-functions')
 const firestore = require('@google-cloud/firestore')
 
 const client = new firestore.v1.FirestoreAdminClient()

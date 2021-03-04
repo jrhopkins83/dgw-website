@@ -338,4 +338,4 @@ function backupFirestore () {
 }
 
 // Schedule the automated backup
-functions.pubsub.schedule('every 24 hours').onRun(backupFirestore)
+functions.pubsub.schedule('every 7 days').onRun(backupFirestore)

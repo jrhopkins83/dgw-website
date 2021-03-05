@@ -7,14 +7,14 @@ import 'firebase/storage'
 
 // // PROD FIREBASE CONFIG
 var firebaseConfig = {
-  apiKey: 'AIzaSyD6Uu3fQj7LcUCx9sXzsqLUKQoDmsocsW4',
-  authDomain: 'donkeys-gone-wild.firebaseapp.com',
-  databaseURL: 'https://donkeys-gone-wild.firebaseio.com',
-  projectId: 'donkeys-gone-wild',
-  storageBucket: 'donkeys-gone-wild.appspot.com',
-  messagingSenderId: '633549083760',
-  appId: '1:633549083760:web:5cebf6557c754f731bd0b5',
-  measurementId: 'G-ZTHN3MFG0R'
+  apiKey: '',
+  authDomain: '',
+  databaseURL: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
+  measurementId: ''
 }
 
 // Initialize Firebase Performance Monitoring.

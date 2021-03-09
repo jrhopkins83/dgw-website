@@ -9,15 +9,15 @@
     },
     "prod": {
       "hosting": {
-        "prod": [
+        "production": [
           "donkeysgonewild.com"
         ]
       }
     }
   },
   "projects": {
-    "prod": "donkeys-gone-wild",
-    "staging": "fir-authdemo-5cd82",
-    "default": "fir-authdemo-5cd82"
+    "production": "donkeys-gone-wild",
+    "staging": "DGW-Test",
+    "default": "DGW-Test"
   }
 }

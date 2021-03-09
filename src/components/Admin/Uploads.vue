@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="q-pa-xs"
-    style="max-width: 400px"
-    v-if="true"
-  >
-    <q-card class="my-card">
+  <div class="q-pa-xs" style="max-width: 400px" v-if="true">
+    <q-card class="my-card" v-if="devMode">
       <q-card-section class="q-pa-xs">
         <div class="text-subtitle1 text-weight-bold text-center">Bulk Uploads</div>
       </q-card-section>
@@ -16,23 +12,14 @@
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-md">
           <q-card class="my-card">
-            <q-card-actions
-              class="q-mb-xs justify-evenly"
-              align="center"
-            >
-              <q-btn
-                color="blue-6"
-                label="Upload dates"
-                @click="dates=true"
-              />
+            <q-card-actions class="q-mb-xs justify-evenly" align="center">
+              <q-btn color="blue-6" label="Upload dates" @click="dates=true" />
             </q-card-actions>
           </q-card>
-          <q-dialog
-            v-model="dates"
-          >
+          <q-dialog v-model="dates">
             <q-card style="width: 300px; max-width: 80vw;">
               <q-card-section>
-                <input type="file" id="dateFile" value="Import"/>
+                <input type="file" id="dateFile" value="Import" />
               </q-card-section>
               <q-card-actions align="right" class="bg-white text-teal">
                 <q-btn label="Cancel" color="negative" v-close-popup />
@@ -41,10 +28,7 @@
             </q-card>
           </q-dialog>
           <q-inner-loading :showing="updating">
-            <q-spinner-gears
-              size="50px"
-              color="blue-9"
-            />
+            <q-spinner-gears size="50px" color="blue-9" />
           </q-inner-loading>
         </q-form>
       </q-card-section>
@@ -54,23 +38,92 @@
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-md">
           <q-card class="my-card">
-            <q-card-actions
-              class="q-mb-xs justify-evenly"
-              align="center"
-            >
-              <q-btn
-                color="blue-6"
-                label="Upload players"
-                @click="players=true"
-              />
+            <q-card-actions class="q-mb-xs justify-evenly" align="center">
+              <q-btn color="blue-6" label="Upload League Info" @click="league=true" />
             </q-card-actions>
           </q-card>
-          <q-dialog
-            v-model="players"
-          >
+          <q-dialog v-model="league">
             <q-card style="width: 300px; max-width: 80vw;">
               <q-card-section>
-                <input type="file" id="playerFile" value="Import"/>
+                <input type="file" id="leagueFile" value="Import" />
+              </q-card-section>
+              <q-card-actions align="right" class="bg-white text-teal">
+                <q-btn label="Cancel" color="negative" v-close-popup />
+                <q-btn label="Upload" color="blue-9" @click="leagueUpload" />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+          <q-inner-loading :showing="updating">
+            <q-spinner-gears size="50px" color="blue-9" />
+          </q-inner-loading>
+        </q-form>
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-section class="q-pa-sm">
+        <q-form class="q-gutter-md">
+          <q-card class="my-card">
+            <q-card-actions class="q-mb-xs justify-evenly" align="center">
+              <q-btn color="blue-6" label="Upload Game Templates" @click="templates=true" />
+            </q-card-actions>
+          </q-card>
+          <q-dialog v-model="templates">
+            <q-card style="width: 300px; max-width: 80vw;">
+              <q-card-section>
+                <input type="file" id="leagueFile" value="Import" />
+              </q-card-section>
+              <q-card-actions align="right" class="bg-white text-teal">
+                <q-btn label="Cancel" color="negative" v-close-popup />
+                <q-btn label="Upload" color="blue-9" @click="templateUpload" />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+          <q-inner-loading :showing="updating">
+            <q-spinner-gears size="50px" color="blue-9" />
+          </q-inner-loading>
+        </q-form>
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-section class="q-pa-sm">
+        <q-form class="q-gutter-md">
+          <q-card class="my-card">
+            <q-card-actions class="q-mb-xs justify-evenly" align="center">
+              <q-btn color="blue-6" label="Upload Points" @click="points=true" />
+            </q-card-actions>
+          </q-card>
+          <q-dialog v-model="points">
+            <q-card style="width: 300px; max-width: 80vw;">
+              <q-card-section>
+                <input type="file" id="pointsFile" value="Import" />
+              </q-card-section>
+              <q-card-actions align="right" class="bg-white text-teal">
+                <q-btn label="Cancel" color="negative" v-close-popup />
+                <q-btn label="Upload" color="blue-9" @click="pointsUpload" />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+          <q-inner-loading :showing="updating">
+            <q-spinner-gears size="50px" color="blue-9" />
+          </q-inner-loading>
+        </q-form>
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-section class="q-pa-sm">
+        <q-form class="q-gutter-md">
+          <q-card class="my-card">
+            <q-card-actions class="q-mb-xs justify-evenly" align="center">
+              <q-btn color="blue-6" label="Upload Players" @click="players=true" />
+            </q-card-actions>
+          </q-card>
+          <q-dialog v-model="players">
+            <q-card style="width: 300px; max-width: 80vw;">
+              <q-card-section>
+                <input type="file" id="playerFile" value="Import" />
               </q-card-section>
               <q-card-actions align="right" class="bg-white text-teal">
                 <q-btn label="Cancel" color="negative" v-close-popup />
@@ -79,10 +132,7 @@
             </q-card>
           </q-dialog>
           <q-inner-loading :showing="updating">
-            <q-spinner-gears
-              size="50px"
-              color="blue-9"
-            />
+            <q-spinner-gears size="50px" color="blue-9" />
           </q-inner-loading>
         </q-form>
       </q-card-section>
@@ -92,23 +142,14 @@
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-md">
           <q-card class="my-card">
-            <q-card-actions
-              class="q-mb-xs justify-evenly"
-              align="center"
-            >
-              <q-btn
-                color="blue-6"
-                label="Upload Standings"
-                @click="standings=true"
-              />
+            <q-card-actions class="q-mb-xs justify-evenly" align="center">
+              <q-btn color="blue-6" label="Upload Standings" @click="standings=true" />
             </q-card-actions>
           </q-card>
-          <q-dialog
-            v-model="standings"
-          >
+          <q-dialog v-model="standings">
             <q-card style="width: 300px; max-width: 80vw;">
               <q-card-section>
-                <input type="file" id="standingsFile" value="Import"/>
+                <input type="file" id="standingsFile" value="Import" />
               </q-card-section>
               <q-card-actions align="right" class="bg-white text-teal">
                 <q-btn label="Cancel" color="negative" v-close-popup />
@@ -117,10 +158,7 @@
             </q-card>
           </q-dialog>
           <q-inner-loading :showing="updating">
-            <q-spinner-gears
-              size="50px"
-              color="blue-9"
-            />
+            <q-spinner-gears size="50px" color="blue-9" />
           </q-inner-loading>
         </q-form>
       </q-card-section>
@@ -135,13 +173,13 @@ import { mapActions, mapGetters } from 'vuex'
 import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 
 export default {
-  components: {
-
-  },
+  components: {},
   mixins: [mixinAddEditPlayer],
-  data () {
+  data() {
     return {
       league: false,
+      templates: false,
+      points: false,
       players: false,
       dates: false,
       standings: false,
@@ -155,11 +193,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded'])
+    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded']),
+    devMode: function () {
+      let devMode = true
+      if (process.env.ENV_TYPE === 'Running Production') {
+        devMode = false
+      }
+      return devMode
+    }
   },
   methods: {
     ...mapActions('leagueSettings', ['fbLeagueInfo']),
-    async bulkUpload () {
+    async bulkUpload() {
       // Upload JSON formatted file with players
       const files = document.getElementById('playerFile').files
       if (files.length <= 0) {
@@ -167,7 +212,7 @@ export default {
       }
       const reader = new FileReader()
 
-      reader.onload = async e => {
+      reader.onload = async (e) => {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
           // this.gameDates = await this.getLeagueDates()
@@ -223,7 +268,10 @@ export default {
                 player.playerID = playerID
                 // await this.uploadWeeklyResults(player)
                 if (playerContactInfo.email) {
-                  const newUserID = await this.createNewUser(playerContactInfo.email, 'dgwpassword')
+                  const newUserID = await this.createNewUser(
+                    playerContactInfo.email,
+                    'dgwpassword'
+                  )
                   if (newUserID) {
                     const userRef = {
                       playerID: playerID,
@@ -232,7 +280,9 @@ export default {
                     await this.createUserPlayerRef(userRef)
                     return this.setUserClaim(newUserID, playerID)
                   } else {
-                    return new Error(`Problem creating user ID for ${player.firstName} ${player.lastName}`)
+                    return new Error(
+                      `Problem creating user ID for ${player.firstName} ${player.lastName}`
+                    )
                   }
                 } else {
                   return new Error('New player not created')
@@ -250,7 +300,7 @@ export default {
       this.players = false
       reader.readAsText(files.item(0))
     },
-    async uploadWeeklyResults (player) {
+    async uploadWeeklyResults(player) {
       try {
         const playerTotals = {
           places: [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -268,7 +318,9 @@ export default {
             const keyDtTime = Timestamp.fromDate(new Date(keyDate))
             if (keyDtTime.seconds && player[key] > 0) {
               // Get date ID from date key
-              const index = this.gameDates.findIndex(item => item.txtDate === key)
+              const index = this.gameDates.findIndex(
+                (item) => item.txtDate === key
+              )
               if (index >= 0) {
                 const gameID = this.gameDates[index].id
                 // Lookup position based on points
@@ -280,10 +332,13 @@ export default {
                   if (weekPoints === 1) {
                     position = 10
                   } else {
-                    const index = pointsAssignments.findIndex(item => item.points === player[key])
+                    const index = pointsAssignments.findIndex(
+                      (item) => item.points === player[key]
+                    )
                     position = pointsAssignments[index].position
                     const totalIndex = position - 1
-                    playerTotals.places[totalIndex] = playerTotals.places[totalIndex] + 1
+                    playerTotals.places[totalIndex] =
+                      playerTotals.places[totalIndex] + 1
                     playerTotals.finalTables = playerTotals.finalTables + 1
                     if (position <= 9) {
                       finalTable = true
@@ -301,7 +356,9 @@ export default {
                   finalTable: finalTable,
                   prizeMoney: 0
                 }
-                promises.push(firebaseStore.collection('weeklyResults').add(newResult))
+                promises.push(
+                  firebaseStore.collection('weeklyResults').add(newResult)
+                )
               }
             }
             await Promise.all(promises)
@@ -313,7 +370,7 @@ export default {
         return null
       }
     },
-    async createPlayerStanding (player, playerTotals) {
+    async createPlayerStanding(player, playerTotals) {
       try {
         const playerID = player.playerID
         const newStanding = {
@@ -334,7 +391,7 @@ export default {
         console.log(`Error adding standing: ${error.message}`)
       }
     },
-    async createNewUser (email) {
+    async createNewUser(email) {
       const createUser = firebaseFunctions.httpsCallable('createUser')
       const password = 'test123'
       try {
@@ -345,7 +402,7 @@ export default {
         return null
       }
     },
-    async uploadStandings () {
+    async uploadStandings() {
       // Upload JSON formatted file with players
       const files = document.getElementById('standingsFile').files
       if (files.length <= 0) {
@@ -353,7 +410,7 @@ export default {
       }
       const reader = new FileReader()
 
-      reader.onload = e => {
+      reader.onload = (e) => {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
           const newPlayer = {}
@@ -368,7 +425,7 @@ export default {
                 newPlayer.points = player.points
                 newPlayer.numGames = player.games
                 newPlayer.pts_game = player.pts_game
-                newPlayer.winnings = 0.00
+                newPlayer.winnings = 0.0
                 await this.newPlayerStanding(newPlayer)
               }
             } catch (error) {
@@ -379,17 +436,19 @@ export default {
       }
       reader.readAsText(files.item(0))
     },
-    async getPointAssignments () {
+    async getPointAssignments() {
       try {
         // get point assignments
-        const pointAssignmentRef = firebaseStore.collection('leagueInfo').doc('1')
+        const pointAssignmentRef = firebaseStore
+          .collection('leagueInfo')
+          .doc('1')
           .collection('pointsAssignments')
           .orderBy('position')
         const pointsSnap = await pointAssignmentRef.get()
 
         if (!pointsSnap.empty) {
           const pointsAssignments = []
-          pointsSnap.forEach(doc => {
+          pointsSnap.forEach((doc) => {
             pointsAssignments.push(doc.data())
           })
           return pointsAssignments
@@ -399,9 +458,10 @@ export default {
         return null
       }
     },
-    async getLeagueDates () {
+    async getLeagueDates() {
       try {
-        const gameDatesRef = firebaseStore.collection('gameDates')
+        const gameDatesRef = firebaseStore
+          .collection('gameDates')
           .orderBy('gameDate')
         const datesSnap = await gameDatesRef.get()
         if (!datesSnap.empty) {
@@ -424,7 +484,7 @@ export default {
         return null
       }
     },
-    async uploadDates () {
+    async leagueUpload() {
       // Upload JSON formatted file with players
       const files = document.getElementById('dateFile').files
       if (files.length <= 0) {
@@ -433,12 +493,118 @@ export default {
       }
       const reader = new FileReader()
 
-      reader.onload = e => {
+      reader.onload = (e) => {
+        const results = JSON.parse(e.target.result)
+        if (results.length > 0) {
+          results.forEach(async (league) => {
+            try {
+              const newLeague = {
+                bank: league.bank,
+                currentSeason: league.currentSeason,
+                helpText: league.helpText,
+                finalTablePlayers: league.finalTablePlayers,
+                leagueName: league.leagueName,
+                leagueShortName: league.leagueShortName,
+                messageLimit: league.messageLimit,
+                pokerBrosInfo: league.pokerBrosInfo,
+                tournamentStructures: league.tournamentStructures,
+                tournamentTypes: league.tournamentTypes,
+                zoomInfo: league.zoomInfo
+              }
+              await this.addNewLeague(newLeague)
+            } catch (error) {
+              console.error('Error adding document: ', error)
+            }
+          })
+        } else {
+          showMessage('No dates found in that file')
+        }
+        this.dates = false
+      }
+      reader.readAsText(files.item(0))
+    },
+    async addNewLeague(league) {
+      try {
+        const templatesRef = firebaseStore.collection('leagueInfo').doc(1)
+        return templatesRef.set(Object.assign({}, league))
+      } catch (error) {
+        return error
+      }
+    },
+    async templateUpload() {
+      // Upload JSON formatted file with players
+      const files = document.getElementById('dateFile').files
+      if (files.length <= 0) {
+        showMessage('No dates found in that file')
+        return false
+      }
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
+        const results = JSON.parse(e.target.result)
+        if (results.length > 0) {
+          results.forEach(async (template) => {
+            try {
+              const newLeague = {
+                defaults: template.defaults,
+                seasonTournament: template.seasonTournament,
+                structure: template.structure,
+                template: template.template,
+                type: template.type
+              }
+              await this.addNewLeague(template.id, newLeague)
+            } catch (error) {
+              console.error('Error adding document: ', error)
+            }
+          })
+        } else {
+          showMessage('No dates found in that file')
+        }
+        this.dates = false
+      }
+      reader.readAsText(files.item(0))
+    },
+    async addLeagueTemplate(id, template) {
+      try {
+        const templatesRef = firebaseStore
+          .collection('leagueInfo')
+          .doc(template.leagueID)
+          .collection('gameTemplates')
+          .doc(id)
+        return templatesRef.add(Object.assign({}, template))
+      } catch (error) {
+        return error
+      }
+    },
+    async addPointsAssignment(id, doc) {
+      try {
+        const templatesRef = firebaseStore
+          .collection('leagueInfo')
+          .doc('1')
+          .collection('pointsAssignments')
+          .doc(id)
+        return templatesRef.set(Object.assign({}, doc))
+      } catch (error) {
+        return error
+      }
+    },
+    async uploadDates() {
+      // Upload JSON formatted file with players
+      const files = document.getElementById('dateFile').files
+      if (files.length <= 0) {
+        showMessage('No dates found in that file')
+        return false
+      }
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
         const results = JSON.parse(e.target.result)
         if (results.length > 0) {
           const newGame = {}
           const lastCompletedDate = '11/25/2020 19:00:00'
-          const lastCompletedDtTm = Timestamp.fromDate(new Date(lastCompletedDate))
+          const lastCompletedDtTm = Timestamp.fromDate(
+            new Date(lastCompletedDate)
+          )
           results.forEach(async (game) => {
             try {
               if (game.gameDate.length) {
@@ -480,7 +646,7 @@ export default {
       }
       reader.readAsText(files.item(0))
     },
-    async addNewLeagueDate (newDate) {
+    async addNewLeagueDate(newDate) {
       const collection = 'gameDates'
       try {
         return await this.addObjectToFS(newDate, collection)
@@ -489,13 +655,14 @@ export default {
       }
     },
     // Add document to collection passed from function
-    async addObjectToFS (object, collectionName) {
+    async addObjectToFS(object, collectionName) {
       // Add scores by hole to FireStore daily scorecard collection
       const collection = firebaseStore.collection(collectionName)
       return collection.add(Object.assign({}, object))
     },
-    async lookupPlayerByEmail (email) {
-      const snapShot = await firebaseStore.collection('players')
+    async lookupPlayerByEmail(email) {
+      const snapShot = await firebaseStore
+        .collection('players')
         .where('email', '==', email)
         .get()
       if (snapShot.docs.length > 0) {
@@ -505,11 +672,9 @@ export default {
         return null
       }
     }
-
   },
-  async created () {
+  async created() {
     await this.fbLeagueInfo()
   }
-
 }
 </script>

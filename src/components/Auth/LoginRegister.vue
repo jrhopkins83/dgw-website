@@ -124,8 +124,8 @@
                   v-if="LoginError.errorCode=='auth/too-many-requests' || resetPassword"
                   class="action-button"
                   color="primary"
-                  label="Reset Password"
-                  @click="sendReset"
+                  label="Send Reset"
+                  @click="sendResetEmail"
                 >
                 <q-tooltip>
                   Click to send password reset email
@@ -335,7 +335,7 @@ export default {
         this.codePrompt = true
       }
     },
-    sendReset () {
+    sendResetEmail () {
       const request = {
         email: this.formData.email,
         requester: 'user'

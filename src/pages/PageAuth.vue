@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page class="flex flex-center">
     <q-card class="auth-tabs ">
       <q-tabs
         v-model="tab"
@@ -45,6 +45,9 @@ export default {
     return {
       tab: 'login'
     }
+  },
+  computed: {
+
   },
   components: {
     'login-register': require('components/Auth/LoginRegister.vue').default

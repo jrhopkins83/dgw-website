@@ -18,8 +18,8 @@
     "dev": "QENV=staging quasar dev",
     "staging": "QENV=staging quasar dev",
     "prod": "QENV=production quasar dev",
-    "deploy-to-staging": "firebase use default && QENV=staging quasar build && firebase deploy",
-    "deploy-to-production": "firebase use production && QENV=production quasar build && firebase deploy"
+    "deploy-to-staging": "firebase use default && QENV=staging quasar build -m pwa && firebase deploy",
+    "deploy-to-production": "firebase use production && QENV=production quasar build -m pwa && firebase deploy"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",

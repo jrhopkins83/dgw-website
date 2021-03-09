@@ -135,7 +135,6 @@ export default {
       if ('permissions' in navigator) {
         navigator.permissions.query({ name: 'notifications' })
           .then((permission) => {
-            console.log('notification permission state is ', permission.state)
             permission.onchange = () => {
               // Show notification banner if user has manually changed notification permission back to ask
               if (permission.state === 'prompt' && neverShowNotificationsBanner) {
@@ -158,7 +157,6 @@ export default {
       if (this.pushNotificationsSupported) {
         // *** Webpush notifications
         Notification.requestPermission(result => {
-          console.log('result: ', result)
           this.neverShowNotificationsBanner()
           if (result === 'granted') {
             this.checkForExistingPushSubscription()

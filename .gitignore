@@ -42,3 +42,9 @@ dir
 
 # Test files
 /spec
+
+.quasar.env.json
+.dev.env
+.prod.env
+
+sandboxKey.json

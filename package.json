@@ -7,20 +7,19 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
-    "deploy-test": "quasar build && firebase deploy -P staging",
-    "deploy-prod": "quasar build && firebase deploy -P prod",
-    "devIOS": "quasar dev -m capacitor -T ios",
-    "devAndroid": "quasar dev -m capacitor -T android",
-    "buildIOS": "quasar build -m capacitor -T ios",
-    "buildAndroud": "quasar build -m capacitor -T android",
     "icons": "icongenie generate -i icon.png --skip-trim --theme-color ac4745",
-    "deploy-test-pwa": "quasar build -m pwa && firebase deploy -P staging",
-    "deploy-prod-pwa": "quasar build -m pwa && firebase deploy -P prod",
+    "deploy-test-pwa": "QENV=staging quasar build -m pwa && firebase deploy -P staging",
+    "deploy-prod-pwa": "QENV=production quasar build -m pwa && firebase deploy -P prod",
     "emulators1": "firebase emulators:start --import=dir/base1",
     "emulators2": "firebase emulators:start --import=dir/base2",
     "emulators3": "firebase emulators:start --import=dir/base3",
     "emulators4": "firebase emulators:start --import=dir/base4",
-    "test": "jest ./spec --detectOpenHandles"
+    "test": "jest ./spec --detectOpenHandles",
+    "dev": "QENV=staging quasar dev",
+    "staging": "QENV=staging quasar dev",
+    "prod": "QENV=production quasar dev",
+    "deploy-to-staging": "firebase use default && QENV=staging quasar build && firebase deploy",
+    "deploy-to-production": "firebase use production && QENV=production quasar build && firebase deploy"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -39,6 +38,7 @@
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
+    "@quasar/quasar-app-extension-qenv": "^1.1.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",

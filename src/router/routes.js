@@ -64,7 +64,7 @@ const routes = [{
       name: 'Help',
       props: true,
       meta: {
-        requiresAuth: true
+        requiresAuth: false
       },
       component: () => import('pages/PageHelp.vue')
     }, {

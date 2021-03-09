@@ -1,0 +1,30 @@
+{
+  "test": "test",
+  "staging": {
+    "ENV_TYPE": "Running Staging",
+    "ENV_Test": "Staging",
+    "firebaseConfig": {
+      "apiKey": "AIzaSyDQChb8_T3PZhBuo5vHOWOpthK9uNfjTVA",
+      "authDomain": "dgw-test.firebaseapp.com",
+      "projectId": "dgw-test",
+      "storageBucket": "dgw-test.appspot.com",
+      "messagingSenderId": "29515174884",
+      "appId": "1:29515174884:web:c2ae4e150dbda03c526df1",
+      "measurementId": "G-69ZHD0YZMC"
+    }
+  },
+  "production": {
+    "ENV_TYPE": "Running Production",
+    "ENV_PROD": "Production",
+    "firebaseConfig": {
+      "apiKey": "AIzaSyD6Uu3fQj7LcUCx9sXzsqLUKQoDmsocsW4",
+      "authDomain": "donkeys-gone-wild.firebaseapp.com",
+      "databaseURL": "https://donkeys-gone-wild.firebaseio.com",
+      "projectId": "donkeys-gone-wild",
+      "storageBucket": "donkeys-gone-wild.appspot.com",
+      "messagingSenderId": "633549083760",
+      "appId": "1:633549083760:web:5cebf6557c754f731bd0b5",
+      "measurementId": "G-ZTHN3MFG0R"
+    }
+  }
+}

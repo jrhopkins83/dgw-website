@@ -71,7 +71,7 @@
           <q-dialog v-model="templates">
             <q-card style="width: 300px; max-width: 80vw;">
               <q-card-section>
-                <input type="file" id="leagueFile" value="Import" />
+                <input type="file" id="templateFile" value="Import" />
               </q-card-section>
               <q-card-actions align="right" class="bg-white text-teal">
                 <q-btn label="Cancel" color="negative" v-close-popup />
@@ -175,7 +175,7 @@ import { mixinAddEditPlayer } from 'src/mixins/mixin-add-edit-player'
 export default {
   components: {},
   mixins: [mixinAddEditPlayer],
-  data() {
+  data () {
     return {
       league: false,
       templates: false,
@@ -204,7 +204,7 @@ export default {
   },
   methods: {
     ...mapActions('leagueSettings', ['fbLeagueInfo']),
-    async bulkUpload() {
+    async bulkUpload () {
       // Upload JSON formatted file with players
       const files = document.getElementById('playerFile').files
       if (files.length <= 0) {
@@ -219,24 +219,40 @@ export default {
           // if (this.gameDates.length) {
           results.forEach(async (player) => {
             try {
-              this.mode = 'add'
+              this.editMode = 'add'
               let nickName = null
               let onlineName = null
               if (player.nickName.length > 0) {
                 nickName = player.nickName.trim()
               }
-              if (player.onlineName.length > 0) {
+
+              if (player.onlineName) {
                 onlineName = player.onlineName.trim()
               }
+
+              const playerAvatar = {
+                avatarUrl: player.avatarUrl,
+                avatarName: `${player.firstName}_${player.lastName}.png`
+              }
+
+              const playerPhoto = {
+                photoUrl: player.photoUrl,
+                photoName: `${player.firstName}_${player.lastName}.png`
+              }
               const newPlayer = {
+                playerID: player.playerID,
+                avatar: playerAvatar,
+                avatarChanged: true,
+                photo: playerPhoto,
+                photoChanged: true,
                 firstName: toTitleCase(player.firstName).trim(),
                 lastName: toTitleCase(player.lastName).trim(),
-                nickName: nickName,
-                onlineName: onlineName,
                 email: player.email,
                 phoneNumber: player.phoneNumber,
-                notificationOptin: true,
-                emailOptin: true
+                nickName: nickName,
+                onlineName: onlineName,
+                emailOptin: true,
+                createUser: true
               }
 
               const playerNames = {
@@ -244,14 +260,8 @@ export default {
                 lastName: newPlayer.lastName,
                 nickName: newPlayer.nickName,
                 onlineName: newPlayer.onlineName,
-                avatar: {
-                  avatarUrl: '',
-                  avatarName: ''
-                },
-                photo: {
-                  photoUrl: '',
-                  photoName: ''
-                }
+                avatar: newPlayer.avatar,
+                photo: newPlayer.photo
               }
 
               const playerContactInfo = {
@@ -300,7 +310,7 @@ export default {
       this.players = false
       reader.readAsText(files.item(0))
     },
-    async uploadWeeklyResults(player) {
+    async uploadWeeklyResults (player) {
       try {
         const playerTotals = {
           places: [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -370,7 +380,7 @@ export default {
         return null
       }
     },
-    async createPlayerStanding(player, playerTotals) {
+    async createPlayerStanding (player, playerTotals) {
       try {
         const playerID = player.playerID
         const newStanding = {
@@ -391,7 +401,7 @@ export default {
         console.log(`Error adding standing: ${error.message}`)
       }
     },
-    async createNewUser(email) {
+    async createNewUser (email) {
       const createUser = firebaseFunctions.httpsCallable('createUser')
       const password = 'test123'
       try {
@@ -402,7 +412,7 @@ export default {
         return null
       }
     },
-    async uploadStandings() {
+    async uploadStandings () {
       // Upload JSON formatted file with players
       const files = document.getElementById('standingsFile').files
       if (files.length <= 0) {
@@ -436,7 +446,7 @@ export default {
       }
       reader.readAsText(files.item(0))
     },
-    async getPointAssignments() {
+    async getPointAssignments () {
       try {
         // get point assignments
         const pointAssignmentRef = firebaseStore
@@ -458,7 +468,7 @@ export default {
         return null
       }
     },
-    async getLeagueDates() {
+    async getLeagueDates () {
       try {
         const gameDatesRef = firebaseStore
           .collection('gameDates')
@@ -484,114 +494,145 @@ export default {
         return null
       }
     },
-    async leagueUpload() {
+    async leagueUpload () {
       // Upload JSON formatted file with players
-      const files = document.getElementById('dateFile').files
-      if (files.length <= 0) {
-        showMessage('No dates found in that file')
+      const files = document.getElementById('leagueFile').files
+      if (!files.length) {
+        showMessage('No info found in that file')
         return false
       }
       const reader = new FileReader()
 
-      reader.onload = (e) => {
-        const results = JSON.parse(e.target.result)
-        if (results.length > 0) {
-          results.forEach(async (league) => {
-            try {
-              const newLeague = {
-                bank: league.bank,
-                currentSeason: league.currentSeason,
-                helpText: league.helpText,
-                finalTablePlayers: league.finalTablePlayers,
-                leagueName: league.leagueName,
-                leagueShortName: league.leagueShortName,
-                messageLimit: league.messageLimit,
-                pokerBrosInfo: league.pokerBrosInfo,
-                tournamentStructures: league.tournamentStructures,
-                tournamentTypes: league.tournamentTypes,
-                zoomInfo: league.zoomInfo
-              }
-              await this.addNewLeague(newLeague)
-            } catch (error) {
-              console.error('Error adding document: ', error)
+      reader.onload = async (e) => {
+        const league = JSON.parse(e.target.result)
+        if (league) {
+          try {
+            const newLeague = {
+              bank: league.bank,
+              currentSeason: league.currentSeason,
+              helpText: league.helpText,
+              finalTablePlayers: league.finalTablePlayers,
+              leagueName: league.leagueName,
+              leagueShortName: league.leagueShortName,
+              messageLimit: league.messageLimit,
+              pokerBrosInfo: league.pokerBrosInfo,
+              tournamentStructures: league.tournamentStructures,
+              tournamentTypes: league.tournamentTypes,
+              zoomInfo: league.zoomInfo
             }
-          })
+            await this.addNewLeague(newLeague)
+          } catch (error) {
+            console.error('Error adding document: ', error)
+          }
         } else {
-          showMessage('No dates found in that file')
+          showMessage('No info found in that file')
         }
         this.dates = false
       }
       reader.readAsText(files.item(0))
     },
-    async addNewLeague(league) {
+    async addNewLeague (league) {
       try {
-        const templatesRef = firebaseStore.collection('leagueInfo').doc(1)
-        return templatesRef.set(Object.assign({}, league))
+        const leagueID = await firebaseStore.collection('leagueInfo')
+          .doc('1').set(league)
+        return leagueID
       } catch (error) {
-        return error
+        return new Error(error)
       }
     },
-    async templateUpload() {
+    async templateUpload () {
       // Upload JSON formatted file with players
-      const files = document.getElementById('dateFile').files
-      if (files.length <= 0) {
-        showMessage('No dates found in that file')
+      const files = document.getElementById('templateFile').files
+      if (!files.length) {
+        showMessage('No templates found in that file')
         return false
       }
       const reader = new FileReader()
 
       reader.onload = (e) => {
         const results = JSON.parse(e.target.result)
-        if (results.length > 0) {
+        if (results.length) {
           results.forEach(async (template) => {
             try {
-              const newLeague = {
+              const newTemplate = {
                 defaults: template.defaults,
                 seasonTournament: template.seasonTournament,
                 structure: template.structure,
                 template: template.template,
                 type: template.type
               }
-              await this.addNewLeague(template.id, newLeague)
+              const templateID = template.id.toString()
+              await this.addLeagueTemplate(templateID, newTemplate)
             } catch (error) {
               console.error('Error adding document: ', error)
             }
           })
         } else {
-          showMessage('No dates found in that file')
+          showMessage('No templates found in that file')
         }
         this.dates = false
       }
       reader.readAsText(files.item(0))
     },
-    async addLeagueTemplate(id, template) {
+    async pointsUpload () {
+      // Upload JSON formatted file with players
+      const files = document.getElementById('pointsFile').files
+      if (!files.length) {
+        showMessage('No points found in that file')
+        return false
+      }
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
+        const results = JSON.parse(e.target.result)
+        if (results.length) {
+          results.forEach(async (position) => {
+            try {
+              const newPosition = {
+                position: position.position,
+                points: position.points
+              }
+              const docId = position.docId.toString()
+              await this.addPointsAssignment(docId, newPosition)
+            } catch (error) {
+              console.error('Error adding document: ', error)
+            }
+          })
+        } else {
+          showMessage('No points found in that file')
+        }
+        this.dates = false
+      }
+      reader.readAsText(files.item(0))
+    },
+    async addLeagueTemplate (id, template) {
       try {
         const templatesRef = firebaseStore
           .collection('leagueInfo')
-          .doc(template.leagueID)
+          .doc('1')
           .collection('gameTemplates')
           .doc(id)
-        return templatesRef.add(Object.assign({}, template))
+        return await templatesRef.set(template)
       } catch (error) {
         return error
       }
     },
-    async addPointsAssignment(id, doc) {
+    async addPointsAssignment (id, doc) {
       try {
         const templatesRef = firebaseStore
           .collection('leagueInfo')
           .doc('1')
           .collection('pointsAssignments')
           .doc(id)
-        return templatesRef.set(Object.assign({}, doc))
+        return await templatesRef.set(doc)
       } catch (error) {
         return error
       }
     },
-    async uploadDates() {
+    async uploadDates () {
       // Upload JSON formatted file with players
       const files = document.getElementById('dateFile').files
-      if (files.length <= 0) {
+      if (files.length) {
         showMessage('No dates found in that file')
         return false
       }
@@ -646,7 +687,7 @@ export default {
       }
       reader.readAsText(files.item(0))
     },
-    async addNewLeagueDate(newDate) {
+    async addNewLeagueDate (newDate) {
       const collection = 'gameDates'
       try {
         return await this.addObjectToFS(newDate, collection)
@@ -655,12 +696,12 @@ export default {
       }
     },
     // Add document to collection passed from function
-    async addObjectToFS(object, collectionName) {
+    async addObjectToFS (object, collectionName) {
       // Add scores by hole to FireStore daily scorecard collection
       const collection = firebaseStore.collection(collectionName)
       return collection.add(Object.assign({}, object))
     },
-    async lookupPlayerByEmail(email) {
+    async lookupPlayerByEmail (email) {
       const snapShot = await firebaseStore
         .collection('players')
         .where('email', '==', email)
@@ -673,7 +714,7 @@ export default {
       }
     }
   },
-  async created() {
+  async created () {
     await this.fbLeagueInfo()
   }
 }

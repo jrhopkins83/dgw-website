@@ -238,6 +238,7 @@ async function createTournamentResults (tournamentInfo, id) {
           nickName: player.data().nickName,
           onlineName: player.data().onlineName,
           avatar: player.data().avatar,
+          photo: player.data().photo,
           RSVPd: false,
           checkedIn: false,
           finished: false,

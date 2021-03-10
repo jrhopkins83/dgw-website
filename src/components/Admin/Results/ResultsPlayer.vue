@@ -17,7 +17,7 @@
       </div>
       <div class="player-img q-px-xs q-py-none">
         <q-avatar size="40px">
-          <img :src="player_avatar" color="primary">
+          <img :src="player_photo" color="primary">
         </q-avatar>
       </div>
       <div class="attribute-container player-information player-names"
@@ -71,9 +71,9 @@ export default {
         this.changePlayerCheckin(newResult)
       }
     },
-    player_avatar: function () {
-      if (this.player.avatar.length > 0) {
-        return this.player.avatar.avatarUrl
+    player_photo: function () {
+      if (this.player.photo.photoUrl.length) {
+        return this.player.photo.photoUrl
       } else {
         return 'default.jpg'
       }

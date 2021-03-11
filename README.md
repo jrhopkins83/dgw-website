@@ -1,6 +1,6 @@
 # dgw-website (dgw-website)
 
-Donkey's Gone Wild poker league website
+Poker league website
 
 ## Install the dependencies
 ```bash

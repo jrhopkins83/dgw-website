@@ -25,6 +25,13 @@ service cloud.firestore {
         allow read, write: if userIsAdmin();
       }
 
+      // Authenticated and unauthenticated users can read public info
+      match /publicInfo/{infoID} {
+        allow read: if true;
+        allow write: if userIsAdmin();
+      }
+
+
     }
 
     // Only admins should be able to read or write game templates

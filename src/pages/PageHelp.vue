@@ -17,7 +17,7 @@ export default {
 
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leaguePublicInfo', 'leagueInfoLoaded']),
+    ...mapGetters('leagueSettings', ['leaguePublicInfo', 'leagueInfo', 'leagueInfoLoaded']),
     helpText: function () {
       const userLoggedIn = this.$q.localStorage.getItem('loggedIn')
       if (userLoggedIn) {
@@ -28,10 +28,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('leagueSettings', ['fbLeaguePublicInfo'])
+    ...mapActions('leagueSettings', ['fbLeagueInfo', 'fbLeaguePublicInfo'])
   },
   async beforeMount () {
     if (!this.leagueInfoLoaded) {
+      await this.fbLeagueInfo()
       await this.fbLeaguePublicInfo()
     }
   }

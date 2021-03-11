@@ -17,22 +17,22 @@ export default {
 
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded']),
+    ...mapGetters('leagueSettings', ['leaguePublicInfo', 'leagueInfoLoaded']),
     helpText: function () {
       const userLoggedIn = this.$q.localStorage.getItem('loggedIn')
       if (userLoggedIn) {
         return this.leagueInfo.helpText
       } else {
-        return this.leagueInfo.loginHelp
+        return this.leaguePublicInfo.loginHelp
       }
     }
   },
   methods: {
-    ...mapActions('leagueSettings', ['fbLeagueSettings'])
+    ...mapActions('leagueSettings', ['fbLeaguePublicInfo'])
   },
   async beforeMount () {
     if (!this.leagueInfoLoaded) {
-      await this.fbLeagueSettings()
+      await this.fbLeaguePublicInfo()
     }
   }
 }

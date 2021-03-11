@@ -11,6 +11,7 @@ const initialState = () => {
   return {
     devMode: 'test',
     leagueInfo: {},
+    leaguePublicInfo: {},
     gameTemplates: {},
     leagueInfoLoaded: false,
     points: {},
@@ -171,13 +172,16 @@ const actions = {
     }
   },
 
-  async fbLeagueSettings ({ state, dispatch, commit }) {
+  async fbLeaguePublicInfo ({ state, dispatch, commit }) {
     try {
       const leagueID = '1'
 
       // Get basic league info
-      const leagueRef = firebaseStore.collection('leagueInfo').doc(leagueID)
-      await dispatch('bindLeagueInfo', leagueRef)
+      const leagueRef = firebaseStore.collection('leagueInfo')
+        .doc(leagueID)
+        .collection('publicInfo')
+        .doc('help')
+      await dispatch('bindLeaguePublicInfo', leagueRef)
       commit('SET_LEAGUE_INFO_LOADED', true)
       return true
     } catch (error) {
@@ -190,6 +194,12 @@ const actions = {
   }),
   unbindLeagueInfo: firestoreAction((context, ref) => {
     context.unbindFirestoreRef('leagueInfo')
+  }),
+  bindLeaguePublicInfo: firestoreAction(async (context, ref) => {
+    return await context.bindFirestoreRef('leaguePublicInfo', ref)
+  }),
+  unbindLeaguePublicInfo: firestoreAction((context, ref) => {
+    context.unbindFirestoreRef('leaguePublicInfo')
   }),
   bindLeaguePoints: firestoreAction((context, ref) => {
     return context.bindFirestoreRef('points', ref)
@@ -239,6 +249,9 @@ const getters = {
   },
   leagueInfo: state => {
     return state.leagueInfo
+  },
+  leaguePublicInfo: state => {
+    return state.leaguePublicInfo
   },
   gameDates: state => {
     return state.gameDates

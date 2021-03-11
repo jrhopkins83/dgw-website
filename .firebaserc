@@ -17,7 +17,7 @@
   },
   "projects": {
     "production": "donkeys-gone-wild",
-    "staging": "DGW-Test",
-    "default": "DGW-Test"
+    "staging": "dgw-test",
+    "default": "dgw-test"
   }
 }

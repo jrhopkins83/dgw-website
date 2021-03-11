@@ -171,6 +171,20 @@ const actions = {
     }
   },
 
+  async fbLeagueSettings ({ state, dispatch, commit }) {
+    try {
+      const leagueID = '1'
+
+      // Get basic league info
+      const leagueRef = firebaseStore.collection('leagueInfo').doc(leagueID)
+      await dispatch('bindLeagueInfo', leagueRef)
+      commit('SET_LEAGUE_INFO_LOADED', true)
+      return true
+    } catch (error) {
+      return showMessage('error', 'Error getting league Info:', error)
+    }
+  },
+
   bindLeagueInfo: firestoreAction(async (context, ref) => {
     return await context.bindFirestoreRef('leagueInfo', ref)
   }),

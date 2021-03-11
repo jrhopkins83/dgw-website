@@ -1,11 +1,11 @@
 <template>
-  <q-page padding>
-    <p v-html="leagueInfo.helpText"></p>
+  <q-page padding v-if="leagueInfoLoaded">
+    <p v-html="helpText"></p>
   </q-page>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -17,7 +17,23 @@ export default {
 
   },
   computed: {
-    ...mapGetters('leagueSettings', ['leagueInfo'])
+    ...mapGetters('leagueSettings', ['leagueInfo', 'leagueInfoLoaded']),
+    helpText: function () {
+      const userLoggedIn = this.$q.localStorage.getItem('loggedIn')
+      if (userLoggedIn) {
+        return this.leagueInfo.helpText
+      } else {
+        return this.leagueInfo.loginHelp
+      }
+    }
+  },
+  methods: {
+    ...mapActions('leagueSettings', ['fbLeagueSettings'])
+  },
+  async beforeMount () {
+    if (!this.leagueInfoLoaded) {
+      await this.fbLeagueSettings()
+    }
   }
 }
 </script>

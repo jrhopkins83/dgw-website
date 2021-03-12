@@ -68,7 +68,11 @@ export default {
       return Object.values(this.completedGames)
     },
     txtPickDate: function () {
-      return date.formatDate(this.gameDate.toDate(), 'MM / DD')
+      if (this.gameDate) {
+        return date.formatDate(this.gameDate.toDate(), 'MM / DD')
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -92,7 +96,7 @@ export default {
     }
   },
 
-  async mounted () {
+  async beforeMount () {
     if (Object.keys(this.completedGames).length) {
       this.getResults()
     } else {

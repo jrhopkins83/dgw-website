@@ -20,8 +20,7 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      'axios',
-      'google-analytics'
+      'axios'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -112,7 +111,8 @@ module.exports = function (/* ctx */) {
         'Notify',
         'Dialog',
         'LocalStorage',
-        'Loading'
+        'Loading',
+        'gtm-plugin'
       ]
     },
 

@@ -220,10 +220,6 @@ const actions = {
     LocalStorage.remove('players')
     LocalStorage.remove('UserInfo')
 
-    // commit('players/RESET_PLAYERS', null, {
-    //   root: true
-    // })
-
     commit('standings/RESET_STANDINGS', null, {
       root: true
     })
@@ -231,11 +227,39 @@ const actions = {
 
   clearSetupInfo ({ commit, dispatch }) {
     dispatch('clearSessionInfo')
+    dispatch('announcements/unbindAnnouncements', null, {
+      root: true
+    })
+    dispatch('announcements/unbindHeroHeadline', null, {
+      root: true
+    })
     dispatch('games/unbindLeagueDates', null, {
+      root: true
+    })
+    dispatch('games/unbindLastComplDate', null, {
+      root: true
+    })
+    dispatch('messages/unBindMessagesRef', null, {
+      root: true
+    })
+    dispatch('players/unBindPlayersRef', null, {
+      root: true
+    })
+    dispatch('players/unBindSubscribersRef', null, {
+      root: true
+    })
+    dispatch('tourneyResults/unbindResultsRef', null, {
+      root: true
+    })
+    dispatch('weeklyResults/unbindResultsRef', null, {
+      root: true
+    })
+    dispatch('weeklyResults/unbindPlayerResultsRef', null, {
       root: true
     })
     dispatch('unbindLeaguePoints')
     dispatch('unbindLeagueInfo')
+    dispatch('unbindGameTemplates')
     commit('RESET_LEAGUEINFO')
 
     LocalStorage.remove('leagueInfo')

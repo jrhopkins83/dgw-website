@@ -1,9 +1,8 @@
 import { uid } from 'quasar'
 
-/* eslint-disable no-undef */
 export default {
   logEvent (category, action, label, value) {
-    dataLayer.push({
+    window.window.dataLayer.push({
       event: 'customEvent',
       category: category,
       action: action,
@@ -14,7 +13,7 @@ export default {
   },
 
   logPage (path, name) {
-    dataLayer.push({
+    window.dataLayer.push({
       path: path,
       event: 'customPageView',
       screenName: name,

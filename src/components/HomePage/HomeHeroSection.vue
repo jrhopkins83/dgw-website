@@ -77,7 +77,7 @@ export default {
     background-image: url(cards_in_the_air.png);
     background-size: cover;
     /* grid styles */
-    display: grid;
+    display: grid !important;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 5rem 1fr;
     grid-template-areas:
@@ -137,7 +137,7 @@ export default {
       max-height: 56rem;
       overflow: hidden;
       /* grid styles */
-      display: grid;
+      display: grid !important;
       grid-template-columns: 1fr;
       grid-template-rows: 3rem 1fr .6fr;
       grid-template-areas:

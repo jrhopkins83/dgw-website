@@ -96,6 +96,7 @@
 import { firebaseStore } from 'boot/firebase'
 import { mapGetters } from 'vuex'
 // const qs = require('qs')
+import gtm from '../components/gtm'
 
 export default {
   name: 'PageIndex',
@@ -262,6 +263,7 @@ export default {
   },
   created () {
     this.initNotificationsBanner()
+    gtm.logEvent('myCat', 'myAction', 'myLabel', 0)
   }
 
 }

@@ -26,6 +26,7 @@ const firebaseStore = firebaseApp.firestore()
 const Timestamp = firebase.firestore.Timestamp
 const Fieldvalue = firebase.firestore.Fieldvalue
 const storage = firebase.storage()
+firebase.analytics()
 
 // Use emulators
 // if (window.location.hostname === 'localhost') {

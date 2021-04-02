@@ -205,6 +205,10 @@ export default {
               avatarURL: '',
               avatarName: ''
             },
+            photo: {
+              photoURL: '',
+              photoName: ''
+            },
             RSVPd: false,
             checkedIn: true,
             finished: false,

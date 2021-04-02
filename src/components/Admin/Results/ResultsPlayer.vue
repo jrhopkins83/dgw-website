@@ -72,7 +72,7 @@ export default {
       }
     },
     player_photo: function () {
-      if (this.player.photo.photoUrl.length) {
+      if (this.player.photo) {
         return this.player.photo.photoUrl
       } else {
         return 'default.jpg'

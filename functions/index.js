@@ -10,11 +10,14 @@ admin.initializeApp()
 /*
   config - webPush
 */
+const mailto = functions.config().webPush.mailto
+const publickey = functions.config().webPush.publickey
+const privatekey = functions.config().webPush.privatekey
 
 webPush.setVapidDetails(
-  'mailto:jrhopkins83@gmail.com',
-  'BD9d2d8NNm30iU4hzsKBRhpBD27wJo93TRtHbeHWYNPO9QjfSmSP579aP7hPiZZB1vTpwsQ6EsZ6Gkzh8YLlzk0', // public key
-  'c3dii9ZWil5tWJg1HUBsVh7-BJ87Fh1G3j1ciADI49k' // private key
+  mailto,
+  publickey,
+  privatekey
 )
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)

@@ -7,15 +7,6 @@ const client = new firestore.v1.FirestoreAdminClient()
 
 admin.initializeApp()
 
-const sgMail = require('@sendgrid/mail')
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-// const API_KEY = functions.config().sendgrid.key
-const API_KEY = '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'
-// const TEMPLATE_ID = functions.config().sendgrid.template
-sgMail.setApiKey(API_KEY)
-// console.log('API_KEY: ', API_KEY)
-// console.log('TEMPLATE_ID: ', TEMPLATE_ID)
-
 /*
   config - webPush
 */

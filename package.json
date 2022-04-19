@@ -28,7 +28,6 @@
     "cropperjs": "^1.5.9",
     "emoji-mart-vue": "^2.6.6",
     "firebase": "^8.6.5",
-    "node-sass": "^4.14.0",
     "pica": "^6.1.1",
     "quasar": "^1.0.0",
     "v-money": "^0.8.1",

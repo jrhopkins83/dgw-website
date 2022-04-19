@@ -7,23 +7,17 @@ const client = new firestore.v1.FirestoreAdminClient()
 
 admin.initializeApp()
 
-const sgMail = require('@sendgrid/mail')
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-// const API_KEY = functions.config().sendgrid.key
-const API_KEY = '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'
-// const TEMPLATE_ID = functions.config().sendgrid.template
-sgMail.setApiKey(API_KEY)
-// console.log('API_KEY: ', API_KEY)
-// console.log('TEMPLATE_ID: ', TEMPLATE_ID)
-
 /*
   config - webPush
 */
+const mailto = functions.config().webPush.mailto
+const publickey = functions.config().webPush.publickey
+const privatekey = functions.config().webPush.privatekey
 
 webPush.setVapidDetails(
-  'mailto:jrhopkins83@gmail.com',
-  'BD9d2d8NNm30iU4hzsKBRhpBD27wJo93TRtHbeHWYNPO9QjfSmSP579aP7hPiZZB1vTpwsQ6EsZ6Gkzh8YLlzk0', // public key
-  'c3dii9ZWil5tWJg1HUBsVh7-BJ87Fh1G3j1ciADI49k' // private key
+  mailto,
+  publickey,
+  privatekey
 )
 
 const adminConfig = JSON.parse(process.env.FIREBASE_CONFIG)

@@ -12,13 +12,14 @@ if (pushNotificationsSupported) {
   // fill in the empty quotes with your credentials
   // eslint-disable-next-line no-undef
   firebase.initializeApp({
-    apiKey: 'AIzaSyCCS8VSb-xeZl8dBwVxYooL3eghW6Xb9lw',
-    authDomain: 'fir-authdemo-5cd82.firebaseapp.com',
-    databaseURL: 'https://fir-authdemo-5cd82.firebaseio.com',
-    projectId: 'fir-authdemo-5cd82',
-    storageBucket: 'fir-authdemo-5cd82.appspot.com',
-    messagingSenderId: '53210843527',
-    appId: '1:53210843527:web:443fcc1f74d4c2d36e6b22'
+    apiKey: process.env.firebaseConfig.apiKey,
+    authDomain: process.env.firebaseConfig.authDomain,
+    databaseURL: process.env.firebaseConfig.databaseURL,
+    projectId: process.env.firebaseConfig.projectId,
+    storageBucket: process.env.firebaseConfig.storageBucket,
+    messagingSenderId: process.env.firebaseConfig.messagingSenderId,
+    appId: process.env.firebaseConfig.appId,
+    measurementId: process.env.firebaseConfig.measurementId
   })
 
   const messaging = firebase.messaging()
